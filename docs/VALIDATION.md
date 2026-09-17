@@ -1,6 +1,15 @@
 # 发布准备验证
 
-验证日期：2026-09-17。版本：`0.1.0-beta`。GitHub 标签与 JitPack 产物已公开。
+验证日期：2026-09-17。当前正式版：`0.1.0`。下方保留 `0.1.0-beta` 的历史验证结果。
+
+## 0.1.0 正式版验证
+
+- [GitHub CI](https://github.com/mobilewhj/offlineSdk/actions/runs/35197000313) 通过，正式标签对应提交 `4153ab4d5a9bd0a62a5fed7966760076a7ace91a`。
+- [JitPack 构建日志](https://jitpack.io/com/github/mobilewhj/offlineSdk/0.1.0/build.log) 显示构建成功，实际坐标为 `com.github.mobilewhj:offlineSdk:0.1.0`。
+- Demo 替换为远端正式版依赖后，Debug、R8 Release 和 JVM 测试任务通过；未变化的测试输入复用了已有通过结果。Gradle 解析的 AAR 与匿名下载文件一致。
+- AAR 内容与 `0.1.0-beta` 一致，SHA-256 为 `5c292f214c0e588b55ce5906ba44dffdf503c209d1aa0859517ba56695f53b93`；本次只调整版本和发布文档。
+- AAR 和源码 JAR 包含 Apache-2.0 许可证。[GitHub Release](https://github.com/mobilewhj/offlineSdk/releases/tag/0.1.0) 使用正式发布标记。
+- 下方的设备验收限制仍然适用。
 
 ## 已验证
 
