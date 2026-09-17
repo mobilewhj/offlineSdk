@@ -1,13 +1,13 @@
 # 首版发布清单
 
-目标仓库：`mobilewhj/offlineSdk`。SDK 包名为 `com.offline.demo`，示例包名为 `com.offline.demo.sample`。当前走 GitHub + JitPack 发布，首版使用 `0.1.0-beta`。
+目标仓库：`mobilewhj/offlineSdk`。SDK 包名为 `com.offline.demo`，示例包名为 `com.offline.demo.sample`。当前走 GitHub + JitPack 发布，首版使用 `0.1.0`。
 
 ## 当前准备情况
 
 - 已有独立工程、SDK 和 Welcome 示例，以及使用说明、更新记录、GitHub Actions、Maven 发布与 JitPack 配置。
 - Git 作者为 `mobilewhj`，邮箱使用 GitHub noreply 地址；origin 为 `https://github.com/mobilewhj/offlineSdk.git`。
 - GitHub 公开仓库：[mobilewhj/offlineSdk](https://github.com/mobilewhj/offlineSdk)。版本与远端构建状态请查看仓库 Releases、Actions 和 JitPack。
-- 已采用 Apache-2.0，LICENSE、双语 README 和 POM license 元数据已补齐；设备验收尚未完成，以 beta 版本发布并明确限制。详细结果见 [验证记录](VALIDATION.md)。
+- 已采用 Apache-2.0，LICENSE、双语 README 和 POM license 元数据已补齐；首个正式版本为 `0.1.0`，设备验收尚未完成，验证记录保留该限制。详细结果见 [验证记录](VALIDATION.md)。
 
 ## 1. 确定许可证
 
@@ -37,7 +37,7 @@
 - `git diff --cached --check` 无格式错误；检查所有暂存文件。
 - 不包含公司标识、凭据、本机路径、`local.properties`、签名文件或构建缓存。
 - `build/repo/` 包含 AAR、源码 JAR、POM、Gradle Module Metadata，POM 作者和许可证正确。
-- 版本在默认 `sdkVersion`、README、CHANGELOG 和稍后创建的 tag 中一致。本项目使用 `0.1.0-beta`，不要额外加 `v` 前缀。
+- 版本在默认 `sdkVersion`、README、CHANGELOG 和稍后创建的 tag 中一致。本项目使用 `0.1.0`，不要额外加 `v` 前缀。
 
 ## 3. 提交源码到 GitHub
 
@@ -51,7 +51,7 @@ git config --get user.name
 git config --get user.email
 git add .
 git diff --cached --check
-git commit -m "Prepare offline SDK 0.1.0-beta"
+git commit -m "Prepare offline SDK 0.1.0"
 git push -u origin main
 ```
 
@@ -62,11 +62,11 @@ git push -u origin main
 确认 `main` 对应提交的 Actions 通过后：
 
 ```bash
-git tag -a 0.1.0-beta -m "Offline SDK 0.1.0-beta"
-git push origin 0.1.0-beta
+git tag -a 0.1.0 -m "Offline SDK 0.1.0"
+git push origin 0.1.0
 ```
 
-不要覆盖或移动已发布的 tag。打开 [JitPack](https://jitpack.io)，查询 `mobilewhj/offlineSdk` 的 `0.1.0-beta`，查看构建日志直到成功。
+不要覆盖或移动已发布的 tag。打开 [JitPack](https://jitpack.io)，查询 `mobilewhj/offlineSdk` 的 `0.1.0`，查看构建日志直到成功。
 
 `jitpack.yml` 选择 JDK 17，通过 `VERSION` 设置实际 tag 版本，执行 SDK 的 `publishToMavenLocal`。发布规则参见 [JitPack 构建文档](https://docs.jitpack.io/building/)。本地 `build/repo/` 构建成功不代表远端已上线。
 
@@ -81,14 +81,14 @@ maven("https://jitpack.io") {
 
 ```kotlin
 // 接入方模块 build.gradle.kts
-implementation("com.github.mobilewhj:offlineSdk:0.1.0-beta")
+implementation("com.github.mobilewhj:offlineSdk:0.1.0")
 ```
 
 本项目仅发布一个 SDK，JitPack 实际产物使用上述仓库级坐标。它与本地 `build/repo/` 中的 group 不同；以远端 POM 和实际解析结果为准。
 
 ## 5. 整理 GitHub Release
 
-从已经验证的 `0.1.0-beta` tag 创建 Release，勾选 pre-release，说明功能、最低 Android API 24、工具链要求、已知限制和安装坐标。内容可从 CHANGELOG 整理。
+从已经验证的 `0.1.0` tag 创建 Release，不勾选 pre-release，设为 Latest，说明功能、最低 Android API 24、工具链要求、已知限制和安装坐标。内容可从 CHANGELOG 整理。
 
 可附 `offlineSdk/build/outputs/aar/offlineSdk-release.aar`；手动 AAR 接入需要调用方补齐传递依赖，优先推荐 Maven 坐标。示例 APK 是可选附件；当前 `app-release-unsigned.apk` 未签名，不能直接作为可安装演示包提供。
 

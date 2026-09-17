@@ -1,5 +1,21 @@
 # 更新记录
 
+## 0.1.0
+
+首个正式版本，面向小型 Android 项目的单包 H5 离线资源方案。
+
+- 沿用 `0.1.0-beta` 的 SDK API 与实现，无功能变更。
+- 正式依赖坐标：`com.github.mobilewhj:offlineSdk:0.1.0`。
+- GitHub Release 使用正式发布标记；设备验收限制继续保留。
+
+### English
+
+First regular release for small Android projects using one offline H5 resource package.
+
+- Same SDK APIs and implementation as `0.1.0-beta`; no functional changes.
+- Release coordinates: `com.github.mobilewhj:offlineSdk:0.1.0`.
+- Published as a regular GitHub Release. Device acceptance remains pending.
+
 ## 0.1.0-beta
 
 首个 beta：面向小型 Android 项目的单包离线资源方案。

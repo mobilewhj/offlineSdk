@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.github.mobilewhj.offlineSdk"
-version = providers.gradleProperty("sdkVersion").getOrElse("0.1.0-beta")
+version = providers.gradleProperty("sdkVersion").getOrElse("0.1.0")
 
 android {
     namespace = "com.offline.demo"

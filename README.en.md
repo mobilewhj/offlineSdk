@@ -26,7 +26,7 @@ The SDK manages resource files. The host owns candidate selection, configuration
 
 ## Installation
 
-Version: `0.1.0-beta`. Confirm a successful build for this version on [JitPack](https://jitpack.io/#mobilewhj/offlineSdk) before using the coordinates below.
+Version: `0.1.0`. Confirm a successful build for this version on [JitPack](https://jitpack.io/#mobilewhj/offlineSdk) before using the coordinates below.
 
 In `settings.gradle.kts`:
 
@@ -45,7 +45,7 @@ dependencyResolutionManagement {
 In your application module's `build.gradle.kts`:
 
 ```kotlin
-implementation("com.github.mobilewhj:offlineSdk:0.1.0-beta")
+implementation("com.github.mobilewhj:offlineSdk:0.1.0")
 ```
 
 The public Kotlin package is `com.offline.demo`. The checked-out sample uses `implementation(project(":offlineSdk"))`.
@@ -125,7 +125,7 @@ On first launch, Welcome prepares resources and persists the record before openi
   :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleRelease
 ```
 
-Local validation passed 67 JVM tests, Debug / R8 Release builds, and integration against the actual local Maven AAR. **Device acceptance remains pending; this is a beta release.** Welcome / system WebView and X5 have not been verified on a device. See the [validation record (Chinese)](docs/VALIDATION.md).
+Local validation passed 67 JVM tests, Debug / R8 Release builds, and integration against the actual local Maven AAR. **Device acceptance remains pending.** Welcome / system WebView and X5 have not been verified on a device. See the [validation record (Chinese)](docs/VALIDATION.md).
 
 With a connected device, run `./gradlew :offlineSdk:connectedDebugAndroidTest`. Compiling Android test sources does not mean device tests passed.
 

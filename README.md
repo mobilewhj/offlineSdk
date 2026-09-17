@@ -26,7 +26,7 @@ SDK 处理资源文件；宿主负责候选版本、配置接口、记录存储�
 
 ## 引入
 
-版本：`0.1.0-beta`。在 [JitPack](https://jitpack.io/#mobilewhj/offlineSdk) 确认该版本构建成功后使用以下坐标。
+版本：`0.1.0`。在 [JitPack](https://jitpack.io/#mobilewhj/offlineSdk) 确认该版本构建成功后使用以下坐标。
 
 在 `settings.gradle.kts` 中：
 
@@ -45,7 +45,7 @@ dependencyResolutionManagement {
 在应用模块 `build.gradle.kts` 中：
 
 ```kotlin
-implementation("com.github.mobilewhj:offlineSdk:0.1.0-beta")
+implementation("com.github.mobilewhj:offlineSdk:0.1.0")
 ```
 
 公开包名为 `com.offline.demo`。克隆源码后，示例使用 `implementation(project(":offlineSdk"))`。
@@ -125,7 +125,7 @@ site.zip
   :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleRelease
 ```
 
-本地已通过 67 项 JVM 测试、Debug / R8 Release 构建，以及实际本地 Maven AAR 接入验证。**设备运行验收尚未完成，首版为 beta**；包括 Welcome / 系统 WebView 和 X5，均不宣称已通过真机测试。详情见 [验证记录](docs/VALIDATION.md)。
+本地已通过 67 项 JVM 测试、Debug / R8 Release 构建，以及实际本地 Maven AAR 接入验证。**设备运行验收尚未完成**；包括 Welcome / 系统 WebView 和 X5，均不宣称已通过真机测试。详情见 [验证记录](docs/VALIDATION.md)。
 
 连接设备后可运行 `./gradlew :offlineSdk:connectedDebugAndroidTest`。编译 Android 测试源码不代表设备测试通过。
 
