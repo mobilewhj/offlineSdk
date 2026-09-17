@@ -1,6 +1,6 @@
 # 发布准备验证
 
-验证日期：2026-09-17。版本：`0.1.0-beta`，尚未对外发布。
+验证日期：2026-09-17。版本：`0.1.0-beta`。GitHub 标签与 JitPack 产物已公开。
 
 ## 已验证
 
@@ -31,9 +31,22 @@
 
 实际 AAR 接入通过临时 Gradle init script 将 `project(":offlineSdk")` 替换为本地 `build/repo/` 中的 `com.github.mobilewhj.offlineSdk:offlineSdk:0.1.0-beta` 后验证。
 
+## 远端发布验证
+
+- [标签 CI](https://github.com/mobilewhj/offlineSdk/actions/runs/35189717102) 通过，提交为 `bfe33f82c4e90b8087e6f5a65886c4b43bd05dcb`。
+- [JitPack 0.1.0-beta](https://jitpack.io/#mobilewhj/offlineSdk/0.1.0-beta) 构建成功，POM、AAR 与源码 JAR 可匿名下载。实际坐标为 `com.github.mobilewhj:offlineSdk:0.1.0-beta`。
+- 使用临时 init script 将示例的 `project(":offlineSdk")` 替换为上述远端依赖，Demo Debug、R8 Release 构建及 26 项 JVM 测试通过；Gradle 缓存中的 AAR 与匿名下载文件的 SHA-256 一致。
+- 远端 AAR 与源码 JAR 均包含 Apache-2.0 许可证。
+
+```bash
+./gradlew :app:assembleDebug :app:assembleRelease :app:testDebugUnitTest \
+  -I /tmp/offline-sdk-jitpack-smoke.gradle --console=plain
+```
+
+临时 init script 向 settings 仓库列表添加 JitPack，并将 `project(":offlineSdk")` 替换为 `com.github.mobilewhj:offlineSdk:0.1.0-beta`，不使用本地 Maven 仓库。
+
 ## 尚未完成
 
 - 设备测试尝试停在测试 APK 安装阶段，已中止等待，测试未执行，不计为通过。可在设备安装条件就绪后运行 `:offlineSdk:connectedDebugAndroidTest`。
 - 尚未完成新版 Welcome／系统 WebView 示例和 X5 的设备运行验收。
 - 示例默认使用内置配置；网络 ZIP 路径有 MockWebServer 测试，真实服务端配置接口尚未集成。
-- 远端构建状态以 [GitHub Actions](https://github.com/mobilewhj/offlineSdk/actions) 和 [JitPack](https://jitpack.io/#mobilewhj/offlineSdk) 为准；本文记录本地验收结果。

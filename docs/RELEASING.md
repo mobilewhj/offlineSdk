@@ -75,16 +75,16 @@ git push origin 0.1.0-beta
 ```kotlin
 // settings.gradle.kts 的 dependencyResolutionManagement.repositories 内
 maven("https://jitpack.io") {
-    content { includeGroup("com.github.mobilewhj.offlineSdk") }
+    content { includeGroup("com.github.mobilewhj") }
 }
 ```
 
 ```kotlin
 // 接入方模块 build.gradle.kts
-implementation("com.github.mobilewhj.offlineSdk:offlineSdk:0.1.0-beta")
+implementation("com.github.mobilewhj:offlineSdk:0.1.0-beta")
 ```
 
-这里是多模块坐标；以 JitPack 实际生成的模块列表、POM 和解析结果为最终依据。
+本项目仅发布一个 SDK，JitPack 实际产物使用上述仓库级坐标。它与本地 `build/repo/` 中的 group 不同；以远端 POM 和实际解析结果为准。
 
 ## 5. 整理 GitHub Release
 

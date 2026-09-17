@@ -36,7 +36,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven("https://jitpack.io") {
-            content { includeGroup("com.github.mobilewhj.offlineSdk") }
+            content { includeGroup("com.github.mobilewhj") }
         }
     }
 }
@@ -45,7 +45,7 @@ dependencyResolutionManagement {
 In your application module's `build.gradle.kts`:
 
 ```kotlin
-implementation("com.github.mobilewhj.offlineSdk:offlineSdk:0.1.0-beta")
+implementation("com.github.mobilewhj:offlineSdk:0.1.0-beta")
 ```
 
 The public Kotlin package is `com.offline.demo`. The checked-out sample uses `implementation(project(":offlineSdk"))`.

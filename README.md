@@ -36,7 +36,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven("https://jitpack.io") {
-            content { includeGroup("com.github.mobilewhj.offlineSdk") }
+            content { includeGroup("com.github.mobilewhj") }
         }
     }
 }
@@ -45,7 +45,7 @@ dependencyResolutionManagement {
 在应用模块 `build.gradle.kts` 中：
 
 ```kotlin
-implementation("com.github.mobilewhj.offlineSdk:offlineSdk:0.1.0-beta")
+implementation("com.github.mobilewhj:offlineSdk:0.1.0-beta")
 ```
 
 公开包名为 `com.offline.demo`。克隆源码后，示例使用 `implementation(project(":offlineSdk"))`。
