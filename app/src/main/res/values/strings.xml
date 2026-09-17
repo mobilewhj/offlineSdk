@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Offline SDK Demo</string>
+    <string name="welcome_intro">首次启动准备离线资源，就绪后自动进入示例页面。</string>
+    <string name="checking">正在检查本地资源…</string>
+    <string name="downloading">正在下载离线包…</string>
+    <string name="extracting">正在校验并解压资源…</string>
+    <string name="saving">正在保存版本记录…</string>
+    <string name="percent">%1$d%%</string>
+    <string name="failed">资源准备失败：%1$s。请重试。</string>
+    <string name="retry">重试</string>
+    <string name="ready">离线版本 %1$s · 当前页面使用固定版本资源</string>
+    <string name="opening">正在打开离线页面…</string>
+    <string name="page_unavailable">本地资源不可用，请返回启动页重新准备。</string>
+    <string name="return_welcome">返回启动页</string>
+</resources>
