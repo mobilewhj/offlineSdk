@@ -26,6 +26,6 @@ jobs:
           name: offline-sdk-release
           path: |
             offlineSdk/build/outputs/aar/*release.aar
-            offlineSdk/build/libs/*sources.jar
+            offlineSdk/build/intermediates/source_jar/release/*sources.jar
             build/repo/
           if-no-files-found: error
