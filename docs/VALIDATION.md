@@ -36,4 +36,4 @@
 - 设备测试尝试停在测试 APK 安装阶段，已中止等待，测试未执行，不计为通过。可在设备安装条件就绪后运行 `:offlineSdk:connectedDebugAndroidTest`。
 - 尚未完成新版 Welcome／系统 WebView 示例和 X5 的设备运行验收。
 - 示例默认使用内置配置；网络 ZIP 路径有 MockWebServer 测试，真实服务端配置接口尚未集成。
-- GitHub 公开仓库已创建；Actions 和 JitPack 的远端执行与 tag 发布待完成。
+- 远端构建状态以 [GitHub Actions](https://github.com/mobilewhj/offlineSdk/actions) 和 [JitPack](https://jitpack.io/#mobilewhj/offlineSdk) 为准；本文记录本地验收结果。

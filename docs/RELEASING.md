@@ -6,7 +6,7 @@
 
 - 已有独立工程、SDK 和 Welcome 示例，以及使用说明、更新记录、GitHub Actions、Maven 发布与 JitPack 配置。
 - Git 作者为 `mobilewhj`，邮箱使用 GitHub noreply 地址；origin 为 `https://github.com/mobilewhj/offlineSdk.git`。
-- GitHub 公开仓库已创建；首次代码上传、远端 CI、tag 和 Release 验证待完成。
+- GitHub 公开仓库：[mobilewhj/offlineSdk](https://github.com/mobilewhj/offlineSdk)。版本与远端构建状态请查看仓库 Releases、Actions 和 JitPack。
 - 已采用 Apache-2.0，LICENSE、双语 README 和 POM license 元数据已补齐；设备验收尚未完成，以 beta 版本发布并明确限制。详细结果见 [验证记录](VALIDATION.md)。
 
 ## 1. 确定许可证

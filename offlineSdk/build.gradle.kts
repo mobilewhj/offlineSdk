@@ -76,8 +76,8 @@ publishing {
 }
 
 // Keep the license with standalone source distributions as well as the AAR.
-tasks.withType<org.gradle.jvm.tasks.Jar>().configureEach {
-    if (name == "releaseSourcesJar") {
+tasks.withType<org.gradle.api.tasks.bundling.Jar>().configureEach {
+    if (name == "sourceReleaseJar") {
         from(rootProject.file("LICENSE")) {
             into("META-INF/offline-sdk")
         }

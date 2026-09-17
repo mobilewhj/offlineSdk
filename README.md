@@ -1,5 +1,7 @@
 # Offline SDK
 
+[![CI](https://github.com/mobilewhj/offlineSdk/actions/workflows/ci.yml/badge.svg)](https://github.com/mobilewhj/offlineSdk/actions/workflows/ci.yml) [![JitPack](https://jitpack.io/v/mobilewhj/offlineSdk.svg)](https://jitpack.io/#mobilewhj/offlineSdk)
+
 **中文** | [English](README.en.md)
 
 面向**小型 Android 项目的单包离线方案**。将一套 H5 静态资源打成 ZIP，按版本安装到本地，再通过 WebView 映射原始 URL 加载资源。

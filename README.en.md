@@ -1,5 +1,7 @@
 # Offline SDK
 
+[![CI](https://github.com/mobilewhj/offlineSdk/actions/workflows/ci.yml/badge.svg)](https://github.com/mobilewhj/offlineSdk/actions/workflows/ci.yml) [![JitPack](https://jitpack.io/v/mobilewhj/offlineSdk.svg)](https://jitpack.io/#mobilewhj/offlineSdk)
+
 [中文](README.md) | **English**
 
 A **single-package offline solution for small Android projects**. Bundle one set of H5 static assets into a ZIP, install it into a versioned local directory, and serve matching WebView requests using their original URLs.
