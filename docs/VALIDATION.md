@@ -37,4 +37,3 @@
 - 尚未完成新版 Welcome／系统 WebView 示例和 X5 的设备运行验收。
 - 示例默认使用内置配置；网络 ZIP 路径有 MockWebServer 测试，真实服务端配置接口尚未集成。
 - GitHub 公开仓库已创建；Actions 和 JitPack 的远端执行与 tag 发布待完成。
-
