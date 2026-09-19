@@ -26,7 +26,7 @@ SDK 处理资源文件；宿主负责候选版本、配置接口、记录存储�
 
 ## 引入
 
-版本：`0.1.0`。在 [JitPack](https://jitpack.io/#mobilewhj/offlineSdk) 确认该版本构建成功后使用以下坐标。
+版本：`0.2.0`。在 [JitPack](https://jitpack.io/#mobilewhj/offlineSdk) 确认该版本构建成功后使用以下坐标。
 
 在 `settings.gradle.kts` 中：
 
@@ -45,19 +45,19 @@ dependencyResolutionManagement {
 在应用模块 `build.gradle.kts` 中：
 
 ```kotlin
-implementation("com.github.mobilewhj:offlineSdk:0.1.0")
+implementation("com.github.mobilewhj:offlineSdk:0.2.0")
 ```
 
-公开包名为 `com.offline.demo`。克隆源码后，示例使用 `implementation(project(":offlineSdk"))`。
+公开包名为 `com.offline.tool`。克隆源码后，示例使用 `implementation(project(":offlineSdk"))`。
 
 ## 快速接入
 
 同一资源根目录复用一个安装器：
 
 ```kotlin
-import com.offline.demo.InstallResult
-import com.offline.demo.PackageInstaller
-import com.offline.demo.PackageRecord
+import com.offline.tool.InstallResult
+import com.offline.tool.PackageInstaller
+import com.offline.tool.PackageRecord
 import java.io.File
 
 val installer = PackageInstaller(File(context.filesDir, "offline-packages"))
@@ -73,7 +73,7 @@ suspend fun installCandidate(record: PackageRecord, url: String): InstallResult 
 在主线程为 WebView 绑定已经安装并保存的版本：
 
 ```kotlin
-import com.offline.demo.OfflineInterceptor
+import com.offline.tool.OfflineInterceptor
 
 webView.webViewClient = OfflineInterceptor(
     directory = installer.directory(installedVersion),
@@ -107,7 +107,7 @@ site.zip
 
 ## 运行示例
 
-用 Android Studio 打开项目并运行 `app`。示例包名为 `com.offline.demo.sample`，默认安装随 APK 提供的合成 ZIP，无需服务端或账号。
+用 Android Studio 打开项目并运行 `app`。示例包名为 `com.offline.tool.sample`，默认安装随 APK 提供的合成 ZIP，无需服务端或账号。
 
 首次启动进入 Welcome，资源安装及记录保存完成后打开 WebView；失败停留并可重试。已有可用包时先进入页面，再检查候选更新。默认 Repository 返回内置包；接真实配置接口时复用宿主的 Retrofit / Moshi 链路。网络下载安装路径已有 MockWebServer 测试。
 
@@ -125,7 +125,7 @@ site.zip
   :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleRelease
 ```
 
-本地已通过 67 项 JVM 测试、Debug / R8 Release 构建，以及实际本地 Maven AAR 接入验证。**设备运行验收尚未完成**；包括 Welcome / 系统 WebView 和 X5，均不宣称已通过真机测试。详情见 [验证记录](docs/VALIDATION.md)。
+本地已通过 67 项 JVM 测试、Debug / R8 Release 构建，以及实际本地 Maven AAR 接入验证。**设备运行验收尚未完成**；包括 Welcome / 系统 WebView 和 X5，均不宣称已通过真机测试。详情见 [验证记录](docs/VALIDATION-0.2.0.md)。
 
 连接设备后可运行 `./gradlew :offlineSdk:connectedDebugAndroidTest`。编译 Android 测试源码不代表设备测试通过。
 
@@ -138,3 +138,16 @@ site.zip
 本项目采用 [Apache License 2.0](LICENSE)。
 
 推荐使用 Maven 坐标获得传递依赖。直接使用 AAR 时，调用方需自行提供 Kotlin 标准库、OkHttp 4.12.0、Okio 3.7.0 和 kotlinx-coroutines-android 1.7.3；AAR 本身不包含这些依赖。
+
+## 本地生成示例包
+
+Demo ZIP 仅由仓库 `sample-web/` 中可审阅的示例文件生成，脚本不接收下载地址或外部 ZIP。使用 Python 3，固定文件顺序、时间戳和权限，生成 ZIP 时同步更新 Demo 的 SHA-256。
+
+```sh
+python3 scripts/generate-sample.py
+python3 scripts/generate-sample.py --check
+```
+
+CI 会检查已提交 ZIP、示例源码和配置摘要是否一致。修改网页后，应提高 Demo 的离线包版本号再测试已有安装，或清除 Demo 应用数据。测试 ZIP 由测试夹具在本地构造；Demo 和测试均无需业务网页或真实账号。
+
+[0.2.0 migration / 改名接入说明](docs/MIGRATION-0.2.0.md)

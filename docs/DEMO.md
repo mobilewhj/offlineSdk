@@ -1,6 +1,6 @@
 # Welcome 接入示例
 
-运行 Android Studio 的 `app` 配置，最低 Android API 24。默认安装 APK 内合成的 `assets/sample.zip`，不需要服务端、账户或网络；包内页面和样式不含业务数据。示例代码位于 `app/src/main/java/com/offline/demo/sample/`，不会被打入 SDK AAR。
+运行 Android Studio 的 `app` 配置，最低 Android API 24。默认安装 APK 内合成的 `assets/sample.zip`，不需要服务端、账户或网络；包内页面和样式不含业务数据。示例代码位于 `app/src/main/java/com/offline/tool/sample/`，不会被打入 SDK AAR。
 
 ## 页面流程
 

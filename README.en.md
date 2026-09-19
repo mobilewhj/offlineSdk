@@ -26,7 +26,7 @@ The SDK manages resource files. The host owns candidate selection, configuration
 
 ## Installation
 
-Version: `0.1.0`. Confirm a successful build for this version on [JitPack](https://jitpack.io/#mobilewhj/offlineSdk) before using the coordinates below.
+Version: `0.2.0`. Confirm a successful build for this version on [JitPack](https://jitpack.io/#mobilewhj/offlineSdk) before using the coordinates below.
 
 In `settings.gradle.kts`:
 
@@ -45,19 +45,19 @@ dependencyResolutionManagement {
 In your application module's `build.gradle.kts`:
 
 ```kotlin
-implementation("com.github.mobilewhj:offlineSdk:0.1.0")
+implementation("com.github.mobilewhj:offlineSdk:0.2.0")
 ```
 
-The public Kotlin package is `com.offline.demo`. The checked-out sample uses `implementation(project(":offlineSdk"))`.
+The public Kotlin package is `com.offline.tool`. The checked-out sample uses `implementation(project(":offlineSdk"))`.
 
 ## Quick start
 
 Reuse one installer for each resource root:
 
 ```kotlin
-import com.offline.demo.InstallResult
-import com.offline.demo.PackageInstaller
-import com.offline.demo.PackageRecord
+import com.offline.tool.InstallResult
+import com.offline.tool.PackageInstaller
+import com.offline.tool.PackageRecord
 import java.io.File
 
 val installer = PackageInstaller(File(context.filesDir, "offline-packages"))
@@ -73,7 +73,7 @@ Versions start at `10000`. Supply a trusted, 64-character lowercase hexadecimal 
 On the main thread, bind WebView to an installed and persisted version:
 
 ```kotlin
-import com.offline.demo.OfflineInterceptor
+import com.offline.tool.OfflineInterceptor
 
 webView.webViewClient = OfflineInterceptor(
     directory = installer.directory(installedVersion),
@@ -107,7 +107,7 @@ See the [SDK API guide (Chinese)](offlineSdk/README.md) for progress, stream own
 
 ## Run the sample
 
-Open the project in Android Studio and run `app`. Its application ID is `com.offline.demo.sample`. The sample installs a synthetic ZIP bundled in the APK, so it requires no server or account.
+Open the project in Android Studio and run `app`. Its application ID is `com.offline.tool.sample`. The sample installs a synthetic ZIP bundled in the APK, so it requires no server or account.
 
 On first launch, Welcome prepares resources and persists the record before opening WebView. Failures remain on Welcome with retry available. Later launches open an available local package first and check for updates in the background. The default Repository returns the built-in candidate. Integrate a real configuration endpoint through the host's existing Retrofit / Moshi stack. The remote ZIP installation path is covered by MockWebServer tests.
 
@@ -125,7 +125,7 @@ On first launch, Welcome prepares resources and persists the record before openi
   :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleRelease
 ```
 
-Local validation passed 67 JVM tests, Debug / R8 Release builds, and integration against the actual local Maven AAR. **Device acceptance remains pending.** Welcome / system WebView and X5 have not been verified on a device. See the [validation record (Chinese)](docs/VALIDATION.md).
+Local validation passed 67 JVM tests, Debug / R8 Release builds, and integration against the actual local Maven AAR. **Device acceptance remains pending.** Welcome / system WebView and X5 have not been verified on a device. See the [validation record (Chinese)](docs/VALIDATION-0.2.0.md).
 
 With a connected device, run `./gradlew :offlineSdk:connectedDebugAndroidTest`. Compiling Android test sources does not mean device tests passed.
 
@@ -138,3 +138,16 @@ With a connected device, run `./gradlew :offlineSdk:connectedDebugAndroidTest`. 
 Licensed under the [Apache License 2.0](LICENSE).
 
 Prefer Maven coordinates to resolve transitive dependencies. When using an AAR directly, provide the Kotlin standard library, OkHttp 4.12.0, Okio 3.7.0, and kotlinx-coroutines-android 1.7.3 yourself; the AAR does not bundle these dependencies.
+
+## Reproduce the demo package
+
+The ZIP is generated locally from the reviewed files in `sample-web/`; the generator accepts no download URL or external archive. Python 3 uses a fixed entry order, timestamp and permissions. It updates the demo SHA-256 together with the ZIP.
+
+```sh
+python3 scripts/generate-sample.py
+python3 scripts/generate-sample.py --check
+```
+
+CI verifies that the committed ZIP and configured hash match the example source. After changing the sample content, increment the demo package version before testing against an existing installation, or clear the demo app's data. Test archives are synthesized locally by the test fixtures. No business web assets or account are required.
+
+[0.2.0 migration / 改名接入说明](docs/MIGRATION-0.2.0.md)

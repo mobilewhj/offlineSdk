@@ -5,10 +5,10 @@ plugins {
 }
 
 group = "com.github.mobilewhj.offlineSdk"
-version = providers.gradleProperty("sdkVersion").getOrElse("0.1.0")
+version = providers.gradleProperty("sdkVersion").getOrElse("0.2.0")
 
 android {
-    namespace = "com.offline.demo"
+    namespace = "com.offline.tool"
     compileSdk = 35
     defaultConfig {
         minSdk = 24

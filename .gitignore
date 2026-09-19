@@ -10,3 +10,11 @@ captures/
 .cxx/
 *.jks
 *.keystore
+*.pem
+*.key
+*.p12
+*.p7b
+*.cer
+.env
+.env.*
+.ohpmrc

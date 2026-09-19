@@ -4,16 +4,16 @@ SDK 负责离线 ZIP 的下载、校验、安装和 WebView 资源映射。版�
 
 | 文件 | 职责 |
 |---|---|
-| [PackageRecord.kt](src/main/java/com/offline/demo/PackageRecord.kt) | 与存储方式无关的 `PackageRecord(version, sha256)` |
-| [InstallResult.kt](src/main/java/com/offline/demo/InstallResult.kt) | 公开的安装成功／失败结果与错误详情 |
-| [FailureReason.kt](src/main/java/com/offline/demo/FailureReason.kt) | 公开的安装失败分类 |
-| [InstallStage.kt](src/main/java/com/offline/demo/InstallStage.kt) | 公开的安装失败阶段 |
-| [InstallException.kt](src/main/java/com/offline/demo/InstallException.kt) | 内部步骤间传递失败原因、说明与 HTTP 状态的异常 |
-| [PackageInstaller.kt](src/main/java/com/offline/demo/PackageInstaller.kt) | 公共 API、安装顺序与互斥、元数据校验、错误映射、目录发布和清理 |
-| [PackageDownloader.kt](src/main/java/com/offline/demo/PackageDownloader.kt) | 内部 HTTP 下载、请求总时限、下载进度、取消及响应关闭 |
-| [PackageArchive.kt](src/main/java/com/offline/demo/PackageArchive.kt) | 内部无状态 ZIP 工具：有界 Okio 复制与摘要、解压进度、路径及大小限制、内容目录校验 |
-| [OfflineInterceptor.kt](src/main/java/com/offline/demo/OfflineInterceptor.kt) | 固定版本目录的资源映射及失败诊断 |
-| [X5OfflineResponse.kt](src/main/java/com/offline/demo/x5/X5OfflineResponse.kt) | 可选 X5 响应适配 |
+| [PackageRecord.kt](src/main/java/com/offline/tool/PackageRecord.kt) | 与存储方式无关的 `PackageRecord(version, sha256)` |
+| [InstallResult.kt](src/main/java/com/offline/tool/InstallResult.kt) | 公开的安装成功／失败结果与错误详情 |
+| [FailureReason.kt](src/main/java/com/offline/tool/FailureReason.kt) | 公开的安装失败分类 |
+| [InstallStage.kt](src/main/java/com/offline/tool/InstallStage.kt) | 公开的安装失败阶段 |
+| [InstallException.kt](src/main/java/com/offline/tool/InstallException.kt) | 内部步骤间传递失败原因、说明与 HTTP 状态的异常 |
+| [PackageInstaller.kt](src/main/java/com/offline/tool/PackageInstaller.kt) | 公共 API、安装顺序与互斥、元数据校验、错误映射、目录发布和清理 |
+| [PackageDownloader.kt](src/main/java/com/offline/tool/PackageDownloader.kt) | 内部 HTTP 下载、请求总时限、下载进度、取消及响应关闭 |
+| [PackageArchive.kt](src/main/java/com/offline/tool/PackageArchive.kt) | 内部无状态 ZIP 工具：有界 Okio 复制与摘要、解压进度、路径及大小限制、内容目录校验 |
+| [OfflineInterceptor.kt](src/main/java/com/offline/tool/OfflineInterceptor.kt) | 固定版本目录的资源映射及失败诊断 |
+| [X5OfflineResponse.kt](src/main/java/com/offline/tool/x5/X5OfflineResponse.kt) | 可选 X5 响应适配 |
 
 ## 存储契约
 
@@ -30,9 +30,9 @@ SDK 负责离线 ZIP 的下载、校验、安装和 WebView 资源映射。版�
 下面是调用方协程中的最小调用示例；返回后按上述存储契约处理结果：
 
 ```kotlin
-import com.offline.demo.InstallResult
-import com.offline.demo.PackageInstaller
-import com.offline.demo.PackageRecord
+import com.offline.tool.InstallResult
+import com.offline.tool.PackageInstaller
+import com.offline.tool.PackageRecord
 
 suspend fun installCandidate(
     installer: PackageInstaller,
