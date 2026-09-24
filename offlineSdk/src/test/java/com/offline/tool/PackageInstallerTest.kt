@@ -493,6 +493,7 @@ class PackageInstallerTest {
             assertEquals(503, failed.httpStatus)
             assertEquals(InstallStage.DOWNLOAD, failed.stage)
             assertEquals("离线包下载失败，HTTP 状态码：503", failed.message)
+            assertTrue(failed.requestStarted)
             assertNotNull(failed.cause)
             server.enqueue(
                 MockResponse().setBody(Buffer().write(bytes))
@@ -501,6 +502,7 @@ class PackageInstallerTest {
             val interrupted = assertFailure(
                 installer.install(record(bytes), server.url("/v1.zip").toString()), FailureReason.DOWNLOAD
             )
+            assertTrue(interrupted.requestStarted)
             assertTrue(interrupted.cause is IOException)
             assertTrue(root.list()!!.isEmpty())
         }

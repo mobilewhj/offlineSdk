@@ -25,6 +25,7 @@ class PackageInstallerPathTest {
         assertTrue(installer.installBuiltin(10001) { zip("active").inputStream() } is InstallResult.Success)
         assertEquals(realRoot.resolve("10001"), installer.directory(10001).canonicalFile)
         assertEquals("active", installer.directory(10001).resolve("index.html").readText())
+        assertTrue(installer.isUsable(10001))
 
         assertTrue(installer.clearOldVersions(10001))
         assertEquals(listOf("10001"), realRoot.list()!!.toList())

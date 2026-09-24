@@ -16,6 +16,7 @@ import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermission
+import java.security.MessageDigest
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
@@ -132,6 +133,12 @@ class PackageInstallerCleanupTest {
             result as InstallResult.Failure
             assertEquals(FailureReason.CLEANUP, result.reason)
             assertEquals(InstallStage.CLEANUP, result.stage)
+            assertFalse(result.requestStarted)
+            assertEquals(
+                PackageRecord(10000, MessageDigest.getInstance("SHA-256").digest(bytes)
+                    .joinToString("") { "%02x".format(it) }),
+                result.publishedRecord,
+            )
             assertTrue(result.cause is InstallException)
             assertTrue(result.message!!.contains("residue/keep.txt"))
             assertEquals("published", root.resolve("10000/index.html").readText())

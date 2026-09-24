@@ -97,8 +97,7 @@ internal object PackageArchive {
             throw InstallException(FailureReason.INVALID_ARCHIVE, "离线包 ZIP 条目数量与中央目录不符或文件已损坏")
         }
         val content = if (File(temp, "index.html").isFile) temp else File(temp, "dist")
-        val entry = File(content, "index.html")
-        if (!entry.isFile || entry.length() == 0L) {
+        if (!PackageEntry.isUsable(content)) {
             throw InstallException(FailureReason.INVALID_ARCHIVE, "离线包入口文件 index.html 缺失或为空")
         }
         return content

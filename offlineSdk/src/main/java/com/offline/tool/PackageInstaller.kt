@@ -41,6 +41,7 @@ class PackageInstaller(
 
     /**
      * 下载并安装指定版本。下载与解压回调均在 ioDispatcher 上执行，默认使用 IO，未知下载总量用 null 表示。
+     * requestStarted 在进入 HTTP Call.execute 前置为 true，与响应和进度回调无关。
      * 取消以 CancellationException 向上传播，同时关闭本次请求并清理临时文件。
      */
     suspend fun install(
@@ -48,19 +49,53 @@ class PackageInstaller(
         url: String,
         onDownloadProgress: ((downloadedBytes: Long, totalBytes: Long?) -> Unit)? = null,
         onExtractProgress: ((Int) -> Unit)? = null,
-    ): InstallResult = try {
-        downloader.withSource(url, onDownloadProgress) { openSource ->
-            installZip(record.version, record.sha256, openSource, onExtractProgress)
+    ): InstallResult {
+        val attempt = DownloadAttempt()
+        return try {
+            val result = downloader.withSource(url, onDownloadProgress, attempt) { openSource ->
+                installZip(record.version, record.sha256, openSource, onExtractProgress)
+            }
+            when (result) {
+                is InstallResult.Success -> result.copy(requestStarted = attempt.requestStarted)
+                is InstallResult.Failure -> result.copy(requestStarted = attempt.requestStarted)
+            }
+        } catch (error: InstallException) {
+            currentCoroutineContext().ensureActive()
+            // URL 在进入安装流程前校验；请求读取错误由 installZip 按实际阶段转换。
+            InstallResult.Failure(
+                reason = error.reason,
+                cause = error.cause,
+                httpStatus = error.status,
+                stage = InstallStage.DOWNLOAD,
+                message = error.message,
+                requestStarted = attempt.requestStarted,
+            )
         }
-    } catch (error: InstallException) {
-        // URL 在进入安装流程前校验；请求读取错误由 installZip 按实际阶段转换。
-        InstallResult.Failure(
-            reason = error.reason,
-            cause = error.cause,
-            httpStatus = error.status,
-            stage = InstallStage.DOWNLOAD,
-            message = error.message,
-        )
+    }
+
+    /**
+     * 只检查版本目录的 index.html 是否为可读、非空的普通文件；不提供安装可信证明。
+     * 非法版本、不安全路径、目录/入口缺失和读取失败均返回 false；取消正常传播。
+     * 不创建、删除、下载或保存任何内容。文件操作在 ioDispatcher 上执行。
+     */
+    suspend fun isUsable(version: Int): Boolean = withContext(ioDispatcher) {
+        mutex.withLock {
+            try {
+                val operationRoot = checkedRoot()
+                val usable = PackageEntry.isUsable(File(operationRoot, directory(version).name))
+                currentCoroutineContext().ensureActive()
+                usable
+            } catch (_: IOException) {
+                currentCoroutineContext().ensureActive()
+                false
+            } catch (_: SecurityException) {
+                currentCoroutineContext().ensureActive()
+                false
+            } catch (_: IllegalArgumentException) {
+                currentCoroutineContext().ensureActive()
+                false
+            }
+        }
     }
 
     /** 安装本地 ZIP 并计算摘要；摘要只标识输入内容，不提供独立可信校验。输入流由 SDK 关闭。 */
@@ -154,10 +189,18 @@ class PackageInstaller(
                     try {
                         deleteChecked(file)
                     } catch (error: IOException) {
-                        val previous = thrown ?: (result as? InstallResult.Failure)?.cause
+                        val currentResult = result
+                        val previous = thrown ?: (currentResult as? InstallResult.Failure)?.cause
                         when {
                             previous != null -> previous.addSuppressed(error)
-                            result is InstallResult.Success -> result = failure(error, InstallStage.CLEANUP)
+                            currentResult is InstallResult.Success -> {
+                                val cleanupFailure = failure(error, InstallStage.CLEANUP)
+                                result = cleanupFailure.copy(publishedRecord = currentResult.record)
+                            }
+                            currentResult is InstallResult.Failure -> {
+                                // 原失败没有 cause 时，保留其分类和阶段，同时挂载清理异常。
+                                result = currentResult.copy(cause = error)
+                            }
                         }
                     }
                 }
@@ -176,8 +219,9 @@ class PackageInstaller(
                 val operationRoot = checkedRoot()
                 val active = activeVersion?.let { File(operationRoot, directory(it).name) }
                 if (active != null) {
-                    val entry = File(active, "index.html")
-                    if (!entry.isFile || entry.length() == 0L || active.canonicalFile != active.absoluteFile) {
+                    val usable = PackageEntry.isUsable(active)
+                    currentCoroutineContext().ensureActive()
+                    if (!usable) {
                         return@withLock false
                     }
                 }

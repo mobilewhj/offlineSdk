@@ -1,0 +1,27 @@
+// Use only for local AAR consumption checks; the sample's project dependency stays unchanged.
+def smokeVersion = gradle.startParameter.projectProperties['smokeSdkVersion'] ?: '0.2.1'
+
+settingsEvaluated { settings ->
+    settings.dependencyResolutionManagement.repositories.maven {
+        name = 'offlineSdkLocalRelease'
+        url = settings.rootDir.toPath().resolve('build/repo').toUri()
+        content { includeGroup('com.github.mobilewhj.offlineSdk') }
+    }
+}
+
+gradle.beforeProject { p ->
+    if (p.path == ':app') {
+        p.configurations.configureEach {
+            resolutionStrategy.dependencySubstitution {
+                substitute project(':offlineSdk') using module(
+                    "com.github.mobilewhj.offlineSdk:offlineSdk:$smokeVersion"
+                )
+            }
+        }
+        p.plugins.withId('com.android.application') {
+            p.android.sourceSets.main.java.srcDir(
+                p.rootProject.file('scripts/aar-consumer-smoke/src')
+            )
+        }
+    }
+}

@@ -1,4 +1,6 @@
-# 首版发布清单
+# 0.2.0 历史发布清单
+
+当前源码的默认版本已是 `0.2.1`；本页保留已发布 `0.2.0` 的历史步骤，不应用来再次发布或移动该标签。`0.2.1` 的改动见 [执行记录](EXECUTION-INSTALL-FACTS.md)。
 
 目标仓库：`mobilewhj/offlineSdk`。SDK 包名为 `com.offline.tool`，示例包名为 `com.offline.tool.sample`。当前走 GitHub + JitPack 发布，首版使用 `0.2.0`。
 
@@ -37,7 +39,7 @@
 - `git diff --cached --check` 无格式错误；检查所有暂存文件。
 - 不包含公司标识、凭据、本机路径、`local.properties`、签名文件或构建缓存。
 - `build/repo/` 包含 AAR、源码 JAR、POM、Gradle Module Metadata，POM 作者和许可证正确。
-- 版本在默认 `sdkVersion`、README、CHANGELOG 和稍后创建的 tag 中一致。本项目使用 `0.2.0`，不要额外加 `v` 前缀。
+- 当时发布版本在 `sdkVersion`、README、CHANGELOG 和 tag 中一致，使用 `0.2.0`，不加 `v` 前缀。
 
 ## 3. 提交源码到 GitHub
 

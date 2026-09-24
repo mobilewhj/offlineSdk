@@ -42,6 +42,7 @@ internal class PackageDownloader(
     suspend fun <T> withSource(
         url: String,
         onProgress: ((downloadedBytes: Long, totalBytes: Long?) -> Unit)?,
+        attempt: DownloadAttempt = DownloadAttempt(),
         block: suspend (openSource: () -> Source) -> T,
     ): T = withContext(ioDispatcher) {
         val httpUrl = url.toHttpUrlOrNull()
@@ -55,6 +56,7 @@ internal class PackageDownloader(
             try {
                 block {
                     operationContext.ensureActive()
+                    attempt.markRequestStarted()
                     val received = try {
                         call.execute().also { response = it }
                     } catch (error: IOException) {
@@ -137,4 +139,14 @@ internal class PackageDownloader(
         cause = error,
         status = status,
     )
+}
+
+/** 只归属一次 install 调用；在执行 HTTP 请求的同一线程上写入，返回结果时读取。 */
+internal class DownloadAttempt {
+    var requestStarted: Boolean = false
+        private set
+
+    fun markRequestStarted() {
+        requestStarted = true
+    }
 }

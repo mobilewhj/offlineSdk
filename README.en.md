@@ -26,7 +26,7 @@ The SDK manages resource files. The host owns candidate selection, configuration
 
 ## Installation
 
-Version: `0.2.0`. Confirm a successful build for this version on [JitPack](https://jitpack.io/#mobilewhj/offlineSdk) before using the coordinates below.
+Version: `0.2.1`. Confirm a successful build for this version on [JitPack](https://jitpack.io/#mobilewhj/offlineSdk) before using the coordinates below.
 
 In `settings.gradle.kts`:
 
@@ -45,10 +45,12 @@ dependencyResolutionManagement {
 In your application module's `build.gradle.kts`:
 
 ```kotlin
-implementation("com.github.mobilewhj:offlineSdk:0.2.0")
+implementation("com.github.mobilewhj:offlineSdk:0.2.1")
 ```
 
 The public Kotlin package is `com.offline.tool`. The checked-out sample uses `implementation(project(":offlineSdk"))`.
+
+`0.2.1` adds installation facts and an entry-file check. The new result fields change some binary signatures; rebuild consumers upgrading from `0.2.0`. See the [host migration notes](docs/MIGRATION-INSTALL-FACTS.md).
 
 ## Quick start
 
@@ -125,7 +127,7 @@ On first launch, Welcome prepares resources and persists the record before openi
   :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleRelease
 ```
 
-Local validation passed 67 JVM tests, Debug / R8 Release builds, and integration against the actual local Maven AAR. **Device acceptance remains pending.** Welcome / system WebView and X5 have not been verified on a device. See the [validation record (Chinese)](docs/VALIDATION-0.2.0.md).
+Current source passed 71 JVM tests, Debug / R8 Release builds, and integration against the actual local Maven AAR. **Device acceptance remains pending.** Welcome / system WebView and X5 have not been verified on a device. See the [current execution record (Chinese)](docs/EXECUTION-INSTALL-FACTS.md); the [0.2.0 validation record (Chinese)](docs/VALIDATION-0.2.0.md) remains historical.
 
 With a connected device, run `./gradlew :offlineSdk:connectedDebugAndroidTest`. Compiling Android test sources does not mean device tests passed.
 
