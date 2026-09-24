@@ -77,24 +77,24 @@ class PackageInstaller(
      * 只检查版本目录的 index.html 是否为可读、非空的普通文件；不提供安装可信证明。
      * 非法版本、不安全路径、目录/入口缺失和读取失败均返回 false；取消正常传播。
      * 不创建、删除、下载或保存任何内容。文件操作在 ioDispatcher 上执行。
+     * 检查不等待安装锁；结果只反映本次观察，文件在检查过程中或返回后均可能变化。
+     * 页面使用期间的目录保护由调用方负责。
      */
     suspend fun isUsable(version: Int): Boolean = withContext(ioDispatcher) {
-        mutex.withLock {
-            try {
-                val operationRoot = checkedRoot()
-                val usable = PackageEntry.isUsable(File(operationRoot, directory(version).name))
-                currentCoroutineContext().ensureActive()
-                usable
-            } catch (_: IOException) {
-                currentCoroutineContext().ensureActive()
-                false
-            } catch (_: SecurityException) {
-                currentCoroutineContext().ensureActive()
-                false
-            } catch (_: IllegalArgumentException) {
-                currentCoroutineContext().ensureActive()
-                false
-            }
+        try {
+            val operationRoot = checkedRoot()
+            val usable = PackageEntry.isUsable(File(operationRoot, directory(version).name))
+            currentCoroutineContext().ensureActive()
+            usable
+        } catch (_: IOException) {
+            currentCoroutineContext().ensureActive()
+            false
+        } catch (_: SecurityException) {
+            currentCoroutineContext().ensureActive()
+            false
+        } catch (_: IllegalArgumentException) {
+            currentCoroutineContext().ensureActive()
+            false
         }
     }
 

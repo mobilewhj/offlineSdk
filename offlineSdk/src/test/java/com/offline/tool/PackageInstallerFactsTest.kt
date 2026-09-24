@@ -1,6 +1,13 @@
 package com.offline.tool
 
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.async
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.SocketPolicy
@@ -15,6 +22,8 @@ import java.io.ByteArrayOutputStream
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermission
 import java.security.MessageDigest
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
@@ -96,6 +105,44 @@ class PackageInstallerFactsTest {
             assertTrue(builtin is InstallResult.Success)
             assertFalse((builtin as InstallResult.Success).requestStarted)
             assertFalse(failure(installer.installBuiltin(10005) { "bad".byteInputStream() }).requestStarted)
+        }
+    }
+
+    @Test(timeout = 20_000L)
+    fun checkingOldPackageDoesNotWaitForNewPackageDownload() = runBlocking {
+        val root = temporary.newFolder().canonicalFile
+        val entry = root.resolve("10000/index.html")
+        assertTrue(entry.parentFile!!.mkdirs())
+        entry.writeText("old version")
+
+        // 两个 IO 线程排除网络请求占满单线程造成的等待。
+        Executors.newFixedThreadPool(2).asCoroutineDispatcher().use { io ->
+            MockWebServer().use { server ->
+                server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE))
+                server.start()
+                val installer = PackageInstaller(root, downloadTimeoutMillis = 15_000L, ioDispatcher = io)
+                assertTrue(installer.isUsable(10000))
+
+                val download = async(start = CoroutineStart.UNDISPATCHED) {
+                    installer.install(PackageRecord(10001, "a".repeat(64)), server.url("/new.zip").toString())
+                }
+                try {
+                    val request = server.takeRequest(3, TimeUnit.SECONDS)
+                    assertNotNull("The new package request must reach the server", request)
+                    assertEquals("/new.zip", request?.path)
+
+                    assertTrue(withTimeout(3_000L) { installer.isUsable(10000) })
+                    assertFalse("The new package download must still be waiting", download.isCompleted)
+                    assertEquals("old version", entry.readText())
+                    assertFalse(root.resolve("10001").exists())
+                } finally {
+                    withContext(NonCancellable) {
+                        withTimeout(3_000L) { download.cancelAndJoin() }
+                    }
+                }
+                assertEquals("old version", entry.readText())
+                assertFalse(root.resolve("10001").exists())
+            }
         }
     }
 

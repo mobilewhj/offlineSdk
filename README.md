@@ -26,7 +26,7 @@ SDK 处理资源文件；宿主负责候选版本、配置接口、记录存储�
 
 ## 引入
 
-版本：`0.2.1`。在 [JitPack](https://jitpack.io/#mobilewhj/offlineSdk) 确认该版本构建成功后使用以下坐标。
+版本：`0.2.2`。在 [JitPack](https://jitpack.io/#mobilewhj/offlineSdk) 确认该版本构建成功后使用以下坐标。
 
 在 `settings.gradle.kts` 中：
 
@@ -45,12 +45,12 @@ dependencyResolutionManagement {
 在应用模块 `build.gradle.kts` 中：
 
 ```kotlin
-implementation("com.github.mobilewhj:offlineSdk:0.2.1")
+implementation("com.github.mobilewhj:offlineSdk:0.2.2")
 ```
 
 公开包名为 `com.offline.tool`。克隆源码后，示例使用 `implementation(project(":offlineSdk"))`。
 
-`0.2.1` 增加安装事实与入口检查能力。新增结果字段改变部分二进制签名；从 `0.2.0` 升级时请重新编译宿主。详见 [迁移说明](docs/MIGRATION-INSTALL-FACTS.md)。
+`0.2.2` 修复入口检查等待后台下载的问题，公开 API 签名不变。`0.2.1` 增加的安装结果字段改变了部分二进制签名；从 `0.2.0` 升级时请重新编译宿主。详见 [迁移说明](docs/MIGRATION-INSTALL-FACTS.md)和[并发修复记录](docs/EXECUTION-ISUSABLE-CONCURRENCY.md)。
 
 ## 快速接入
 
@@ -127,7 +127,7 @@ site.zip
   :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleRelease
 ```
 
-当前源码已通过 71 项 JVM 测试、Debug / R8 Release 构建，以及实际本地 Maven AAR 接入验证。**设备运行验收尚未完成**；包括 Welcome / 系统 WebView 和 X5，均不宣称已通过真机测试。详情见 [本轮执行记录](docs/EXECUTION-INSTALL-FACTS.md)；已发布 `0.2.0` 的历史结果见 [验证记录](docs/VALIDATION-0.2.0.md)。
+当前源码已通过 72 项 JVM 测试、Debug / R8 Release 构建，以及实际本地 Maven AAR 接入验证。**设备运行验收尚未完成**；包括 Welcome / 系统 WebView 和 X5，均不宣称已通过真机测试。详情见 [0.2.2 执行记录](docs/EXECUTION-ISUSABLE-CONCURRENCY.md)和 [0.2.1 执行记录](docs/EXECUTION-INSTALL-FACTS.md)；已发布 `0.2.0` 的历史结果见 [验证记录](docs/VALIDATION-0.2.0.md)。
 
 连接设备后可运行 `./gradlew :offlineSdk:connectedDebugAndroidTest`。编译 Android 测试源码不代表设备测试通过。
 

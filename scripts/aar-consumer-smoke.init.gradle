@@ -1,5 +1,5 @@
 // Use only for local AAR consumption checks; the sample's project dependency stays unchanged.
-def smokeVersion = gradle.startParameter.projectProperties['smokeSdkVersion'] ?: '0.2.1'
+def smokeVersion = gradle.startParameter.projectProperties['smokeSdkVersion'] ?: '0.2.2'
 
 settingsEvaluated { settings ->
     settings.dependencyResolutionManagement.repositories.maven {

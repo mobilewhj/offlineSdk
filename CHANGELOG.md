@@ -1,5 +1,10 @@
 # 更新记录
 
+## 0.2.2（Android SDK）
+
+- `PackageInstaller.isUsable(version)` 不再等待安装互斥锁；后台下载新包时可检查已存在的旧包入口。结果只表示本次观察到的文件状态，页面使用期间的目录保护仍由宿主负责。公开 API 签名不变，见 [并发修复执行记录](docs/EXECUTION-ISUSABLE-CONCURRENCY.md)。
+- 正式依赖坐标：`com.github.mobilewhj:offlineSdk:0.2.2`；`0.2.1` 标签和产物保持不变。
+
 ## 0.2.1（Android SDK）
 
 - 安装结果增加本次 HTTP 请求是否进入执行边界的 `requestStarted`；本地安装为 `false`，协程取消仍抛出。
