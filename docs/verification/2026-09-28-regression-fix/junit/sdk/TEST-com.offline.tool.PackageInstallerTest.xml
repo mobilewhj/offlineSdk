@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.offline.tool.PackageInstallerTest" tests="24" skipped="0" failures="0" errors="0" timestamp="2026-09-28T14:03:43" hostname="mobilewhjdeMacBook-Pro.local" time="0.707">
+  <properties/>
+  <testcase name="hashesChunkedArchiveAcrossBuffersBeforePublishingExactBytes" classname="com.offline.tool.PackageInstallerTest" time="0.014"/>
+  <testcase name="coldCleanupRemovesOrphansWithoutFollowingLinks" classname="com.offline.tool.PackageInstallerTest" time="0.003"/>
+  <testcase name="injectedDispatcherRunsLocalSourcesDownloadSetupAndProgress" classname="com.offline.tool.PackageInstallerTest" time="0.007"/>
+  <testcase name="invalidActiveDirectoryDoesNotAuthorizeCleanup" classname="com.offline.tool.PackageInstallerTest" time="0.001"/>
+  <testcase name="hashMismatchAndSourceFailureLeaveNoPublishedDirectory" classname="com.offline.tool.PackageInstallerTest" time="0.002"/>
+  <testcase name="safeRepairRemovesOnlySpecifiedResidueAndReinstallsSameRecord" classname="com.offline.tool.PackageInstallerTest" time="0.004"/>
+  <testcase name="httpsDownloadsAndInstallsExpectedZip" classname="com.offline.tool.PackageInstallerTest" time="0.084"/>
+  <testcase name="wholeDownloadTimeoutStopsTrickleAndKeepsCurrentAndOtherClientCalls" classname="com.offline.tool.PackageInstallerTest" time="0.305"/>
+  <testcase name="publishesCompleteFilesAndRemovesBothTemps" classname="com.offline.tool.PackageInstallerTest" time="0.006"/>
+  <testcase name="invalidBuiltinNeverReportsCompletedProgress" classname="com.offline.tool.PackageInstallerTest" time="0.006"/>
+  <testcase name="httpDownloadStillChecksDigestBeforePublishing" classname="com.offline.tool.PackageInstallerTest" time="0.01"/>
+  <testcase name="builtinProgressTracksWrittenBytesAndReservesCompletionForHost" classname="com.offline.tool.PackageInstallerTest" time="0.004"/>
+  <testcase name="emptyCurrentEntryDoesNotAuthorizeDeletingOtherVersions" classname="com.offline.tool.PackageInstallerTest" time="0.002"/>
+  <testcase name="remoteProgressUsesActualBytesAndSeparatesExtraction" classname="com.offline.tool.PackageInstallerTest" time="0.01"/>
+  <testcase name="cancellationDuringCopyCleansTempsAndAllowsRetry" classname="com.offline.tool.PackageInstallerTest" time="0.003"/>
+  <testcase name="zipSlipAndMissingEntryAreRejected" classname="com.offline.tool.PackageInstallerTest" time="0.003"/>
+  <testcase name="invalidInputsAndExpandedSizeLimitAreObservable" classname="com.offline.tool.PackageInstallerTest" time="0.165"/>
+  <testcase name="archiveWithoutCentralDirectoryFailsWithAndWithoutProgress" classname="com.offline.tool.PackageInstallerTest" time="0.004"/>
+  <testcase name="cancelledHttpsRequestClosesItsCallAndCleansTemps" classname="com.offline.tool.PackageInstallerTest" time="0.029"/>
+  <testcase name="cancelledUpgradePreservesOldDirectory" classname="com.offline.tool.PackageInstallerTest" time="0.003"/>
+  <testcase name="downloadHttpStatusAndInterruptedResponseAreObservable" classname="com.offline.tool.PackageInstallerTest" time="0.031"/>
+  <testcase name="readFailureClosesSourceAndRemovesTemps" classname="com.offline.tool.PackageInstallerTest" time="0.002"/>
+  <testcase name="builtinComputesDigestAndPublishesDistWithAndWithoutProgress" classname="com.offline.tool.PackageInstallerTest" time="0.005"/>
+  <testcase name="installingNewVersionDoesNotOverwriteOrDeleteOldVersion" classname="com.offline.tool.PackageInstallerTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[9月 28, 2026 10:03:44 下午 okhttp3.internal.platform.Platform log
+信息: Http2Connection.Listener failure for MockWebServer localhost
+java.net.SocketException: Connection or outbound has closed
+	at java.base/sun.security.ssl.SSLSocketImpl$AppOutputStream.write(SSLSocketImpl.java:1301)
+	at okio.OutputStreamSink.write(JvmOkio.kt:56)
+	at okio.AsyncTimeout$sink$1.write(AsyncTimeout.kt:127)
+	at okio.RealBufferedSink.flush(RealBufferedSink.kt:268)
+	at okhttp3.internal.http2.Http2Writer.flush(Http2Writer.kt:120)
+	at okhttp3.internal.http2.Http2Connection.flush(Http2Connection.kt:408)
+	at okhttp3.internal.http2.Http2Stream$FramingSink.close(Http2Stream.kt:624)
+	at okio.RealBufferedSink.close(RealBufferedSink.kt:287)
+	at kotlin.io.CloseableKt.closeFinally(Closeable.kt:56)
+	at okhttp3.mockwebserver.MockWebServer$Http2SocketHandler.writeResponse(MockWebServer.kt:1096)
+	at okhttp3.mockwebserver.MockWebServer$Http2SocketHandler.onStream(MockWebServer.kt:977)
+	at okhttp3.internal.http2.Http2Connection$ReaderRunnable$headers$lambda$2$$inlined$execute$default$1.runOnce(TaskQueue.kt:220)
+	at okhttp3.internal.concurrent.TaskRunner.runTask(TaskRunner.kt:116)
+	at okhttp3.internal.concurrent.TaskRunner.access$runTask(TaskRunner.kt:42)
+	at okhttp3.internal.concurrent.TaskRunner$runnable$1.run(TaskRunner.kt:65)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+
+]]></system-err>
+</testsuite>

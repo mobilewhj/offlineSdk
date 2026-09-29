@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.offline.tool.PackageInstallerCleanupTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-09-29T13:55:54" hostname="mobilewhjdeMacBook-Pro.local" time="0.018">
+  <properties/>
+  <testcase name="cancellationDuringReadKeepsBothCleanupErrors" classname="com.offline.tool.PackageInstallerCleanupTest" time="0.008"/>
+  <testcase name="publishedPackageStillReportsResidualCleanupFailure" classname="com.offline.tool.PackageInstallerCleanupTest" time="0.006"/>
+  <testcase name="sourceFailureKeepsMetadataAndBothCleanupErrors" classname="com.offline.tool.PackageInstallerCleanupTest" time="0.002"/>
+  <testcase name="unexpectedSourceExceptionAlsoKeepsBothCleanupErrors" classname="com.offline.tool.PackageInstallerCleanupTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

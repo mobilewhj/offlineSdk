@@ -1,0 +1,87 @@
+{
+  "artifacts": {
+    "offlineSdk-0.3.0.aar": {
+      "sha256": "79616940830c3a39d188556169046d831c32a72113582b881ea276b73961bcb6",
+      "sidecar_matches": true
+    },
+    "offlineSdk-0.3.0-sources.jar": {
+      "sha256": "0158e130669972a54a8023a42242748fb58507db8b2d2b33f8408eb72a37812d",
+      "sidecar_matches": true
+    },
+    "offlineSdk-0.3.0.pom": {
+      "sha256": "5379399a9f112b88872a69b491d24881a4fe4c358ff1d3c7b1acba10672bb0b3",
+      "sidecar_matches": true
+    },
+    "offlineSdk-0.3.0.module": {
+      "sha256": "bb98d7a382ff1cc68835f7e537a019125e5ee445818265979e5221701512cddf",
+      "sidecar_matches": true
+    }
+  },
+  "sources": {
+    "count": 15,
+    "all_match": true,
+    "files": {
+      "com/offline/tool/FailureReason.kt": {
+        "exists": true,
+        "bytes_match": true
+      },
+      "com/offline/tool/InitialLocalFacts.kt": {
+        "exists": true,
+        "bytes_match": true
+      },
+      "com/offline/tool/InstallException.kt": {
+        "exists": true,
+        "bytes_match": true
+      },
+      "com/offline/tool/InstallResult.kt": {
+        "exists": true,
+        "bytes_match": true
+      },
+      "com/offline/tool/InstallStage.kt": {
+        "exists": true,
+        "bytes_match": true
+      },
+      "com/offline/tool/ManagedOfflineSdk.kt": {
+        "exists": true,
+        "bytes_match": true
+      },
+      "com/offline/tool/ManagedOfflineTypes.kt": {
+        "exists": true,
+        "bytes_match": true
+      },
+      "com/offline/tool/OfflineInterceptor.kt": {
+        "exists": true,
+        "bytes_match": true
+      },
+      "com/offline/tool/OfflineUrlRules.kt": {
+        "exists": true,
+        "bytes_match": true
+      },
+      "com/offline/tool/PackageArchive.kt": {
+        "exists": true,
+        "bytes_match": true
+      },
+      "com/offline/tool/PackageDownloader.kt": {
+        "exists": true,
+        "bytes_match": true
+      },
+      "com/offline/tool/PackageEntry.kt": {
+        "exists": true,
+        "bytes_match": true
+      },
+      "com/offline/tool/PackageInstaller.kt": {
+        "exists": true,
+        "bytes_match": true
+      },
+      "com/offline/tool/PackageRecord.kt": {
+        "exists": true,
+        "bytes_match": true
+      },
+      "com/offline/tool/x5/X5OfflineResponse.kt": {
+        "exists": true,
+        "bytes_match": true
+      }
+    }
+  },
+  "aar_output_matches_repository": true
+}

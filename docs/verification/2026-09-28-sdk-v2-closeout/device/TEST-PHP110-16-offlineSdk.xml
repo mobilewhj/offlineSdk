@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuite name="com.offline.tool.OfflineAndroidTest" tests="9" failures="0" errors="0" skipped="0" time="0.934" timestamp="2026-09-28T10:37:00" hostname="localhost">
+  <properties>
+    <property name="device" value="PHP110 - 16" />
+    <property name="flavor" value="" />
+    <property name="project" value=":offlineSdk" />
+  </properties>
+  <testcase name="runtimeSwitchStopsInterceptionWithoutRecreatingClient" classname="com.offline.tool.OfflineAndroidTest" time="0.006" />
+  <testcase name="systemWebViewLoadsOfflineHtmlAndScriptAtOriginalUrl" classname="com.offline.tool.OfflineAndroidTest" time="0.344" />
+  <testcase name="strictDefaultAndExplicitNonstandardPortsKeepTheirBoundaries" classname="com.offline.tool.OfflineAndroidTest" time="0.002" />
+  <testcase name="resourceDiagnosticsExcludeNormalSkipsAndStripQuery" classname="com.offline.tool.OfflineAndroidTest" time="0.002" />
+  <testcase name="optionalDualSchemeMapsBothDefaultPortsToTheSameFiles" classname="com.offline.tool.OfflineAndroidTest" time="0.001" />
+  <testcase name="managerConstructionOnMainDoesNotAccessDiskUnderStrictMode" classname="com.offline.tool.OfflineAndroidTest" time="0.028" />
+  <testcase name="explicitMimeAndUtf8PropertiesHaveNoCorsHeaders" classname="com.offline.tool.OfflineAndroidTest" time="0.062" />
+  <testcase name="baseAndRequestSchemesAreCaseInsensitive" classname="com.offline.tool.OfflineAndroidTest" time="0.002" />
+  <testcase name="interceptorReturnsFileStreamOrNullWithoutChangingItsVersionDirectory" classname="com.offline.tool.OfflineAndroidTest" time="0.002" />
+</testsuite>

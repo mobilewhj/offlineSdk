@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.offline.tool.ActiveSaveCancellationProbe" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-29T13:55:51" hostname="mobilewhjdeMacBook-Pro.local" time="0.157">
+  <properties/>
+  <testcase name="activeReadFailureAfterCancelledWriteCannotAuthorizeDowngrade" classname="com.offline.tool.ActiveSaveCancellationProbe" time="0.123"/>
+  <testcase name="cancelledPersistedHigherActiveMustRemainTheDowngradeFloor" classname="com.offline.tool.ActiveSaveCancellationProbe" time="0.012"/>
+  <testcase name="cancellationBeforeActiveSideEffectAllowsNextNormalAttempt" classname="com.offline.tool.ActiveSaveCancellationProbe" time="0.007"/>
+  <testcase name="cancelledSavedTargetRecoversNewPageWithoutReinstallingBoundDirectory" classname="com.offline.tool.ActiveSaveCancellationProbe" time="0.009"/>
+  <testcase name="missingFilesAfterCancelledWriteSendZeroButRetainVersionFloor" classname="com.offline.tool.ActiveSaveCancellationProbe" time="0.006"/>
+  <system-out><![CDATA[active-save-cancel requested=[100000, 100002] stored=100002 memory=100002 outcomes=[]
+active-save-cancel same-target stored=100002 memory=100002 failure=null outcomes=0
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

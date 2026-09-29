@@ -31,6 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:max="100"
+        android:visibility="gone"
         android:indeterminate="true" />
 
     <TextView
@@ -38,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/checking"
+        android:text="@string/starting"
         android:textColor="#182C46"
         android:gravity="center"
         android:accessibilityLiveRegion="polite" />
@@ -56,5 +57,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="@string/retry"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/btnWelcomeReturn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/return_to_previous"
         android:visibility="gone" />
 </LinearLayout>

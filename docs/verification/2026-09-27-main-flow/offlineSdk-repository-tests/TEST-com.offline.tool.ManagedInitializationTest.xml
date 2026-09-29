@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.offline.tool.ManagedInitializationTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-27T15:01:51" hostname="mobilewhjdeMacBook-Pro.local" time="0.16">
+  <properties/>
+  <testcase name="allInitialStorageReadsUseIoAndExistingHistorySkipsLegacy" classname="com.offline.tool.ManagedInitializationTest" time="0.126"/>
+  <testcase name="oldUsableDirectoryFinishesPreparationWithoutInventingActiveRecord" classname="com.offline.tool.ManagedInitializationTest" time="0.013"/>
+  <testcase name="incompleteLocalReadsPreserveDirectoriesAndRetryBeforeCommitting" classname="com.offline.tool.ManagedInitializationTest" time="0.013"/>
+  <testcase name="validActiveCompletesInitialQualificationWithoutRewritingExistingHistory" classname="com.offline.tool.ManagedInitializationTest" time="0.002"/>
+  <testcase name="cacheReadFailureKeepsActiveAndRequiresResourceCacheClearing" classname="com.offline.tool.ManagedInitializationTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

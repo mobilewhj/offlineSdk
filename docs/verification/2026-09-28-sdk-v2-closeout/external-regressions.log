@@ -1,0 +1,26 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :offlineSdk:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :offlineSdk:preBuild UP-TO-DATE
+> Task :offlineSdk:preDebugBuild UP-TO-DATE
+> Task :offlineSdk:generateDebugResValues
+> Task :offlineSdk:generateDebugResources
+> Task :offlineSdk:packageDebugResources
+> Task :offlineSdk:preDebugUnitTestBuild UP-TO-DATE
+> Task :offlineSdk:javaPreCompileDebug
+> Task :offlineSdk:javaPreCompileDebugUnitTest
+> Task :offlineSdk:parseDebugLocalResources
+> Task :offlineSdk:generateDebugRFile
+> Task :offlineSdk:generateDebugUnitTestStubRFile
+> Task :offlineSdk:compileDebugKotlin
+> Task :offlineSdk:compileDebugJavaWithJavac NO-SOURCE
+> Task :offlineSdk:bundleLibRuntimeToJarDebug
+> Task :offlineSdk:processDebugJavaRes
+> Task :offlineSdk:bundleLibCompileToJarDebug
+> Task :offlineSdk:compileDebugUnitTestKotlin
+> Task :offlineSdk:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :offlineSdk:processDebugUnitTestJavaRes
+> Task :offlineSdk:testDebugUnitTest
+
+BUILD SUCCESSFUL in 15s
+15 actionable tasks: 15 executed

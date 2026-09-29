@@ -1,0 +1,30 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :offlineSdk:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :offlineSdk:preBuild UP-TO-DATE
+> Task :offlineSdk:preDebugBuild UP-TO-DATE
+> Task :offlineSdk:generateDebugResValues UP-TO-DATE
+> Task :offlineSdk:generateDebugResources UP-TO-DATE
+> Task :offlineSdk:packageDebugResources UP-TO-DATE
+> Task :offlineSdk:parseDebugLocalResources UP-TO-DATE
+> Task :offlineSdk:generateDebugRFile UP-TO-DATE
+> Task :offlineSdk:compileDebugKotlin UP-TO-DATE
+> Task :offlineSdk:javaPreCompileDebug UP-TO-DATE
+> Task :offlineSdk:compileDebugJavaWithJavac NO-SOURCE
+> Task :offlineSdk:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :offlineSdk:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :offlineSdk:preDebugUnitTestBuild UP-TO-DATE
+> Task :offlineSdk:generateDebugUnitTestStubRFile UP-TO-DATE
+> Task :offlineSdk:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :offlineSdk:processDebugJavaRes UP-TO-DATE
+> Task :offlineSdk:compileDebugUnitTestKotlin
+> Task :offlineSdk:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :offlineSdk:processDebugUnitTestJavaRes UP-TO-DATE
+WARNING: A terminally deprecated method in java.lang.System has been called
+WARNING: System::setSecurityManager has been called by com.offline.tool.ManagedOfflineRegressionTest$pageCommitUsesPreparedFactsWithoutReadingPackageFiles$1 (file:$SDK_REPO/offlineSdk/build/tmp/kotlin-classes/debugUnitTest/)
+WARNING: Please consider reporting this to the maintainers of com.offline.tool.ManagedOfflineRegressionTest$pageCommitUsesPreparedFactsWithoutReadingPackageFiles$1
+WARNING: System::setSecurityManager will be removed in a future release
+> Task :offlineSdk:testDebugUnitTest
+
+BUILD SUCCESSFUL in 10s
+15 actionable tasks: 2 executed, 13 up-to-date

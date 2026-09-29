@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.offline.tool.PackageDownloaderTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-09-27T15:01:52" hostname="mobilewhjdeMacBook-Pro.local" time="1.117">
+  <properties/>
+  <testcase name="invalidUrlsFailBeforeInvokingConsumer" classname="com.offline.tool.PackageDownloaderTest" time="0.015"/>
+  <testcase name="completedDownloadsReuseConnectionWithoutCanceledEvents" classname="com.offline.tool.PackageDownloaderTest" time="0.054"/>
+  <testcase name="progressIoExceptionsRemainUnchangedBeforeAndAfterReadingBytes" classname="com.offline.tool.PackageDownloaderTest" time="0.008"/>
+  <testcase name="cancellationInterruptsWaitingForHeadersAndPropagatesFromSourceFactory" classname="com.offline.tool.PackageDownloaderTest" time="0.011"/>
+  <testcase name="injectedSingleThreadDispatcherDoesNotDelayCallCancellation" classname="com.offline.tool.PackageDownloaderTest" time="0.014"/>
+  <testcase name="consumerMayFinishWithoutOpeningHttpRequest" classname="com.offline.tool.PackageDownloaderTest" time="0.002"/>
+  <testcase name="cancellationInterruptsBlockedBodyReadAndPropagatesFromSource" classname="com.offline.tool.PackageDownloaderTest" time="1.007"/>
+  <testcase name="partialOrEmptySuccessStatusDoesNotCountAsCompleteDownload" classname="com.offline.tool.PackageDownloaderTest" time="0.005"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[9月 27, 2026 11:01:52 下午 okhttp3.mockwebserver.MockWebServer$SocketHandler handle
+警告: MockWebServer[53649] connection from /127.0.0.1 didn't make a request
+9月 27, 2026 11:01:52 下午 okhttp3.mockwebserver.MockWebServer$SocketHandler handle
+警告: MockWebServer[53651] connection from /127.0.0.1 didn't make a request
+]]></system-err>
+</testsuite>

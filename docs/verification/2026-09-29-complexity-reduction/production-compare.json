@@ -1,0 +1,364 @@
+{
+  "summary": {
+    "sdk": {
+      "files": 15,
+      "before_lines": 2092,
+      "after_lines": 2060,
+      "delta_lines": -32
+    },
+    "demo": {
+      "files": 9,
+      "before_lines": 599,
+      "after_lines": 586,
+      "delta_lines": -13
+    },
+    "total": {
+      "files": 24,
+      "before_lines": 2691,
+      "after_lines": 2646,
+      "delta_lines": -45
+    },
+    "manager": {
+      "before_lines": 889,
+      "after_lines": 864
+    }
+  },
+  "files": {
+    "app/src/main/java/com/offline/tool/sample/DemoApplication.kt": {
+      "before": {
+        "lines": 99,
+        "nonblank": 93,
+        "sha256": "25aad97221dbc57cb096dd20c01ef8c1a769f3d9b70c64ae56e47cb71bb570f8",
+        "source": "2026-09-28 v2 production manifest; only DemoManagedStorage changed in F3"
+      },
+      "after": {
+        "lines": 99,
+        "nonblank": 93,
+        "sha256": "25aad97221dbc57cb096dd20c01ef8c1a769f3d9b70c64ae56e47cb71bb570f8"
+      },
+      "delta_lines": 0
+    },
+    "app/src/main/java/com/offline/tool/sample/MainActivity.kt": {
+      "before": {
+        "lines": 97,
+        "nonblank": 88,
+        "sha256": "ec90fdfbc2853562dbeedb4a670195f69090b6a5a990663235543936f67bf64e",
+        "source": "2026-09-28 v2 production manifest; only DemoManagedStorage changed in F3"
+      },
+      "after": {
+        "lines": 95,
+        "nonblank": 86,
+        "sha256": "042a269b57314a6a2bc3b593d2c9d9dfda83e9a6305e3419c83c152314e736c0"
+      },
+      "delta_lines": -2
+    },
+    "app/src/main/java/com/offline/tool/sample/SystemBarInsets.kt": {
+      "before": {
+        "lines": 18,
+        "nonblank": 16,
+        "sha256": "9d5ae832be52ec0e934278d142f5b7ad1008e89ff4a8fca9e85165c81b710a87",
+        "source": "2026-09-28 v2 production manifest; only DemoManagedStorage changed in F3"
+      },
+      "after": {
+        "lines": 18,
+        "nonblank": 16,
+        "sha256": "9d5ae832be52ec0e934278d142f5b7ad1008e89ff4a8fca9e85165c81b710a87"
+      },
+      "delta_lines": 0
+    },
+    "app/src/main/java/com/offline/tool/sample/offline/DemoManagedStorage.kt": {
+      "before": {
+        "lines": 126,
+        "nonblank": null,
+        "sha256": "c9df9205b5c8c3e245440fc99cc408490ac27ca960a3df80a895ce6326713ee0",
+        "source": "2026-09-28 regression-fix receipt and start-of-task line count"
+      },
+      "after": {
+        "lines": 126,
+        "nonblank": 112,
+        "sha256": "c9df9205b5c8c3e245440fc99cc408490ac27ca960a3df80a895ce6326713ee0"
+      },
+      "delta_lines": 0
+    },
+    "app/src/main/java/com/offline/tool/sample/offline/DemoOutcomeReporter.kt": {
+      "before": {
+        "lines": 49,
+        "nonblank": 45,
+        "sha256": "be933404c5489170a8f3302f66ca569e52a662fb14b7bf4e37ace4c5f61c2fc0",
+        "source": "2026-09-28 v2 production manifest; only DemoManagedStorage changed in F3"
+      },
+      "after": {
+        "lines": 49,
+        "nonblank": 45,
+        "sha256": "be933404c5489170a8f3302f66ca569e52a662fb14b7bf4e37ace4c5f61c2fc0"
+      },
+      "delta_lines": 0
+    },
+    "app/src/main/java/com/offline/tool/sample/offline/OfflineLog.kt": {
+      "before": {
+        "lines": 8,
+        "nonblank": 6,
+        "sha256": "ae68480821cb1adcfa7a8ed5dd82e9c2d71db13116c15bae3f69834d38032401",
+        "source": "2026-09-28 v2 production manifest; only DemoManagedStorage changed in F3"
+      },
+      "after": {
+        "lines": 8,
+        "nonblank": 6,
+        "sha256": "ae68480821cb1adcfa7a8ed5dd82e9c2d71db13116c15bae3f69834d38032401"
+      },
+      "delta_lines": 0
+    },
+    "app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeActivity.kt": {
+      "before": {
+        "lines": 78,
+        "nonblank": 72,
+        "sha256": "272c9bb7e96d5aee15076e58e6e80fd5bf63439487a094370fb14c5129381a3c",
+        "source": "2026-09-28 v2 production manifest; only DemoManagedStorage changed in F3"
+      },
+      "after": {
+        "lines": 78,
+        "nonblank": 72,
+        "sha256": "272c9bb7e96d5aee15076e58e6e80fd5bf63439487a094370fb14c5129381a3c"
+      },
+      "delta_lines": 0
+    },
+    "app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeProgressPresentation.kt": {
+      "before": {
+        "lines": 28,
+        "nonblank": 25,
+        "sha256": "738000404fce7570abd93e06afea0554c662b157d9d61810e18863ae840a4910",
+        "source": "2026-09-28 v2 production manifest; only DemoManagedStorage changed in F3"
+      },
+      "after": {
+        "lines": 26,
+        "nonblank": 23,
+        "sha256": "59227f440fe83badbfd6de2bfd5701729a47462b26571b708da74a84ffd0e62e"
+      },
+      "delta_lines": -2
+    },
+    "app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeViewModel.kt": {
+      "before": {
+        "lines": 96,
+        "nonblank": 90,
+        "sha256": "b0a3052f64c79a9ead88da34b11301887becb3da3e2bb6c7005fc7d418317436",
+        "source": "2026-09-28 v2 production manifest; only DemoManagedStorage changed in F3"
+      },
+      "after": {
+        "lines": 87,
+        "nonblank": 81,
+        "sha256": "7aacc64de7e06d28afab22e3652ff1c8ebc4d3491ad1fa4a623ad7b4d0c93d94"
+      },
+      "delta_lines": -9
+    },
+    "offlineSdk/src/main/java/com/offline/tool/FailureReason.kt": {
+      "before": {
+        "lines": 17,
+        "nonblank": 16,
+        "sha256": "77b14af11405e65308167b537e75bbb3fcf8d0667954c67b45d6f7ac664a0cee",
+        "source": "prior local 0.3.0 sources JAR"
+      },
+      "after": {
+        "lines": 17,
+        "nonblank": 16,
+        "sha256": "77b14af11405e65308167b537e75bbb3fcf8d0667954c67b45d6f7ac664a0cee"
+      },
+      "delta_lines": 0
+    },
+    "offlineSdk/src/main/java/com/offline/tool/InitialLocalFacts.kt": {
+      "before": {
+        "lines": 92,
+        "nonblank": 84,
+        "sha256": "ee77b15aab131c807853f366f3ca32466bb42e86089d3dfc04ce3e581f2d96f6",
+        "source": "prior local 0.3.0 sources JAR"
+      },
+      "after": {
+        "lines": 92,
+        "nonblank": 84,
+        "sha256": "ee77b15aab131c807853f366f3ca32466bb42e86089d3dfc04ce3e581f2d96f6"
+      },
+      "delta_lines": 0
+    },
+    "offlineSdk/src/main/java/com/offline/tool/InstallException.kt": {
+      "before": {
+        "lines": 11,
+        "nonblank": 9,
+        "sha256": "4654d9e87b87bf8d013e514a4d29fc47229dd3a60c0b0d4f254f690801dca604",
+        "source": "prior local 0.3.0 sources JAR"
+      },
+      "after": {
+        "lines": 11,
+        "nonblank": 9,
+        "sha256": "4654d9e87b87bf8d013e514a4d29fc47229dd3a60c0b0d4f254f690801dca604"
+      },
+      "delta_lines": 0
+    },
+    "offlineSdk/src/main/java/com/offline/tool/InstallResult.kt": {
+      "before": {
+        "lines": 25,
+        "nonblank": 23,
+        "sha256": "4832d7329e15188abecb343726d1a867ffa5ac6d909f11f2b7bfaea59cd5072f",
+        "source": "prior local 0.3.0 sources JAR"
+      },
+      "after": {
+        "lines": 25,
+        "nonblank": 23,
+        "sha256": "4832d7329e15188abecb343726d1a867ffa5ac6d909f11f2b7bfaea59cd5072f"
+      },
+      "delta_lines": 0
+    },
+    "offlineSdk/src/main/java/com/offline/tool/InstallStage.kt": {
+      "before": {
+        "lines": 12,
+        "nonblank": 11,
+        "sha256": "6537e2c3a736138c2b2cfd80ffb6e3a157cc6ca204a6402de208f8a5999d82c8",
+        "source": "prior local 0.3.0 sources JAR"
+      },
+      "after": {
+        "lines": 12,
+        "nonblank": 11,
+        "sha256": "6537e2c3a736138c2b2cfd80ffb6e3a157cc6ca204a6402de208f8a5999d82c8"
+      },
+      "delta_lines": 0
+    },
+    "offlineSdk/src/main/java/com/offline/tool/ManagedOfflineSdk.kt": {
+      "before": {
+        "lines": 889,
+        "nonblank": 834,
+        "sha256": "15624eabdf3368859a141834a4e180cf68865242c6b031bb311b926189c66c61",
+        "source": "prior local 0.3.0 sources JAR"
+      },
+      "after": {
+        "lines": 864,
+        "nonblank": 809,
+        "sha256": "2930808d110dabe57d719d632e41a160ba12795ab93cdacdd1d2a46efd91f53f"
+      },
+      "delta_lines": -25
+    },
+    "offlineSdk/src/main/java/com/offline/tool/ManagedOfflineTypes.kt": {
+      "before": {
+        "lines": 174,
+        "nonblank": 148,
+        "sha256": "51acc9049c0250738e0400b35406fa34dedf8cbd7755dd8f1f06726bed3b9f52",
+        "source": "prior local 0.3.0 sources JAR"
+      },
+      "after": {
+        "lines": 167,
+        "nonblank": 142,
+        "sha256": "4185fa6c6a3a281d601612ac7b90060ecfa0621abf570a16551c1e3f11abb615"
+      },
+      "delta_lines": -7
+    },
+    "offlineSdk/src/main/java/com/offline/tool/OfflineInterceptor.kt": {
+      "before": {
+        "lines": 129,
+        "nonblank": 119,
+        "sha256": "0429a5e56ff558c32d4f41b51e8c350003cfc0701a7f1f15ef4d95f27ec7369a",
+        "source": "prior local 0.3.0 sources JAR"
+      },
+      "after": {
+        "lines": 129,
+        "nonblank": 119,
+        "sha256": "0429a5e56ff558c32d4f41b51e8c350003cfc0701a7f1f15ef4d95f27ec7369a"
+      },
+      "delta_lines": 0
+    },
+    "offlineSdk/src/main/java/com/offline/tool/OfflineUrlRules.kt": {
+      "before": {
+        "lines": 56,
+        "nonblank": 45,
+        "sha256": "595bb281cb734495d766eff661221f4025353c3d47fb32de39882007baf0c3c6",
+        "source": "prior local 0.3.0 sources JAR"
+      },
+      "after": {
+        "lines": 56,
+        "nonblank": 45,
+        "sha256": "595bb281cb734495d766eff661221f4025353c3d47fb32de39882007baf0c3c6"
+      },
+      "delta_lines": 0
+    },
+    "offlineSdk/src/main/java/com/offline/tool/PackageArchive.kt": {
+      "before": {
+        "lines": 126,
+        "nonblank": 121,
+        "sha256": "c2c222872b11c4573e9791fae8209d332c2d251c2e89939bdb30ec00392e00ee",
+        "source": "prior local 0.3.0 sources JAR"
+      },
+      "after": {
+        "lines": 126,
+        "nonblank": 121,
+        "sha256": "c2c222872b11c4573e9791fae8209d332c2d251c2e89939bdb30ec00392e00ee"
+      },
+      "delta_lines": 0
+    },
+    "offlineSdk/src/main/java/com/offline/tool/PackageDownloader.kt": {
+      "before": {
+        "lines": 152,
+        "nonblank": 143,
+        "sha256": "1b88914f19c3fbc5ff6e9b16da446f1cbfe49fd5c6474572e0f14add74053534",
+        "source": "prior local 0.3.0 sources JAR"
+      },
+      "after": {
+        "lines": 152,
+        "nonblank": 143,
+        "sha256": "1b88914f19c3fbc5ff6e9b16da446f1cbfe49fd5c6474572e0f14add74053534"
+      },
+      "delta_lines": 0
+    },
+    "offlineSdk/src/main/java/com/offline/tool/PackageEntry.kt": {
+      "before": {
+        "lines": 23,
+        "nonblank": 21,
+        "sha256": "56e570112ebfcc8ca06bfb374ff68390cfdf35cac9c9bccc408ed51c710b46de",
+        "source": "prior local 0.3.0 sources JAR"
+      },
+      "after": {
+        "lines": 23,
+        "nonblank": 21,
+        "sha256": "56e570112ebfcc8ca06bfb374ff68390cfdf35cac9c9bccc408ed51c710b46de"
+      },
+      "delta_lines": 0
+    },
+    "offlineSdk/src/main/java/com/offline/tool/PackageInstaller.kt": {
+      "before": {
+        "lines": 349,
+        "nonblank": 326,
+        "sha256": "bbd0a546425f74d2943a7b3c41da3a36a1abaa5ac5c6f8f94f880351273eeb44",
+        "source": "prior local 0.3.0 sources JAR"
+      },
+      "after": {
+        "lines": 349,
+        "nonblank": 326,
+        "sha256": "bbd0a546425f74d2943a7b3c41da3a36a1abaa5ac5c6f8f94f880351273eeb44"
+      },
+      "delta_lines": 0
+    },
+    "offlineSdk/src/main/java/com/offline/tool/PackageRecord.kt": {
+      "before": {
+        "lines": 4,
+        "nonblank": 3,
+        "sha256": "94b3ec2390643200fafc12cfe9791d4832eca4e44acef5b0b034aab082bc30a0",
+        "source": "prior local 0.3.0 sources JAR"
+      },
+      "after": {
+        "lines": 4,
+        "nonblank": 3,
+        "sha256": "94b3ec2390643200fafc12cfe9791d4832eca4e44acef5b0b034aab082bc30a0"
+      },
+      "delta_lines": 0
+    },
+    "offlineSdk/src/main/java/com/offline/tool/x5/X5OfflineResponse.kt": {
+      "before": {
+        "lines": 33,
+        "nonblank": 30,
+        "sha256": "e8b97f79f32a7da53735515991669f206e77eb20a3dc19e1502263d99a3dab38",
+        "source": "prior local 0.3.0 sources JAR"
+      },
+      "after": {
+        "lines": 33,
+        "nonblank": 30,
+        "sha256": "e8b97f79f32a7da53735515991669f206e77eb20a3dc19e1502263d99a3dab38"
+      },
+      "delta_lines": 0
+    }
+  }
+}

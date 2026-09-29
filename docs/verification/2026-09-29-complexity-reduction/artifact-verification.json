@@ -1,0 +1,28 @@
+{
+  "aar": {
+    "sha256": "2a8a69e9dd687def6369879fbf55d909edc386f20d9663310210f373cbc015a4",
+    "bytes": 233537,
+    "sidecar_matches": true
+  },
+  "sources.jar": {
+    "sha256": "250246ccf85d75f1eb2b48195b4cf92d57195f96cfc3637a806e0ecc4b9e44bb",
+    "bytes": 36835,
+    "sidecar_matches": true
+  },
+  "pom": {
+    "sha256": "5379399a9f112b88872a69b491d24881a4fe4c358ff1d3c7b1acba10672bb0b3",
+    "bytes": 2383,
+    "sidecar_matches": true
+  },
+  "module": {
+    "sha256": "6aaeeb31229d4164a8a55b9cb211fd8dedc516d5eae4d9ec96d14f0716e8872a",
+    "bytes": 3938,
+    "sidecar_matches": true
+  },
+  "sources_match": {
+    "matched": 15,
+    "total": 15
+  },
+  "release_aar_matches_local_maven": true,
+  "previous_aar_sha256": "36f00b9bbfe5ec43cefbf5a33d4ac22080030404d3351203b30c92fe4ebbf169"
+}

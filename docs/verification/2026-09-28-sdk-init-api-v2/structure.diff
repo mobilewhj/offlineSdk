@@ -1,0 +1,618 @@
+--- b25b08/app/src/main/java/com/offline/tool/sample/DemoApplication.kt
++++ v2/app/src/main/java/com/offline/tool/sample/DemoApplication.kt
+@@ -15,77 +15,11 @@
+ import com.offline.tool.sample.offline.DemoManagedStorage
+ import com.offline.tool.sample.offline.DemoOutcomeReporter
+ import com.offline.tool.sample.offline.logOffline
+-import kotlinx.coroutines.CancellationException
+-import kotlinx.coroutines.CompletableDeferred
+-import kotlinx.coroutines.CoroutineScope
+-import kotlinx.coroutines.Dispatchers
+-import kotlinx.coroutines.SupervisorJob
+-import kotlinx.coroutines.launch
+-import kotlinx.coroutines.withContext
+ import java.io.File
+ 
+ class DemoApplication : Application() {
+-    private val processScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+-    private val graphReady = CompletableDeferred<DemoGraph>()
+-    private var graph: DemoGraph? = null
+     private var startedActivities = 0
+     private var privacyAllowed = true
+-
+-    override fun onCreate() {
+-        super.onCreate()
+-        // 示例没有隐私页面；真实宿主通过 setPrivacyAllowed 接入授权与撤回。
+-        registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
+-            override fun onActivityCreated(activity: Activity, state: Bundle?) = Unit
+-            override fun onActivityStarted(activity: Activity) {
+-                startedActivities++
+-                updateConditions()
+-            }
+-            override fun onActivityResumed(activity: Activity) = Unit
+-            override fun onActivityPaused(activity: Activity) = Unit
+-            override fun onActivityStopped(activity: Activity) {
+-                startedActivities = (startedActivities - 1).coerceAtLeast(0)
+-                if (startedActivities == 0) {
+-                    updateConditions()
+-                }
+-            }
+-            override fun onActivitySaveInstanceState(activity: Activity, state: Bundle) = Unit
+-            override fun onActivityDestroyed(activity: Activity) = Unit
+-        })
+-        processScope.launch {
+-            try {
+-                // 安装器在构造时规范化根路径；整个 graph 在 IO 创建，回 Main 后才接入管理状态。
+-                val created = withContext(Dispatchers.IO) { DemoGraph(this@DemoApplication) }
+-                // 构造期间的生命周期/隐私变化先存宿主事实；这里应用最新值再向页面发布。
+-                created.setConditions(privacyAllowed, startedActivities > 0)
+-                graph = created
+-                graphReady.complete(created)
+-            } catch (cancelled: CancellationException) {
+-                graphReady.completeExceptionally(cancelled)
+-                throw cancelled
+-            } catch (error: Exception) {
+-                graphReady.completeExceptionally(error)
+-                logOffline("manager creation failed type=${error.javaClass.simpleName}")
+-            }
+-        }
+-    }
+-
+-    /** 在主线程传入真实授权事实，同步取消 SDK 更新与宿主报告，不依赖 Welcome 页面。 */
+-    @MainThread
+-    fun setPrivacyAllowed(allowed: Boolean) {
+-        privacyAllowed = allowed
+-        updateConditions()
+-    }
+-
+-    private fun updateConditions() {
+-        graph?.setConditions(privacyAllowed, startedActivities > 0)
+-    }
+-
+-    /** 仅在最新隐私和前台事实已在 Main 同步应用后交付管理器；构造失败向等待页面传播。 */
+-    internal suspend fun awaitGraph(): DemoGraph = graphReady.await()
+-}
+-
+-/** 在 IO 构造同一进程的唯一管理器；目录和更新时机均由 SDK 管理。 */
+-internal class DemoGraph(application: Application) {
+     private val reporter = DemoOutcomeReporter(
+         report = { outcome ->
+             when (outcome) {
+@@ -99,37 +33,62 @@
+         },
+         onFailure = { error -> logOffline("report failed type=${error.javaClass.simpleName}") },
+     )
+-    // 配置端口从 Main 调用；本地样例只构造数据，真实宿主的阻塞工作应在适配器内切 IO。
+-    private val config = ManagedConfigProvider { currentVersion ->
+-        logOffline("configuration requested with usable version=$currentVersion")
+-        ConfigResponse.Success(
+-            OfflineConfiguration(
+-                enabled = true,
+-                onlineVersion = BUILTIN_VERSION,
+-                candidate = OfflineCandidate(
+-                    PackageRecord(BUILTIN_VERSION, BUILTIN_SHA256),
+-                    PackageSource.Local { application.assets.open("sample.zip") },
+-                ),
+-            )
++    internal lateinit var manager: ManagedOfflineSdk
++        private set
++
++    override fun onCreate() {
++        super.onCreate()
++        // 路径只是数据，规范化和安装器接管由 SDK 的首次挂起入口在 IO 完成。
++        manager = ManagedOfflineSdk(
++            root = File(applicationInfo.dataDir, "files/offline/packages"),
++            storage = DemoManagedStorage(this),
++            configProvider = ManagedConfigProvider { currentVersion ->
++                logOffline("configuration requested with usable version=$currentVersion")
++                ConfigResponse.Success(
++                    OfflineConfiguration(
++                        enabled = true,
++                        onlineVersion = BUILTIN_VERSION,
++                        candidate = OfflineCandidate(
++                            PackageRecord(BUILTIN_VERSION, BUILTIN_SHA256),
++                            PackageSource.Local { assets.open("sample.zip") },
++                        ),
++                    )
++                )
++            },
++            minimumVersion = BUILTIN_VERSION,
++            onInstallationOutcome = reporter::submit,
++            onDiagnostic = { failure ->
++                logOffline("diagnostic stage=${failure.stage} reason=${failure.reason}")
++            },
+         )
++        // 示例没有隐私页面；真实宿主通过 setPrivacyAllowed 接入授权与撤回。
++        registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
++            override fun onActivityCreated(activity: Activity, state: Bundle?) = Unit
++            override fun onActivityStarted(activity: Activity) {
++                startedActivities++
++                updateConditions()
++            }
++            override fun onActivityResumed(activity: Activity) = Unit
++            override fun onActivityPaused(activity: Activity) = Unit
++            override fun onActivityStopped(activity: Activity) {
++                startedActivities = (startedActivities - 1).coerceAtLeast(0)
++                if (startedActivities == 0) updateConditions()
++            }
++            override fun onActivitySaveInstanceState(activity: Activity, state: Bundle) = Unit
++            override fun onActivityDestroyed(activity: Activity) = Unit
++        })
+     }
+ 
+-    val manager = ManagedOfflineSdk(
+-        root = File(application.filesDir, "offline/packages"),
+-        storage = DemoManagedStorage(application),
+-        configProvider = config,
+-        minimumVersion = BUILTIN_VERSION,
+-        onInstallationOutcome = reporter::submit,
+-        onDiagnostic = { failure ->
+-            logOffline("diagnostic stage=${failure.stage} reason=${failure.reason}")
+-        },
+-    )
++    /** Main 上同步传入最新授权与前台事实；SDK 自行调度初始化和检查。 */
++    @MainThread
++    fun setPrivacyAllowed(allowed: Boolean) {
++        privacyAllowed = allowed
++        updateConditions()
++    }
+ 
+-    @MainThread
+-    fun setConditions(privacyAllowed: Boolean, foreground: Boolean) {
+-        // 先关闭报告入口，避免 SDK 正在结束的操作在撤回间隙启动上传。
++    private fun updateConditions() {
+         reporter.setPrivacyAllowed(privacyAllowed)
+-        manager.setConditions(privacyAllowed, foreground)
++        manager.setConditions(privacyAllowed, startedActivities > 0)
+     }
+ 
+     companion object {
+--- b25b08/app/src/main/java/com/offline/tool/sample/MainActivity.kt
++++ v2/app/src/main/java/com/offline/tool/sample/MainActivity.kt
+@@ -31,12 +31,12 @@
+         }
+         lifecycleScope.launch {
+             try {
+-                val manager = (application as DemoApplication).awaitGraph().manager
++                val manager = (application as DemoApplication).manager
+                 val page = manager.preparePage()
+                 val decision = manager.commitPage(
+                     preparation = page,
+-                    url = DemoGraph.BASE_URL,
+-                    baseUrl = DemoGraph.BASE_URL,
++                    url = DemoApplication.BASE_URL,
++                    baseUrl = DemoApplication.BASE_URL,
+                     callbacks = object : ManagedPageCallbacks {
+                         override fun clearResourceCache(): Boolean = try {
+                             // 资源缓存包含磁盘；不触碰 Cookie、localStorage 或业务数据。
+--- b25b08/app/src/main/java/com/offline/tool/sample/offline/DemoManagedStorage.kt
++++ v2/app/src/main/java/com/offline/tool/sample/offline/DemoManagedStorage.kt
+@@ -21,9 +21,11 @@
+ 
+ /** 宿主只实现存储编码；更新决策归 SDK。挂起读写切到 IO，缓存 Boolean 遵循同步提交契约。 */
+ internal class DemoManagedStorage(context: Context) : ManagedOfflineStorage {
+-    private val preferences = context.getSharedPreferences("offline_demo", Context.MODE_PRIVATE)
++    private val application = context.applicationContext
++    // 首次读取由 SDK 的初始化 IO 边界触发，Main 构造适配器时不打开偏好文件。
++    private val preferences by lazy { application.getSharedPreferences("offline_demo", Context.MODE_PRIVATE) }
+     // 保留示例已有的 active 记录格式，使已安装资源可以直接迁移。
+-    private val activeFile = File(context.filesDir, "offline/current.txt")
++    private val activeFile by lazy { File(application.filesDir, "offline/current.txt") }
+ 
+     override suspend fun readActive(): PackageRecord? = withContext(Dispatchers.IO) {
+         if (!activeFile.exists()) return@withContext null
+--- b25b08/app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeActivity.kt
++++ v2/app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeActivity.kt
+@@ -20,7 +20,7 @@
+ class WelcomeActivity : ComponentActivity() {
+     private val viewModel: WelcomeViewModel by viewModels {
+         viewModelFactory { initializer {
+-            WelcomeViewModel { (application as DemoApplication).awaitGraph().manager }
++            WelcomeViewModel((application as DemoApplication).manager)
+         } }
+     }
+     private lateinit var binding: ActWelcomeBinding
+--- b25b08/app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeViewModel.kt
++++ v2/app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeViewModel.kt
+@@ -30,7 +30,7 @@
+ internal enum class WelcomeFailure { PRIVACY_REQUIRED, LOCAL_PREPARATION }
+ 
+ /** 页面只拥有本次首次调用；SDK 的后续检查不依赖这个 ViewModel 的生命周期。 */
+-internal class WelcomeViewModel(private val awaitManager: suspend () -> ManagedOfflineSdk) : ViewModel() {
++internal class WelcomeViewModel(private val manager: ManagedOfflineSdk) : ViewModel() {
+     private val _uiState = MutableStateFlow<WelcomeUiState>(WelcomeUiState.Idle)
+     val uiState = _uiState.asStateFlow()
+     private var preparationJob: Job? = null
+@@ -41,7 +41,6 @@
+         _uiState.value = WelcomeUiState.Idle
+         preparationJob = viewModelScope.launch {
+             try {
+-                val manager = awaitManager()
+                 when (manager.startupDecision()) {
+                     StartupDecision.CONTINUE -> _uiState.value = WelcomeUiState.Ready
+                     StartupDecision.NEEDS_FIRST_PREPARATION -> {
+--- b25b08/offlineSdk/src/main/java/com/offline/tool/ManagedOfflineSdk.kt
++++ v2/offlineSdk/src/main/java/com/offline/tool/ManagedOfflineSdk.kt
+@@ -1,7 +1,6 @@
+ package com.offline.tool
+ 
+ import androidx.annotation.MainThread
+-import androidx.annotation.WorkerThread
+ import kotlinx.coroutines.CancellationException
+ import kotlinx.coroutines.CoroutineDispatcher
+ import kotlinx.coroutines.CoroutineScope
+@@ -9,7 +8,6 @@
+ import kotlinx.coroutines.Deferred
+ import kotlinx.coroutines.Dispatchers
+ import kotlinx.coroutines.Job
+-import kotlinx.coroutines.NonCancellable
+ import kotlinx.coroutines.SupervisorJob
+ import kotlinx.coroutines.async
+ import kotlinx.coroutines.coroutineScope
+@@ -31,13 +29,14 @@
+ /**
+  * 主进程中固定环境、固定包目录的唯一管理入口，宿主不能再通过其他入口修改此目录。
+  *
+- * 构造期安装器会规范化根目录，应在 IO 创建；之后挂起入口从任意协程上下文切回 Main 管理状态，
++ * 构造只保存端口和参数，可在 Main 创建；首次合法入口在 IO 准备安装器并规范化根目录。
++ * 之后挂起入口从任意协程上下文切回 Main 管理状态，
+  * 同步条件、关闭与页面提交必须在 Main 调用。
+  * 首装由首个调用者的子任务拥有，重复调用只等待同一次结果；静默更新由 SDK 进程任务拥有。
+  * 普通退后台只停止后续调度，隐私撤回取消两类更新，不取消宿主无关任务。
+  * 文件、网络与主要存储工作在 IO；底层下载/解压进度可从 IO 回调，其他结果与诊断从 Main 通知。
+  */
+-class ManagedOfflineSdk internal constructor(
++class ManagedOfflineSdk private constructor(
+     private val root: File,
+     private val storage: ManagedOfflineStorage,
+     private val configProvider: ManagedConfigProvider,
+@@ -48,11 +47,10 @@
+     private val mainDispatcher: CoroutineDispatcher,
+     private val checkIntervalMillis: Long = 300_000L,
+     private val monotonicMillis: () -> Long = { System.nanoTime() / 1_000_000L },
+-    downloadClient: OkHttpClient = OkHttpClient(),
+-    downloadTimeoutMillis: Long = 120_000L,
++    private val downloadClient: OkHttpClient = OkHttpClient(),
++    private val downloadTimeoutMillis: Long = 120_000L,
+ ) {
+-    /** 构造期在 IO 解析根目录；创建后固定由 Android Main 管理状态。 */
+-    @WorkerThread
++    /** Main 可轻量构造；路径、记录和安装器在首次挂起入口由 SDK 准备。 */
+     constructor(
+         root: File,
+         storage: ManagedOfflineStorage,
+@@ -60,15 +58,11 @@
+         minimumVersion: Int = 10_000,
+         onInstallationOutcome: (InstallationOutcome) -> Unit = {},
+         onDiagnostic: (ManagedFailure) -> Unit = {},
+-        ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+-        checkIntervalMillis: Long = 300_000L,
+-        monotonicMillis: () -> Long = { System.nanoTime() / 1_000_000L },
+         downloadClient: OkHttpClient = OkHttpClient(),
+-        downloadTimeoutMillis: Long = 120_000L,
+     ) : this(
+         root, storage, configProvider, minimumVersion, onInstallationOutcome, onDiagnostic,
+-        ioDispatcher, Dispatchers.Main.immediate, checkIntervalMillis, monotonicMillis,
+-        downloadClient, downloadTimeoutMillis,
++        Dispatchers.IO, Dispatchers.Main.immediate, 300_000L,
++        { System.nanoTime() / 1_000_000L }, downloadClient, 120_000L,
+     )
+ 
+     init {
+@@ -77,8 +71,8 @@
+         require(downloadTimeoutMillis > 0)
+     }
+ 
+-    private val installer = PackageInstaller(root, downloadClient, downloadTimeoutMillis, ioDispatcher)
+-    init { installer.claimManagedRoot() }
++    private var preparedInstaller: PackageInstaller? = null
++    private val installer: PackageInstaller get() = checkNotNull(preparedInstaller)
+     // 更新许可覆盖配置、安装、active 与 History 收尾；页面 IO 不等待这段长操作。
+     private val operation = Mutex()
+     // 协调首次读取、状态提交及初始化收尾，不覆盖长安装流程。
+@@ -105,8 +99,7 @@
+     private var privacyAllowed = false
+     private var foreground = false
+     private var closed = false
+-    private var pollingJob: Job? = null
+-    private var bootstrapJob: Job? = null
++    private var monitorJob: Job? = null
+     private var firstJob: Deferred<FirstPreparationResult>? = null
+     private var silentJob: Deferred<CheckResult>? = null
+     private var directoryGeneration = 0L
+@@ -117,7 +110,7 @@
+         if (!initializeLocked()) return@withContext StartupDecision.CONTINUE
+         val decision = if (!initialFinished && !usable) StartupDecision.NEEDS_FIRST_PREPARATION
+         else StartupDecision.CONTINUE
+-        startPollingIfEligible()
++        startMonitorIfEligible()
+         decision
+     }
+ 
+@@ -132,19 +125,20 @@
+         firstJob?.let { return@withContext it.await() }
+         if (!privacyAllowed || closed) return@withContext FirstPreparationResult.PrivacyRequired
+         if (!foreground) return@withContext FirstPreparationResult.NotForeground
+-        coroutineScope {
+-            // 懒启动保证共享 handle 先发布；子任务仍归首个调用方所有。
+-            val owner = async(start = CoroutineStart.LAZY) { runFirstPreparation(onActivity, onProgress) }
+-            firstJob = owner
+-            try {
+-                owner.start()
+-                owner.await()
+-            } finally {
+-                // 即使在懒任务执行前取消，创建方也要等其收尾后释放唯一 handle。
+-                withContext(NonCancellable) { owner.join() }
+-                if (firstJob === owner) firstJob = null
+-                startPollingIfEligible()
+-            }
++        var owner: Deferred<FirstPreparationResult>? = null
++        try {
++            coroutineScope {
++                // 懒启动保证共享 handle 先发布；子任务仍归首个调用方所有。
++                val task = async(start = CoroutineStart.LAZY) { runFirstPreparation(onActivity, onProgress) }
++                owner = task
++                firstJob = task
++                task.start()
++                task.await()
++            }
++        } finally {
++            // coroutineScope 已等待 owner 的取消收尾；此时才允许新首装取得唯一 handle。
++            if (firstJob === owner) firstJob = null
++            startMonitorIfEligible()
+         }
+     }
+ 
+@@ -184,17 +178,14 @@
+         this.privacyAllowed = privacyAllowed
+         this.foreground = foreground
+         if (!privacyAllowed || !foreground) {
+-            pollingJob?.cancel()
+-            pollingJob = null
+-            bootstrapJob?.cancel()
+-            bootstrapJob = null
++            monitorJob?.cancel()
++            monitorJob = null
+         }
+         if (!privacyAllowed) {
+             firstJob?.cancel()
+             silentJob?.cancel()
+         }
+-        startBootstrapIfEligible()
+-        startPollingIfEligible()
++        startMonitorIfEligible()
+     }
+ 
+     /** SDK 自有的一次静默更新；宿主不持有检查 Job，也不通过结果返回驱动再次尝试。 */
+@@ -248,7 +239,7 @@
+             publishState()
+         }
+         val valid = unchanged && directory != null
+-        startPollingIfEligible()
++        startMonitorIfEligible()
+         PagePreparation(this@ManagedOfflineSdk, record?.takeIf { valid }, directory?.takeIf { valid }, generation)
+     }
+ 
+@@ -287,13 +278,16 @@
+                 val cleared = try { callbacks.clearResourceCache() }
+                     catch (cancelled: CancellationException) { throw cancelled }
+                     catch (_: Exception) { false }
+-                if (cleared) {
++                if (cleared && initialized) {
+                     val saved = try { storage.writeCacheDirty(false) }
+                         catch (cancelled: CancellationException) { throw cancelled }
+                         catch (_: Exception) { false }
+                     if (saved) cacheDirty = false
+                     else cacheFailure = localFailure(ManagedFailureReason.STORAGE_WRITE, ManagedStage.CACHE)
+-                } else cacheFailure = localFailure(ManagedFailureReason.LOCAL_PREPARATION, ManagedStage.CACHE)
++                } else if (!cleared) {
++                    cacheFailure = localFailure(ManagedFailureReason.LOCAL_PREPARATION, ManagedStage.CACHE)
++                }
++                // 初始化事实未知时只清 WebView 资源缓存；不在 Main 打开尚未就绪的存储。
+             }
+             if (interceptor != null) {
+                 callbacks.loadOffline(checkNotNull(preparation.directory), interceptor, url)
+@@ -322,24 +316,42 @@
+     )
+ 
+     private suspend fun initializeLocked(): Boolean = initialization.withLock {
++        if (closed) return@withLock false
+         if (initialized) {
+             // 事实已提交但初始化收尾曾被取消时，下一合法入口仍要完成冷清理。
+             if (!coldCleaned) ensureColdCleanup()
+             return@withLock true
++        }
++        if (preparedInstaller == null) {
++            val created = try {
++                withContext(ioDispatcher) {
++                    PackageInstaller(root, downloadClient, downloadTimeoutMillis, ioDispatcher)
++                }
++            } catch (cancelled: CancellationException) {
++                throw cancelled
++            } catch (_: Exception) {
++                // 运行故障保留同一管理器；下一合法入口会重新准备，页面先走线上。
++                reportInitializationFailure()
++                return@withLock false
++            }
++            currentCoroutineContext().ensureActive()
++            if (closed) return@withLock false
++            // Main 上没有挂起点：claim 成功后立即保存所有者，后续读取失败可复用。
++            created.claimManagedRoot()
++            preparedInstaller = created
+         }
+         val facts = when (val read = readInitialLocalFacts(
+             root, storage, minimumVersion, ioDispatcher, { validRecord(it, minimumVersion) }, installer::isUsable,
+         )) {
+             InitialLocalRead.Failed -> {
+                 // 事实未知时只给出诊断；不提交空状态、不保存迁移记录、不授予清理资格。
+-                val failure = initializationFailure().failure
+-                activity = ManagedActivity.Failed(failure)
+-                publishState()
+-                offerDiagnostic(failure)
++                reportInitializationFailure()
+                 return@withLock false
+             }
+             is InitialLocalRead.Ready -> read
+         }
++        currentCoroutineContext().ensureActive()
++        if (closed) return@withLock false
+         if (facts.cacheReadFailed) offerDiagnostic(localFailure(ManagedFailureReason.STORAGE_READ, ManagedStage.CACHE))
+         active = facts.active
+         usable = facts.usablePackage
+@@ -357,8 +369,17 @@
+             if (!saved) offerDiagnostic(localFailure(ManagedFailureReason.STORAGE_WRITE, ManagedStage.CACHE))
+         }
+         // 只有完整事实已提交，管理器才可依据 active 与页面保护授予冷清理资格。
+-        if (!ensureColdCleanup()) offerDiagnostic(localFailure(ManagedFailureReason.LOCAL_PREPARATION, ManagedStage.CLEANUP))
++        if (!closed && !ensureColdCleanup()) {
++            offerDiagnostic(localFailure(ManagedFailureReason.LOCAL_PREPARATION, ManagedStage.CLEANUP))
++        }
+         true
++    }
++
++    private fun reportInitializationFailure() {
++        val failure = initializationFailure().failure
++        activity = ManagedActivity.Failed(failure)
++        publishState()
++        offerDiagnostic(failure)
+     }
+ 
+     private suspend fun ensureColdCleanup(): Boolean {
+@@ -658,52 +679,56 @@
+     private fun isPollingEligible(): Boolean =
+         !closed && initialized && initialFinished && privacyAllowed && foreground
+ 
+-    private fun startPollingIfEligible() {
+-        if (!isPollingEligible() || pollingJob?.isActive == true) return
+-        pollingJob = processScope.launch {
+-            while (isPollingEligible()) {
+-                val wait = millisUntilNextCheck()
+-                if (wait > 0) delay(wait)
+-                if (!isPollingEligible()) break
+-                val running = silentJob
+-                if (running != null && !running.isCompleted) {
+-                    running.join()
+-                    continue
+-                }
+-                val priorRequest = lastCheck
+-                // 静默任务是进程作用域中的兄弟任务；普通后台只取消轮询等待。
+-                val task = processScope.async(start = CoroutineStart.LAZY) {
+-                    try { runSilentCheck() }
+-                    finally { if (silentJob === currentCoroutineContext()[Job]) silentJob = null }
+-                }
+-                silentJob = task
+-                task.start()
+-                val result = try { task.await() }
+-                    catch (_: CancellationException) {
+-                        // 静默任务自身取消不取消其兄弟轮询；轮询被停时仍传播真实取消。
+-                        currentCoroutineContext().ensureActive()
+-                        null
+-                    }
+-                val failure = (result as? CheckResult.Failed)?.failure
+-                if (failure?.stage == ManagedStage.LOCAL ||
+-                    (result == null && lastCheck == priorRequest && millisUntilNextCheck() == 0L)) {
+-                    // 本轮没有发出请求时才让出一个周期；长请求结束后按其真实起点重算 TTL。
+-                    delay(checkIntervalMillis)
+-                }
+-            }
+-        }
+-    }
+-
+-    private fun startBootstrapIfEligible() {
+-        if (closed || !privacyAllowed || !foreground || initialized || bootstrapJob?.isActive == true) return
+-        bootstrapJob = processScope.launch {
++    private fun startMonitorIfEligible() {
++        if (closed || !privacyAllowed || !foreground || monitorJob?.isActive == true) return
++        monitorJob = processScope.launch {
++            var waitingForFirst = false
+             try {
+                 if (!initializeLocked()) return@launch
+-                startPollingIfEligible()
++                if (!initialFinished) {
++                    waitingForFirst = true
++                    return@launch
++                }
++                while (isPollingEligible()) {
++                    val wait = millisUntilNextCheck()
++                    if (wait > 0) delay(wait)
++                    if (!isPollingEligible()) break
++                    val running = silentJob
++                    if (running != null && !running.isCompleted) {
++                        running.join()
++                        continue
++                    }
++                    val priorRequest = lastCheck
++                    // 静默任务是进程作用域中的兄弟任务；普通后台只取消轮询等待。
++                    val task = processScope.async(start = CoroutineStart.LAZY) {
++                        try { runSilentCheck() }
++                        finally { if (silentJob === currentCoroutineContext()[Job]) silentJob = null }
++                    }
++                    silentJob = task
++                    task.start()
++                    val result = try { task.await() }
++                        catch (_: CancellationException) {
++                            // 静默任务自身取消不取消其兄弟轮询；轮询被停时仍传播真实取消。
++                            currentCoroutineContext().ensureActive()
++                            null
++                        }
++                    val failure = (result as? CheckResult.Failed)?.failure
++                    if (failure?.stage == ManagedStage.LOCAL ||
++                        (result == null && lastCheck == priorRequest && millisUntilNextCheck() == 0L)) {
++                        // 本轮没有发出请求时才让出一个周期；长请求结束后按其真实起点重算 TTL。
++                        delay(checkIntervalMillis)
++                    }
++                }
+             } catch (cancelled: CancellationException) {
+                 throw cancelled
+             } catch (_: Exception) {
+                 offerDiagnostic(localFailure(ManagedFailureReason.LOCAL_PREPARATION, ManagedStage.LOCAL))
++            } finally {
++                if (monitorJob === currentCoroutineContext()[Job]) {
++                    monitorJob = null
++                    // 首次完成与监控退出交错时，重新进入同一入口，不丢失到期检查。
++                    if (waitingForFirst && isPollingEligible()) startMonitorIfEligible()
++                }
+             }
+         }
+     }
+@@ -731,9 +756,30 @@
+ 
+     private class Terminal(var outcome: InstallationOutcome? = null)
+ 
+-    private companion object {
++    companion object {
++        /** SDK 模块内测试可控制线程与时间；宿主只能使用七项参数的公开构造。 */
++        @JvmSynthetic
++        internal fun forTest(
++            root: File,
++            storage: ManagedOfflineStorage,
++            configProvider: ManagedConfigProvider,
++            minimumVersion: Int = 10_000,
++            onInstallationOutcome: (InstallationOutcome) -> Unit = {},
++            onDiagnostic: (ManagedFailure) -> Unit = {},
++            ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
++            mainDispatcher: CoroutineDispatcher,
++            checkIntervalMillis: Long = 300_000L,
++            monotonicMillis: () -> Long = { System.nanoTime() / 1_000_000L },
++            downloadClient: OkHttpClient = OkHttpClient(),
++            downloadTimeoutMillis: Long = 120_000L,
++        ) = ManagedOfflineSdk(
++            root, storage, configProvider, minimumVersion, onInstallationOutcome, onDiagnostic,
++            ioDispatcher, mainDispatcher, checkIntervalMillis, monotonicMillis,
++            downloadClient, downloadTimeoutMillis,
++        )
++
+         /** 只解释本次传入的事实，不读运行状态、不执行 IO，也不生成含时钟事实的失败记录。 */
+-        fun decideCandidate(
++        private fun decideCandidate(
+             config: OfflineConfiguration,
+             current: PackageRecord?,
+             currentUsable: Boolean,
+@@ -776,6 +822,6 @@
+             } catch (_: Exception) { false }
+         }
+ 
+-        val SHA256 = Regex("[0-9a-f]{64}")
++        private val SHA256 = Regex("[0-9a-f]{64}")
+     }
+ }

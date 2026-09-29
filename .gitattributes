@@ -2,3 +2,4 @@
 *.bat text eol=crlf
 *.jar binary
 *.zip binary
+docs/verification/** -whitespace

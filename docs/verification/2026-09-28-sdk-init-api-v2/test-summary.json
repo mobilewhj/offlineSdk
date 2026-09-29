@@ -1,0 +1,30 @@
+{
+  "repository_sdk": {
+    "suites": 10,
+    "tests": 117,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "external_probes": {
+    "suites": 1,
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "sdk_with_external": {
+    "suites": 11,
+    "tests": 123,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "demo": {
+    "suites": 3,
+    "tests": 13,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}

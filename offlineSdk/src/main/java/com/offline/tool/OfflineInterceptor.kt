@@ -9,31 +9,32 @@ import android.webkit.WebViewClient
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
-import java.net.URI
 import java.util.Locale
 
 /**
  * 创建 WebView 时传入一个版本目录；本地存在就读取，否则返回 null 正常联网。
  * allowHttpAndHttps 允许同一主机的两种协议共用资源，默认端口视为等价，其他端口仍须相同。
  */
-class OfflineInterceptor(
-    directory: File,
+class OfflineInterceptor private constructor(
+    private val root: File,
     baseUrl: String,
-    private val allowHttpAndHttps: Boolean = false,
+    allowHttpAndHttps: Boolean = false,
     private val debugLogging: Boolean = false,
     private val onResourceFailure: ((reason: String, path: String) -> Unit)? = null,
+    private val isEnabled: () -> Boolean = { true },
+    @Suppress("UNUSED_PARAMETER") prepared: Unit,
 ) : WebViewClient() {
-    private val root = directory.canonicalFile
-    private val rootPathPrefix = root.path + File.separator
-    private val base = URI(baseUrl)
+    constructor(
+        directory: File,
+        baseUrl: String,
+        allowHttpAndHttps: Boolean = false,
+        debugLogging: Boolean = false,
+        onResourceFailure: ((String, String) -> Unit)? = null,
+        isEnabled: () -> Boolean = { true },
+    ) : this(directory.canonicalFile, baseUrl, allowHttpAndHttps, debugLogging, onResourceFailure, isEnabled, Unit)
 
-    init {
-        require(
-            (base.scheme.equals("http", ignoreCase = true) || base.scheme.equals("https", ignoreCase = true)) &&
-                base.host != null && base.userInfo == null
-        )
-        require(base.path.endsWith('/') && base.query == null && base.fragment == null)
-    }
+    private val rootPathPrefix = root.path + File.separator
+    private val urlRules = OfflineUrlRules(baseUrl, allowHttpAndHttps)
 
     override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest?): WebResourceResponse? =
         request?.let {
@@ -47,24 +48,9 @@ class OfflineInterceptor(
 
     /** X5 适配器也复用这个查找入口，不改原始 URL、Cookie 或 JSBridge。 */
     fun resolve(url: String, method: String = "GET", hasRange: Boolean = false): WebResourceResponse? {
+        if (!isEnabled()) return null
         if (method != "GET" || hasRange) return null
-        val request = try {
-            URI(url)
-        } catch (_: Exception) {
-            return null
-        }
-        val schemeMatches = if (allowHttpAndHttps) {
-            request.scheme.equals("http", true) || request.scheme.equals("https", true)
-        } else request.scheme.equals(base.scheme, true)
-        val portsMatch = port(request) == port(base) ||
-            (allowHttpAndHttps && port(request) == defaultPort(request) && port(base) == defaultPort(base))
-        if (!schemeMatches || !request.host.equals(
-                base.host, true
-            ) || !portsMatch || request.userInfo != null
-        ) return null
-        val path = request.path ?: return null
-        if (!path.startsWith(base.path)) return null
-        val relative = path.removePrefix(base.path).ifEmpty { "index.html" }
+        val relative = urlRules.resourcePath(url) ?: return null
         return try {
             val file = File(root, relative)
             val canonical = file.canonicalFile
@@ -124,14 +110,20 @@ class OfflineInterceptor(
         }
     }
 
-    private companion object {
+    internal companion object {
+        /** 仅供管理器使用：目录已在 IO 规范化，Main 构造拦截器时不再访问文件系统。 */
+        internal fun fromPreparedDirectory(
+            directory: File,
+            baseUrl: String,
+            allowHttpAndHttps: Boolean,
+            onResourceFailure: ((String, String) -> Unit)?,
+            isEnabled: () -> Boolean,
+        ) = OfflineInterceptor(directory, baseUrl, allowHttpAndHttps, false, onResourceFailure, isEnabled, Unit)
+
         val staticExtensions = setOf(
             "html", "htm", "js", "mjs", "css", "json", "map", "wasm", "properties",
             "svg", "png", "jpg", "jpeg", "gif", "webp", "ico", "ttf", "otf", "woff", "woff2",
         )
     }
 
-    private fun defaultPort(uri: URI): Int = if (uri.scheme.equals("https", true)) 443 else 80
-
-    private fun port(uri: URI): Int = if (uri.port >= 0) uri.port else defaultPort(uri)
 }

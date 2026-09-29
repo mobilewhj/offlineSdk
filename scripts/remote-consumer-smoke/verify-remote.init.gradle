@@ -1,0 +1,52 @@
+// Read-only resolution check for the isolated Demo host. It does not add a
+// repository or change any dependency.
+def expectedGroup = gradle.startParameter.projectProperties['remoteSmokeGroup']
+def expectedArtifact = gradle.startParameter.projectProperties['remoteSmokeArtifact']
+def expectedVersion = gradle.startParameter.projectProperties['remoteSmokeVersion']
+if (![expectedGroup, expectedArtifact, expectedVersion].every { it }) {
+    throw new GradleException('Remote smoke coordinate is incomplete')
+}
+
+gradle.beforeProject { project ->
+    if (project.path != ':app') return
+    project.tasks.register('verifyRemoteSdkResolution') {
+        doLast {
+            def configuration = project.configurations.getByName('debugRuntimeClasspath')
+            def components = configuration.incoming.resolutionResult.allComponents.findAll {
+                def id = it.id
+                id instanceof org.gradle.api.artifacts.component.ModuleComponentIdentifier &&
+                    id.group == expectedGroup && id.module == expectedArtifact &&
+                    id.version == expectedVersion
+            }
+            if (components.size() != 1) {
+                throw new GradleException("Expected one remote module component, found ${components.size()}")
+            }
+            def artifacts = configuration.resolvedConfiguration.resolvedArtifacts.findAll {
+                def id = it.moduleVersion.id
+                id.group == expectedGroup && id.name == expectedArtifact &&
+                    id.version == expectedVersion && it.extension == 'aar'
+            }
+            if (artifacts.size() != 1) {
+                throw new GradleException("Expected one remote AAR, found ${artifacts.size()}")
+            }
+            def aar = artifacts.single().file.canonicalFile
+            def path = aar.path
+            if (path.startsWith(project.rootProject.projectDir.canonicalPath + File.separator) ||
+                path.contains("${File.separator}.m2${File.separator}") ||
+                path.contains("${File.separator}build${File.separator}repo${File.separator}")) {
+                throw new GradleException("AAR came from a local project or repository: $path")
+            }
+            def digest = java.security.MessageDigest.getInstance('SHA-256')
+            aar.withInputStream { input ->
+                byte[] buffer = new byte[8192]
+                int count
+                while ((count = input.read(buffer)) != -1) {
+                    digest.update(buffer, 0, count)
+                }
+            }
+            println "REMOTE_COMPONENT=${components.single().id.displayName}"
+            println "REMOTE_AAR_PATH=$path"
+            println "REMOTE_AAR_SHA256=${digest.digest().encodeHex()}"
+        }
+    }
+}

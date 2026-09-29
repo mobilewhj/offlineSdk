@@ -1,0 +1,330 @@
+{
+  "baseline": {
+    "files": 24,
+    "lines": 2621,
+    "nonblank": 2410
+  },
+  "current": {
+    "files": 24,
+    "lines": 2630,
+    "nonblank": 2422
+  },
+  "baseline_sdk": {
+    "files": 15,
+    "lines": 1983,
+    "nonblank": 1828
+  },
+  "current_sdk": {
+    "files": 15,
+    "lines": 2032,
+    "nonblank": 1876
+  },
+  "baseline_demo": {
+    "files": 9,
+    "lines": 638,
+    "nonblank": 582
+  },
+  "current_demo": {
+    "files": 9,
+    "lines": 598,
+    "nonblank": 546
+  },
+  "files": {
+    "app/src/main/java/com/offline/tool/sample/DemoApplication.kt": {
+      "before": {
+        "lines": 140,
+        "nonblank": 130,
+        "sha256": "82e874887ad5bdefe7bcd7eaaf147dd79c95b6bd925064467c6df0181ce46ed9"
+      },
+      "after": {
+        "lines": 99,
+        "nonblank": 93,
+        "sha256": "25aad97221dbc57cb096dd20c01ef8c1a769f3d9b70c64ae56e47cb71bb570f8"
+      }
+    },
+    "app/src/main/java/com/offline/tool/sample/MainActivity.kt": {
+      "before": {
+        "lines": 97,
+        "nonblank": 88,
+        "sha256": "86a53ec02775d96d8e1eb0a01212609caf8eb9e8d93dc35833af2a6730f2b205"
+      },
+      "after": {
+        "lines": 97,
+        "nonblank": 88,
+        "sha256": "ec90fdfbc2853562dbeedb4a670195f69090b6a5a990663235543936f67bf64e"
+      }
+    },
+    "app/src/main/java/com/offline/tool/sample/SystemBarInsets.kt": {
+      "before": {
+        "lines": 18,
+        "nonblank": 16,
+        "sha256": "9d5ae832be52ec0e934278d142f5b7ad1008e89ff4a8fca9e85165c81b710a87"
+      },
+      "after": {
+        "lines": 18,
+        "nonblank": 16,
+        "sha256": "9d5ae832be52ec0e934278d142f5b7ad1008e89ff4a8fca9e85165c81b710a87"
+      }
+    },
+    "app/src/main/java/com/offline/tool/sample/offline/DemoManagedStorage.kt": {
+      "before": {
+        "lines": 123,
+        "nonblank": 109,
+        "sha256": "f29a7b49dac87666d6645c4bd48468fa05f5661c6a8ea55f33c7cd8ae9f489cb"
+      },
+      "after": {
+        "lines": 125,
+        "nonblank": 111,
+        "sha256": "25cb879ec602141fdd7f6b0db23da3e732d4f3a49d3c10b74ea949aadb18a9ea"
+      }
+    },
+    "app/src/main/java/com/offline/tool/sample/offline/DemoOutcomeReporter.kt": {
+      "before": {
+        "lines": 49,
+        "nonblank": 45,
+        "sha256": "be933404c5489170a8f3302f66ca569e52a662fb14b7bf4e37ace4c5f61c2fc0"
+      },
+      "after": {
+        "lines": 49,
+        "nonblank": 45,
+        "sha256": "be933404c5489170a8f3302f66ca569e52a662fb14b7bf4e37ace4c5f61c2fc0"
+      }
+    },
+    "app/src/main/java/com/offline/tool/sample/offline/OfflineLog.kt": {
+      "before": {
+        "lines": 8,
+        "nonblank": 6,
+        "sha256": "ae68480821cb1adcfa7a8ed5dd82e9c2d71db13116c15bae3f69834d38032401"
+      },
+      "after": {
+        "lines": 8,
+        "nonblank": 6,
+        "sha256": "ae68480821cb1adcfa7a8ed5dd82e9c2d71db13116c15bae3f69834d38032401"
+      }
+    },
+    "app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeActivity.kt": {
+      "before": {
+        "lines": 78,
+        "nonblank": 72,
+        "sha256": "69ce318a95e24a597d00be84f960ae58e9871a16b6d19d6673b3121440ca2448"
+      },
+      "after": {
+        "lines": 78,
+        "nonblank": 72,
+        "sha256": "272c9bb7e96d5aee15076e58e6e80fd5bf63439487a094370fb14c5129381a3c"
+      }
+    },
+    "app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeProgressPresentation.kt": {
+      "before": {
+        "lines": 28,
+        "nonblank": 25,
+        "sha256": "738000404fce7570abd93e06afea0554c662b157d9d61810e18863ae840a4910"
+      },
+      "after": {
+        "lines": 28,
+        "nonblank": 25,
+        "sha256": "738000404fce7570abd93e06afea0554c662b157d9d61810e18863ae840a4910"
+      }
+    },
+    "app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeViewModel.kt": {
+      "before": {
+        "lines": 97,
+        "nonblank": 91,
+        "sha256": "13f4fb2cdb9d81a2071dbbd602dbf2308b3ad148aaa86ec6fa7b5bdcb05f66df"
+      },
+      "after": {
+        "lines": 96,
+        "nonblank": 90,
+        "sha256": "b0a3052f64c79a9ead88da34b11301887becb3da3e2bb6c7005fc7d418317436"
+      }
+    },
+    "offlineSdk/src/main/java/com/offline/tool/FailureReason.kt": {
+      "before": {
+        "lines": 17,
+        "nonblank": 16,
+        "sha256": "77b14af11405e65308167b537e75bbb3fcf8d0667954c67b45d6f7ac664a0cee"
+      },
+      "after": {
+        "lines": 17,
+        "nonblank": 16,
+        "sha256": "77b14af11405e65308167b537e75bbb3fcf8d0667954c67b45d6f7ac664a0cee"
+      }
+    },
+    "offlineSdk/src/main/java/com/offline/tool/InitialLocalFacts.kt": {
+      "before": {
+        "lines": 92,
+        "nonblank": 84,
+        "sha256": "ee77b15aab131c807853f366f3ca32466bb42e86089d3dfc04ce3e581f2d96f6"
+      },
+      "after": {
+        "lines": 92,
+        "nonblank": 84,
+        "sha256": "ee77b15aab131c807853f366f3ca32466bb42e86089d3dfc04ce3e581f2d96f6"
+      }
+    },
+    "offlineSdk/src/main/java/com/offline/tool/InstallException.kt": {
+      "before": {
+        "lines": 11,
+        "nonblank": 9,
+        "sha256": "4654d9e87b87bf8d013e514a4d29fc47229dd3a60c0b0d4f254f690801dca604"
+      },
+      "after": {
+        "lines": 11,
+        "nonblank": 9,
+        "sha256": "4654d9e87b87bf8d013e514a4d29fc47229dd3a60c0b0d4f254f690801dca604"
+      }
+    },
+    "offlineSdk/src/main/java/com/offline/tool/InstallResult.kt": {
+      "before": {
+        "lines": 25,
+        "nonblank": 23,
+        "sha256": "4832d7329e15188abecb343726d1a867ffa5ac6d909f11f2b7bfaea59cd5072f"
+      },
+      "after": {
+        "lines": 25,
+        "nonblank": 23,
+        "sha256": "4832d7329e15188abecb343726d1a867ffa5ac6d909f11f2b7bfaea59cd5072f"
+      }
+    },
+    "offlineSdk/src/main/java/com/offline/tool/InstallStage.kt": {
+      "before": {
+        "lines": 12,
+        "nonblank": 11,
+        "sha256": "6537e2c3a736138c2b2cfd80ffb6e3a157cc6ca204a6402de208f8a5999d82c8"
+      },
+      "after": {
+        "lines": 12,
+        "nonblank": 11,
+        "sha256": "6537e2c3a736138c2b2cfd80ffb6e3a157cc6ca204a6402de208f8a5999d82c8"
+      }
+    },
+    "offlineSdk/src/main/java/com/offline/tool/ManagedOfflineSdk.kt": {
+      "before": {
+        "lines": 781,
+        "nonblank": 730,
+        "sha256": "d162aa4db504bbed0a5f029c60c725766f59fabba0cc12138d65c19cb09e4555"
+      },
+      "after": {
+        "lines": 830,
+        "nonblank": 778,
+        "sha256": "c273a7577067967c11931e155d90568891ec438fad560350fe2a9150dfdabae9"
+      }
+    },
+    "offlineSdk/src/main/java/com/offline/tool/ManagedOfflineTypes.kt": {
+      "before": {
+        "lines": 173,
+        "nonblank": 147,
+        "sha256": "c05bf96623425f5a668f9b0a49cbbf844ead96874859b53af2aa1b70fe68ee47"
+      },
+      "after": {
+        "lines": 173,
+        "nonblank": 147,
+        "sha256": "c05bf96623425f5a668f9b0a49cbbf844ead96874859b53af2aa1b70fe68ee47"
+      }
+    },
+    "offlineSdk/src/main/java/com/offline/tool/OfflineInterceptor.kt": {
+      "before": {
+        "lines": 129,
+        "nonblank": 119,
+        "sha256": "0429a5e56ff558c32d4f41b51e8c350003cfc0701a7f1f15ef4d95f27ec7369a"
+      },
+      "after": {
+        "lines": 129,
+        "nonblank": 119,
+        "sha256": "0429a5e56ff558c32d4f41b51e8c350003cfc0701a7f1f15ef4d95f27ec7369a"
+      }
+    },
+    "offlineSdk/src/main/java/com/offline/tool/OfflineUrlRules.kt": {
+      "before": {
+        "lines": 56,
+        "nonblank": 45,
+        "sha256": "595bb281cb734495d766eff661221f4025353c3d47fb32de39882007baf0c3c6"
+      },
+      "after": {
+        "lines": 56,
+        "nonblank": 45,
+        "sha256": "595bb281cb734495d766eff661221f4025353c3d47fb32de39882007baf0c3c6"
+      }
+    },
+    "offlineSdk/src/main/java/com/offline/tool/PackageArchive.kt": {
+      "before": {
+        "lines": 126,
+        "nonblank": 121,
+        "sha256": "c2c222872b11c4573e9791fae8209d332c2d251c2e89939bdb30ec00392e00ee"
+      },
+      "after": {
+        "lines": 126,
+        "nonblank": 121,
+        "sha256": "c2c222872b11c4573e9791fae8209d332c2d251c2e89939bdb30ec00392e00ee"
+      }
+    },
+    "offlineSdk/src/main/java/com/offline/tool/PackageDownloader.kt": {
+      "before": {
+        "lines": 152,
+        "nonblank": 143,
+        "sha256": "1b88914f19c3fbc5ff6e9b16da446f1cbfe49fd5c6474572e0f14add74053534"
+      },
+      "after": {
+        "lines": 152,
+        "nonblank": 143,
+        "sha256": "1b88914f19c3fbc5ff6e9b16da446f1cbfe49fd5c6474572e0f14add74053534"
+      }
+    },
+    "offlineSdk/src/main/java/com/offline/tool/PackageEntry.kt": {
+      "before": {
+        "lines": 23,
+        "nonblank": 21,
+        "sha256": "56e570112ebfcc8ca06bfb374ff68390cfdf35cac9c9bccc408ed51c710b46de"
+      },
+      "after": {
+        "lines": 23,
+        "nonblank": 21,
+        "sha256": "56e570112ebfcc8ca06bfb374ff68390cfdf35cac9c9bccc408ed51c710b46de"
+      }
+    },
+    "offlineSdk/src/main/java/com/offline/tool/PackageInstaller.kt": {
+      "before": {
+        "lines": 349,
+        "nonblank": 326,
+        "sha256": "bbd0a546425f74d2943a7b3c41da3a36a1abaa5ac5c6f8f94f880351273eeb44"
+      },
+      "after": {
+        "lines": 349,
+        "nonblank": 326,
+        "sha256": "bbd0a546425f74d2943a7b3c41da3a36a1abaa5ac5c6f8f94f880351273eeb44"
+      }
+    },
+    "offlineSdk/src/main/java/com/offline/tool/PackageRecord.kt": {
+      "before": {
+        "lines": 4,
+        "nonblank": 3,
+        "sha256": "94b3ec2390643200fafc12cfe9791d4832eca4e44acef5b0b034aab082bc30a0"
+      },
+      "after": {
+        "lines": 4,
+        "nonblank": 3,
+        "sha256": "94b3ec2390643200fafc12cfe9791d4832eca4e44acef5b0b034aab082bc30a0"
+      }
+    },
+    "offlineSdk/src/main/java/com/offline/tool/x5/X5OfflineResponse.kt": {
+      "before": {
+        "lines": 33,
+        "nonblank": 30,
+        "sha256": "e8b97f79f32a7da53735515991669f206e77eb20a3dc19e1502263d99a3dab38"
+      },
+      "after": {
+        "lines": 33,
+        "nonblank": 30,
+        "sha256": "e8b97f79f32a7da53735515991669f206e77eb20a3dc19e1502263d99a3dab38"
+      }
+    }
+  },
+  "changed": [
+    "app/src/main/java/com/offline/tool/sample/DemoApplication.kt",
+    "app/src/main/java/com/offline/tool/sample/MainActivity.kt",
+    "app/src/main/java/com/offline/tool/sample/offline/DemoManagedStorage.kt",
+    "app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeActivity.kt",
+    "app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeViewModel.kt",
+    "offlineSdk/src/main/java/com/offline/tool/ManagedOfflineSdk.kt"
+  ]
+}

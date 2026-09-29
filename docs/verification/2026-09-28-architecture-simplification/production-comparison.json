@@ -1,0 +1,553 @@
+{
+  "baseline_manifest": "$SDK_REPO/build/reports/architecture-simplification/baseline/production-stats.json",
+  "baseline_workspace": "$SDK_REPO/build/reports/architecture-simplification/baseline/workspace",
+  "current_workspace": "$SDK_REPO",
+  "scope": [
+    "offlineSdk/src/main/**/*.kt|java",
+    "app/src/main/**/*.kt|java"
+  ],
+  "summary": {
+    "offlineSdk": {
+      "before": {
+        "files": 15,
+        "physical_lines": 1972,
+        "nonblank_lines": 1818
+      },
+      "after": {
+        "files": 15,
+        "physical_lines": 1983,
+        "nonblank_lines": 1828
+      },
+      "delta": {
+        "files": 0,
+        "physical_lines": 11,
+        "nonblank_lines": 10
+      }
+    },
+    "app": {
+      "before": {
+        "files": 9,
+        "physical_lines": 579,
+        "nonblank_lines": 523
+      },
+      "after": {
+        "files": 9,
+        "physical_lines": 638,
+        "nonblank_lines": 582
+      },
+      "delta": {
+        "files": 0,
+        "physical_lines": 59,
+        "nonblank_lines": 59
+      }
+    },
+    "combined": {
+      "before": {
+        "files": 24,
+        "physical_lines": 2551,
+        "nonblank_lines": 2341
+      },
+      "after": {
+        "files": 24,
+        "physical_lines": 2621,
+        "nonblank_lines": 2410
+      },
+      "delta": {
+        "files": 0,
+        "physical_lines": 70,
+        "nonblank_lines": 69
+      }
+    }
+  },
+  "manager": {
+    "before": {
+      "private_var_names": [
+        "initialized",
+        "coldCleaned",
+        "cleanupInProgress",
+        "history",
+        "active",
+        "usable",
+        "enabled",
+        "onlineVersion",
+        "shaConflict",
+        "configSeen",
+        "cacheDirty",
+        "pagesBound",
+        "failedVersion",
+        "lastCheck",
+        "privacyAllowed",
+        "foreground",
+        "closed",
+        "pollingJob",
+        "bootstrapJob",
+        "directoryGeneration",
+        "activity"
+      ],
+      "private_var_count": 21,
+      "synchronized_gate_count": 46,
+      "markers": {
+        "synchronized(gate)": 46,
+        "updateJobs": 5,
+        "updateOperation": 12,
+        "claimedRoots": 3,
+        "requestCheck": 2,
+        "pollingJob": 5,
+        "silentJob": 0,
+        "bootstrapJob": 5,
+        "firstJob": 0
+      },
+      "mutex_declarations": [
+        "operation",
+        "initialization"
+      ],
+      "nonprivate_function_declarations": [
+        "startupDecision",
+        "prepareFirst",
+        "setConditions",
+        "requestCheck",
+        "preparePage",
+        "commitPage",
+        "shutdown"
+      ]
+    },
+    "after": {
+      "private_var_names": [
+        "initialized",
+        "coldCleaned",
+        "cleanupInProgress",
+        "history",
+        "active",
+        "usable",
+        "enabled",
+        "onlineVersion",
+        "shaConflict",
+        "configSeen",
+        "cacheDirty",
+        "pagesBound",
+        "failedVersion",
+        "lastCheck",
+        "privacyAllowed",
+        "foreground",
+        "closed",
+        "pollingJob",
+        "bootstrapJob",
+        "firstJob",
+        "silentJob",
+        "directoryGeneration",
+        "activity"
+      ],
+      "private_var_count": 23,
+      "synchronized_gate_count": 0,
+      "markers": {
+        "synchronized(gate)": 0,
+        "updateJobs": 0,
+        "updateOperation": 0,
+        "claimedRoots": 0,
+        "requestCheck": 0,
+        "pollingJob": 5,
+        "silentJob": 7,
+        "bootstrapJob": 5,
+        "firstJob": 7
+      },
+      "mutex_declarations": [
+        "operation",
+        "initialization"
+      ],
+      "nonprivate_function_declarations": [
+        "startupDecision",
+        "prepareFirst",
+        "setConditions",
+        "preparePage",
+        "commitPage",
+        "shutdown"
+      ]
+    }
+  },
+  "files": [
+    {
+      "path": "app/src/main/java/com/offline/tool/sample/DemoApplication.kt",
+      "status": "modified",
+      "before": {
+        "physical_lines": 113,
+        "nonblank_lines": 102,
+        "sha256": "8c3d8f0f7f00d4932f141dbf033045124c2768f310f8ace9d75f26438eda46f6"
+      },
+      "after": {
+        "physical_lines": 140,
+        "nonblank_lines": 130,
+        "sha256": "82e874887ad5bdefe7bcd7eaaf147dd79c95b6bd925064467c6df0181ce46ed9"
+      },
+      "physical_delta": 27,
+      "nonblank_delta": 28
+    },
+    {
+      "path": "app/src/main/java/com/offline/tool/sample/MainActivity.kt",
+      "status": "modified",
+      "before": {
+        "physical_lines": 97,
+        "nonblank_lines": 88,
+        "sha256": "5f8c0588ed5a710fa27b0916c555fbd9aac676edbe3c18e7648ec8866a84e193"
+      },
+      "after": {
+        "physical_lines": 97,
+        "nonblank_lines": 88,
+        "sha256": "86a53ec02775d96d8e1eb0a01212609caf8eb9e8d93dc35833af2a6730f2b205"
+      },
+      "physical_delta": 0,
+      "nonblank_delta": 0
+    },
+    {
+      "path": "app/src/main/java/com/offline/tool/sample/SystemBarInsets.kt",
+      "status": "unchanged",
+      "before": {
+        "physical_lines": 18,
+        "nonblank_lines": 16,
+        "sha256": "9d5ae832be52ec0e934278d142f5b7ad1008e89ff4a8fca9e85165c81b710a87"
+      },
+      "after": {
+        "physical_lines": 18,
+        "nonblank_lines": 16,
+        "sha256": "9d5ae832be52ec0e934278d142f5b7ad1008e89ff4a8fca9e85165c81b710a87"
+      },
+      "physical_delta": 0,
+      "nonblank_delta": 0
+    },
+    {
+      "path": "app/src/main/java/com/offline/tool/sample/offline/DemoManagedStorage.kt",
+      "status": "unchanged",
+      "before": {
+        "physical_lines": 123,
+        "nonblank_lines": 109,
+        "sha256": "f29a7b49dac87666d6645c4bd48468fa05f5661c6a8ea55f33c7cd8ae9f489cb"
+      },
+      "after": {
+        "physical_lines": 123,
+        "nonblank_lines": 109,
+        "sha256": "f29a7b49dac87666d6645c4bd48468fa05f5661c6a8ea55f33c7cd8ae9f489cb"
+      },
+      "physical_delta": 0,
+      "nonblank_delta": 0
+    },
+    {
+      "path": "app/src/main/java/com/offline/tool/sample/offline/DemoOutcomeReporter.kt",
+      "status": "unchanged",
+      "before": {
+        "physical_lines": 49,
+        "nonblank_lines": 45,
+        "sha256": "be933404c5489170a8f3302f66ca569e52a662fb14b7bf4e37ace4c5f61c2fc0"
+      },
+      "after": {
+        "physical_lines": 49,
+        "nonblank_lines": 45,
+        "sha256": "be933404c5489170a8f3302f66ca569e52a662fb14b7bf4e37ace4c5f61c2fc0"
+      },
+      "physical_delta": 0,
+      "nonblank_delta": 0
+    },
+    {
+      "path": "app/src/main/java/com/offline/tool/sample/offline/OfflineLog.kt",
+      "status": "unchanged",
+      "before": {
+        "physical_lines": 8,
+        "nonblank_lines": 6,
+        "sha256": "ae68480821cb1adcfa7a8ed5dd82e9c2d71db13116c15bae3f69834d38032401"
+      },
+      "after": {
+        "physical_lines": 8,
+        "nonblank_lines": 6,
+        "sha256": "ae68480821cb1adcfa7a8ed5dd82e9c2d71db13116c15bae3f69834d38032401"
+      },
+      "physical_delta": 0,
+      "nonblank_delta": 0
+    },
+    {
+      "path": "app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeActivity.kt",
+      "status": "modified",
+      "before": {
+        "physical_lines": 73,
+        "nonblank_lines": 67,
+        "sha256": "72fc8935e883d7f3ab06b1566d23c113986a165af9ddd622aac1960db6ddaad0"
+      },
+      "after": {
+        "physical_lines": 78,
+        "nonblank_lines": 72,
+        "sha256": "69ce318a95e24a597d00be84f960ae58e9871a16b6d19d6673b3121440ca2448"
+      },
+      "physical_delta": 5,
+      "nonblank_delta": 5
+    },
+    {
+      "path": "app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeProgressPresentation.kt",
+      "status": "modified",
+      "before": {
+        "physical_lines": 26,
+        "nonblank_lines": 23,
+        "sha256": "351e63a7fbcd174820885cf2526d55f68dafe3d619f0e3e00d065f7d6ed70131"
+      },
+      "after": {
+        "physical_lines": 28,
+        "nonblank_lines": 25,
+        "sha256": "738000404fce7570abd93e06afea0554c662b157d9d61810e18863ae840a4910"
+      },
+      "physical_delta": 2,
+      "nonblank_delta": 2
+    },
+    {
+      "path": "app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeViewModel.kt",
+      "status": "modified",
+      "before": {
+        "physical_lines": 72,
+        "nonblank_lines": 67,
+        "sha256": "1840ae04656c6370e650274a47b2ce85b9d26b9db6bda9b731894a9f3c87ac83"
+      },
+      "after": {
+        "physical_lines": 97,
+        "nonblank_lines": 91,
+        "sha256": "13f4fb2cdb9d81a2071dbbd602dbf2308b3ad148aaa86ec6fa7b5bdcb05f66df"
+      },
+      "physical_delta": 25,
+      "nonblank_delta": 24
+    },
+    {
+      "path": "offlineSdk/src/main/java/com/offline/tool/FailureReason.kt",
+      "status": "unchanged",
+      "before": {
+        "physical_lines": 17,
+        "nonblank_lines": 16,
+        "sha256": "77b14af11405e65308167b537e75bbb3fcf8d0667954c67b45d6f7ac664a0cee"
+      },
+      "after": {
+        "physical_lines": 17,
+        "nonblank_lines": 16,
+        "sha256": "77b14af11405e65308167b537e75bbb3fcf8d0667954c67b45d6f7ac664a0cee"
+      },
+      "physical_delta": 0,
+      "nonblank_delta": 0
+    },
+    {
+      "path": "offlineSdk/src/main/java/com/offline/tool/InitialLocalFacts.kt",
+      "status": "unchanged",
+      "before": {
+        "physical_lines": 92,
+        "nonblank_lines": 84,
+        "sha256": "ee77b15aab131c807853f366f3ca32466bb42e86089d3dfc04ce3e581f2d96f6"
+      },
+      "after": {
+        "physical_lines": 92,
+        "nonblank_lines": 84,
+        "sha256": "ee77b15aab131c807853f366f3ca32466bb42e86089d3dfc04ce3e581f2d96f6"
+      },
+      "physical_delta": 0,
+      "nonblank_delta": 0
+    },
+    {
+      "path": "offlineSdk/src/main/java/com/offline/tool/InstallException.kt",
+      "status": "unchanged",
+      "before": {
+        "physical_lines": 11,
+        "nonblank_lines": 9,
+        "sha256": "4654d9e87b87bf8d013e514a4d29fc47229dd3a60c0b0d4f254f690801dca604"
+      },
+      "after": {
+        "physical_lines": 11,
+        "nonblank_lines": 9,
+        "sha256": "4654d9e87b87bf8d013e514a4d29fc47229dd3a60c0b0d4f254f690801dca604"
+      },
+      "physical_delta": 0,
+      "nonblank_delta": 0
+    },
+    {
+      "path": "offlineSdk/src/main/java/com/offline/tool/InstallResult.kt",
+      "status": "unchanged",
+      "before": {
+        "physical_lines": 25,
+        "nonblank_lines": 23,
+        "sha256": "4832d7329e15188abecb343726d1a867ffa5ac6d909f11f2b7bfaea59cd5072f"
+      },
+      "after": {
+        "physical_lines": 25,
+        "nonblank_lines": 23,
+        "sha256": "4832d7329e15188abecb343726d1a867ffa5ac6d909f11f2b7bfaea59cd5072f"
+      },
+      "physical_delta": 0,
+      "nonblank_delta": 0
+    },
+    {
+      "path": "offlineSdk/src/main/java/com/offline/tool/InstallStage.kt",
+      "status": "unchanged",
+      "before": {
+        "physical_lines": 12,
+        "nonblank_lines": 11,
+        "sha256": "6537e2c3a736138c2b2cfd80ffb6e3a157cc6ca204a6402de208f8a5999d82c8"
+      },
+      "after": {
+        "physical_lines": 12,
+        "nonblank_lines": 11,
+        "sha256": "6537e2c3a736138c2b2cfd80ffb6e3a157cc6ca204a6402de208f8a5999d82c8"
+      },
+      "physical_delta": 0,
+      "nonblank_delta": 0
+    },
+    {
+      "path": "offlineSdk/src/main/java/com/offline/tool/ManagedOfflineSdk.kt",
+      "status": "modified",
+      "before": {
+        "physical_lines": 767,
+        "nonblank_lines": 717,
+        "sha256": "ca1af3321960b4012d92afc1b779b90c00ff77fce624621f7edebe1b9ca02a22"
+      },
+      "after": {
+        "physical_lines": 781,
+        "nonblank_lines": 730,
+        "sha256": "766fb4cdd3182699dce375b6fae3d240e2336ceb8ee678c5c13b87389c3e9405"
+      },
+      "physical_delta": 14,
+      "nonblank_delta": 13
+    },
+    {
+      "path": "offlineSdk/src/main/java/com/offline/tool/ManagedOfflineTypes.kt",
+      "status": "modified",
+      "before": {
+        "physical_lines": 176,
+        "nonblank_lines": 150,
+        "sha256": "d2541b37b3d3530cab609fdd7374e35e2bcf191fc4fd939617a176e4f6b2695a"
+      },
+      "after": {
+        "physical_lines": 173,
+        "nonblank_lines": 147,
+        "sha256": "c05bf96623425f5a668f9b0a49cbbf844ead96874859b53af2aa1b70fe68ee47"
+      },
+      "physical_delta": -3,
+      "nonblank_delta": -3
+    },
+    {
+      "path": "offlineSdk/src/main/java/com/offline/tool/OfflineInterceptor.kt",
+      "status": "unchanged",
+      "before": {
+        "physical_lines": 129,
+        "nonblank_lines": 119,
+        "sha256": "0429a5e56ff558c32d4f41b51e8c350003cfc0701a7f1f15ef4d95f27ec7369a"
+      },
+      "after": {
+        "physical_lines": 129,
+        "nonblank_lines": 119,
+        "sha256": "0429a5e56ff558c32d4f41b51e8c350003cfc0701a7f1f15ef4d95f27ec7369a"
+      },
+      "physical_delta": 0,
+      "nonblank_delta": 0
+    },
+    {
+      "path": "offlineSdk/src/main/java/com/offline/tool/OfflineUrlRules.kt",
+      "status": "unchanged",
+      "before": {
+        "physical_lines": 56,
+        "nonblank_lines": 45,
+        "sha256": "595bb281cb734495d766eff661221f4025353c3d47fb32de39882007baf0c3c6"
+      },
+      "after": {
+        "physical_lines": 56,
+        "nonblank_lines": 45,
+        "sha256": "595bb281cb734495d766eff661221f4025353c3d47fb32de39882007baf0c3c6"
+      },
+      "physical_delta": 0,
+      "nonblank_delta": 0
+    },
+    {
+      "path": "offlineSdk/src/main/java/com/offline/tool/PackageArchive.kt",
+      "status": "unchanged",
+      "before": {
+        "physical_lines": 126,
+        "nonblank_lines": 121,
+        "sha256": "c2c222872b11c4573e9791fae8209d332c2d251c2e89939bdb30ec00392e00ee"
+      },
+      "after": {
+        "physical_lines": 126,
+        "nonblank_lines": 121,
+        "sha256": "c2c222872b11c4573e9791fae8209d332c2d251c2e89939bdb30ec00392e00ee"
+      },
+      "physical_delta": 0,
+      "nonblank_delta": 0
+    },
+    {
+      "path": "offlineSdk/src/main/java/com/offline/tool/PackageDownloader.kt",
+      "status": "unchanged",
+      "before": {
+        "physical_lines": 152,
+        "nonblank_lines": 143,
+        "sha256": "1b88914f19c3fbc5ff6e9b16da446f1cbfe49fd5c6474572e0f14add74053534"
+      },
+      "after": {
+        "physical_lines": 152,
+        "nonblank_lines": 143,
+        "sha256": "1b88914f19c3fbc5ff6e9b16da446f1cbfe49fd5c6474572e0f14add74053534"
+      },
+      "physical_delta": 0,
+      "nonblank_delta": 0
+    },
+    {
+      "path": "offlineSdk/src/main/java/com/offline/tool/PackageEntry.kt",
+      "status": "unchanged",
+      "before": {
+        "physical_lines": 23,
+        "nonblank_lines": 21,
+        "sha256": "56e570112ebfcc8ca06bfb374ff68390cfdf35cac9c9bccc408ed51c710b46de"
+      },
+      "after": {
+        "physical_lines": 23,
+        "nonblank_lines": 21,
+        "sha256": "56e570112ebfcc8ca06bfb374ff68390cfdf35cac9c9bccc408ed51c710b46de"
+      },
+      "physical_delta": 0,
+      "nonblank_delta": 0
+    },
+    {
+      "path": "offlineSdk/src/main/java/com/offline/tool/PackageInstaller.kt",
+      "status": "unchanged",
+      "before": {
+        "physical_lines": 349,
+        "nonblank_lines": 326,
+        "sha256": "bbd0a546425f74d2943a7b3c41da3a36a1abaa5ac5c6f8f94f880351273eeb44"
+      },
+      "after": {
+        "physical_lines": 349,
+        "nonblank_lines": 326,
+        "sha256": "bbd0a546425f74d2943a7b3c41da3a36a1abaa5ac5c6f8f94f880351273eeb44"
+      },
+      "physical_delta": 0,
+      "nonblank_delta": 0
+    },
+    {
+      "path": "offlineSdk/src/main/java/com/offline/tool/PackageRecord.kt",
+      "status": "unchanged",
+      "before": {
+        "physical_lines": 4,
+        "nonblank_lines": 3,
+        "sha256": "94b3ec2390643200fafc12cfe9791d4832eca4e44acef5b0b034aab082bc30a0"
+      },
+      "after": {
+        "physical_lines": 4,
+        "nonblank_lines": 3,
+        "sha256": "94b3ec2390643200fafc12cfe9791d4832eca4e44acef5b0b034aab082bc30a0"
+      },
+      "physical_delta": 0,
+      "nonblank_delta": 0
+    },
+    {
+      "path": "offlineSdk/src/main/java/com/offline/tool/x5/X5OfflineResponse.kt",
+      "status": "unchanged",
+      "before": {
+        "physical_lines": 33,
+        "nonblank_lines": 30,
+        "sha256": "e8b97f79f32a7da53735515991669f206e77eb20a3dc19e1502263d99a3dab38"
+      },
+      "after": {
+        "physical_lines": 33,
+        "nonblank_lines": 30,
+        "sha256": "e8b97f79f32a7da53735515991669f206e77eb20a3dc19e1502263d99a3dab38"
+      },
+      "physical_delta": 0,
+      "nonblank_delta": 0
+    }
+  ]
+}

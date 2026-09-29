@@ -15,12 +15,13 @@ import com.offline.tool.sample.MainActivity
 import com.offline.tool.sample.R
 import com.offline.tool.sample.applySystemBarInsets
 import com.offline.tool.sample.databinding.ActWelcomeBinding
-import com.offline.tool.sample.offline.LocalPreparationProgress.Stage
 import kotlinx.coroutines.launch
 
 class WelcomeActivity : ComponentActivity() {
     private val viewModel: WelcomeViewModel by viewModels {
-        viewModelFactory { initializer { (application as DemoApplication).graph.welcomeViewModel() } }
+        viewModelFactory { initializer {
+            WelcomeViewModel((application as DemoApplication).manager)
+        } }
     }
     private lateinit var binding: ActWelcomeBinding
     private var navigating = false
@@ -30,7 +31,8 @@ class WelcomeActivity : ComponentActivity() {
         binding = ActWelcomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.root.applySystemBarInsets()
-        binding.btnWelcomeRetry.setOnClickListener { viewModel.prepare() }
+        binding.btnWelcomeRetry.setOnClickListener { viewModel.retry() }
+        binding.btnWelcomeReturn.setOnClickListener { finish() }
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect(::render)
@@ -38,27 +40,34 @@ class WelcomeActivity : ComponentActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.prepare()
+    }
+
     private fun render(state: WelcomeUiState) = with(binding) {
-        btnWelcomeRetry.isVisible = state is WelcomeUiState.Failed
+        btnWelcomeRetry.isVisible = state is WelcomeUiState.Failed || state == WelcomeUiState.Interrupted
+        btnWelcomeReturn.isVisible = state == WelcomeUiState.Interrupted
         pbWelcomeOffline.isVisible = state is WelcomeUiState.Preparing
-        tvWelcomeOfflinePercent.isVisible = state is WelcomeUiState.Preparing && state.progress.percent != null
+        val presentation = (state as? WelcomeUiState.Preparing)?.let(::presentProgress)
+        val percent = presentation?.percent
+        tvWelcomeOfflinePercent.isVisible = percent != null
         when (state) {
-            WelcomeUiState.Idle -> Unit
+            WelcomeUiState.Idle -> tvWelcomeOfflineStatus.setText(R.string.starting)
+            WelcomeUiState.Interrupted -> tvWelcomeOfflineStatus.setText(R.string.preparation_interrupted)
             is WelcomeUiState.Preparing -> {
-                tvWelcomeOfflineStatus.setText(
-                    when (state.progress.stage) {
-                        Stage.CHECKING -> R.string.checking
-                        Stage.DOWNLOADING -> R.string.downloading
-                        Stage.EXTRACTING -> R.string.extracting
-                        Stage.SAVING -> R.string.saving
-                    }
-                )
-                pbWelcomeOffline.isIndeterminate = state.progress.percent == null
-                pbWelcomeOffline.progress = state.progress.percent ?: 0
-                tvWelcomeOfflinePercent.text = getString(R.string.percent, state.progress.percent ?: 0)
+                tvWelcomeOfflineStatus.setText(checkNotNull(presentation).statusResource)
+                pbWelcomeOffline.isIndeterminate = percent == null
+                if (percent != null) {
+                    pbWelcomeOffline.progress = percent
+                    tvWelcomeOfflinePercent.text = getString(R.string.percent, percent)
+                }
             }
 
-            is WelcomeUiState.Failed -> tvWelcomeOfflineStatus.text = getString(R.string.failed, state.reason)
+            is WelcomeUiState.Failed -> tvWelcomeOfflineStatus.setText(when (state.reason) {
+                WelcomeFailure.PRIVACY_REQUIRED -> R.string.privacy_required
+                WelcomeFailure.LOCAL_PREPARATION -> R.string.local_preparation_failed
+            })
             WelcomeUiState.Ready -> if (!navigating) {
                 navigating = true
                 startActivity(Intent(this@WelcomeActivity, MainActivity::class.java))

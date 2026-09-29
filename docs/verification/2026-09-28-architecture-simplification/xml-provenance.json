@@ -1,0 +1,32 @@
+{
+  "offlineSdk-repository-tests": {
+    "origin": "最终外部六项重放后的 Gradle XML，排除 ReviewRegressionTest，保留同期仓库 114 项",
+    "file_count": 10,
+    "oldest_file_mtime_utc": "2026-09-27T16:49:03.464014+00:00",
+    "newest_file_mtime_utc": "2026-09-27T16:49:03.464739+00:00",
+    "suite_timestamp_range": [
+      "2026-09-27T16:48:59",
+      "2026-09-27T16:49:02"
+    ]
+  },
+  "app-repository-tests": {
+    "origin": "最终本地 AAR 消费构建后的 Demo Gradle XML；同一源码先前完整构建亦执行该组测试",
+    "file_count": 3,
+    "oldest_file_mtime_utc": "2026-09-27T16:50:45.341824+00:00",
+    "newest_file_mtime_utc": "2026-09-27T16:50:45.341837+00:00",
+    "suite_timestamp_range": [
+      "2026-09-27T16:50:44",
+      "2026-09-27T16:50:44"
+    ]
+  },
+  "offlineSdk-external-tests": {
+    "origin": "最终外部六项重放后的 Gradle XML，仓库 114 项加外部 6 项",
+    "file_count": 11,
+    "oldest_file_mtime_utc": "2026-09-27T16:49:03.464014+00:00",
+    "newest_file_mtime_utc": "2026-09-27T16:49:03.464739+00:00",
+    "suite_timestamp_range": [
+      "2026-09-27T16:48:59",
+      "2026-09-27T16:49:03"
+    ]
+  }
+}

@@ -32,6 +32,25 @@ class PackageInstaller(
 ) {
     private val downloader = PackageDownloader(httpClient, downloadTimeoutMillis, ioDispatcher)
     private val mutex = Mutex()
+    private val rootKey = root.canonicalPath
+    private var managerOwned = false
+
+    /** 将根目录交给唯一托管入口；其他安装器仅保留读取能力。 */
+    internal fun claimManagedRoot() {
+        synchronized(managedRoots) {
+            require(managedRoots.add(rootKey)) { "Package root is already managed" }
+            managerOwned = true
+        }
+    }
+
+    private fun mayMutateRoot(): Boolean = synchronized(managedRoots) {
+        managerOwned || rootKey !in managedRoots
+    }
+
+    private fun managedRootFailure() = InstallResult.Failure(
+        reason = FailureReason.MANAGED_ROOT,
+        stage = InstallStage.PREPARE,
+    )
 
     /** 返回版本目录但不创建它；保留读取 10000 起历史版本的能力。 */
     fun directory(version: Int): File {
@@ -50,6 +69,7 @@ class PackageInstaller(
         onDownloadProgress: ((downloadedBytes: Long, totalBytes: Long?) -> Unit)? = null,
         onExtractProgress: ((Int) -> Unit)? = null,
     ): InstallResult {
+        if (!mayMutateRoot()) return managedRootFailure()
         val attempt = DownloadAttempt()
         return try {
             val result = downloader.withSource(url, onDownloadProgress, attempt) { openSource ->
@@ -81,20 +101,23 @@ class PackageInstaller(
      * 页面使用期间的目录保护由调用方负责。
      */
     suspend fun isUsable(version: Int): Boolean = withContext(ioDispatcher) {
+        val usable = isUsableNow(version)
+        currentCoroutineContext().ensureActive()
+        usable
+    }
+
+    /** 同步文件观察仅在 isUsable 的 IO 边界内调用，页面 Main 提交不能调用此方法。 */
+    private fun isUsableNow(version: Int): Boolean {
         try {
             val operationRoot = checkedRoot()
             val usable = PackageEntry.isUsable(File(operationRoot, directory(version).name))
-            currentCoroutineContext().ensureActive()
-            usable
+            return usable
         } catch (_: IOException) {
-            currentCoroutineContext().ensureActive()
-            false
+            return false
         } catch (_: SecurityException) {
-            currentCoroutineContext().ensureActive()
-            false
+            return false
         } catch (_: IllegalArgumentException) {
-            currentCoroutineContext().ensureActive()
-            false
+            return false
         }
     }
 
@@ -118,6 +141,18 @@ class PackageInstaller(
     suspend fun install(record: PackageRecord, openZip: () -> InputStream): InstallResult =
         installZip(record.version, record.sha256, openZip = { openZip().source() })
 
+    /** 本地 ZIP 的进度重载，100 留给调用方确认 active 保存及最终可用性。 */
+    suspend fun install(
+        record: PackageRecord,
+        onExtractProgress: (Int) -> Unit,
+        openZip: () -> InputStream,
+    ): InstallResult = installZip(
+        record.version,
+        record.sha256,
+        openZip = { openZip().source() },
+        onExtractProgress = onExtractProgress,
+    )
+
     /** 持锁完成一次安装；所有来源复用同一发布顺序和失败清理。 */
     private suspend fun installZip(
         version: Int,
@@ -125,6 +160,7 @@ class PackageInstaller(
         openZip: () -> Source,
         onExtractProgress: ((Int) -> Unit)? = null,
     ): InstallResult = withContext(ioDispatcher) {
+        if (!mayMutateRoot()) return@withContext managedRootFailure()
         mutex.withLock {
             val directoryName = try {
                 directory(version).name
@@ -214,6 +250,7 @@ class PackageInstaller(
      * null 表示没有当前版本，会清理全部遗留安装；当前版本入口缺失时返回 false，不执行清理。
      */
     suspend fun clearOldVersions(activeVersion: Int?): Boolean = withContext(ioDispatcher) {
+        if (!mayMutateRoot()) return@withContext false
         mutex.withLock {
             try {
                 val operationRoot = checkedRoot()
@@ -243,6 +280,7 @@ class PackageInstaller(
 
     /** 仅删除指定版本残留。调用方须确认该目录未交付页面，本方法不跟踪页面生命周期。 */
     suspend fun discardUnboundVersion(version: Int): Boolean = withContext(ioDispatcher) {
+        if (!mayMutateRoot()) return@withContext false
         mutex.withLock {
             try {
                 val operationRoot = checkedRoot()
@@ -306,5 +344,6 @@ class PackageInstaller(
     private companion object {
         const val MIN_PACKAGE_VERSION = 10_000
         val SHA256_PATTERN = Regex("[0-9a-f]{64}")
+        val managedRoots = mutableSetOf<String>()
     }
 }

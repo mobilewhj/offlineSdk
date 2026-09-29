@@ -1,0 +1,87 @@
+{
+  "date": "2026-09-27",
+  "branch": "main",
+  "head": "ef55eb17e659d9f77ee714a9a37a9bb9d0259921",
+  "implementationCommitted": false,
+  "formallyPublished": false,
+  "acceptance": "R1–R9修复后待原规划任务复审；正式发布门未通过",
+  "repositoryTests": {
+    "offlineSdk": 87,
+    "app": 9
+  },
+  "externalReplayCounts": {
+    "offlineSdk": {
+      "tests": 93,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "app": {
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "externalSuite": "com.offline.tool.ReviewRegressionTest: 6 tests, 0 failures/errors/skipped",
+  "sourceManifestSha256": "8e478f7a3f4706db801a4db537739774d4e0f4b516a4a85710b271d956a8ba52",
+  "sourceJarMatchesCurrentProductionSources": true,
+  "localCoordinate": "com.github.mobilewhj.offlineSdk:offlineSdk:0.3.0",
+  "artifactDirectory": "$SDK_REPO/build/repo/com/github/mobilewhj/offlineSdk/offlineSdk/0.3.0",
+  "artifactSha256": {
+    "offlineSdk-0.3.0-sources.jar": "800cf0ab593d52d86939ce170f4567b558e09333ebe458dd1bfb28fd50f8953e",
+    "offlineSdk-0.3.0.aar": "c07cfab1d9eda4071417c5fbf8430fe7b5e7a04fd3597f2e1cfe35c559d7d32c",
+    "offlineSdk-0.3.0.module": "c013f5a34b6137710deb3a4f7d8e2b83932ac1c3228b8f9ac4c3e84779a2209b",
+    "offlineSdk-0.3.0.pom": "5379399a9f112b88872a69b491d24881a4fe4c358ff1d3c7b1acba10672bb0b3"
+  },
+  "commands": [
+    {
+      "command": "./gradlew :offlineSdk:testDebugUnitTest :app:testDebugUnitTest --no-daemon --console=plain",
+      "result": "BUILD SUCCESSFUL；当时SDK85、Demo9"
+    },
+    {
+      "command": "./gradlew :offlineSdk:testDebugUnitTest :offlineSdk:lintRelease :offlineSdk:compileDebugAndroidTestKotlin :offlineSdk:assembleRelease :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleRelease --no-daemon --console=plain",
+      "result": "BUILD SUCCESSFUL；SDK87、Demo9",
+      "log": "full-build.log"
+    },
+    {
+      "command": "./gradlew :offlineSdk:testDebugUnitTest -I $TRACKING_REPO/.trellis/tasks/09-24-offline-sdk-managed-refactor/research/sdk-acceptance-2026-09-27/review-probes.init.gradle -PreviewProbesDir=$TRACKING_REPO/.trellis/tasks/09-24-offline-sdk-managed-refactor/research/sdk-acceptance-2026-09-27 --no-daemon --console=plain",
+      "result": "BUILD SUCCESSFUL；SDK93=87+外部6",
+      "log": "external-regressions.log"
+    },
+    {
+      "command": "./gradlew :offlineSdk:publishReleasePublicationToLocalReleaseRepository -PsdkVersion=0.3.0 --no-daemon --console=plain",
+      "result": "BUILD SUCCESSFUL；仅本地仓库",
+      "log": "local-publish.log"
+    },
+    {
+      "command": "./gradlew :app:dependencyInsight --configuration debugRuntimeClasspath --dependency offlineSdk :app:assembleDebug :app:assembleRelease :app:testDebugUnitTest :app:lintDebug -PsdkVersion=0.3.0 -PsmokeSdkVersion=0.3.0 -I scripts/aar-consumer-smoke.init.gradle --no-daemon --console=plain",
+      "result": "BUILD SUCCESSFUL；真实AAR消费，含下载客户端参数、Debug/Release/R8、Demo9测试、lint",
+      "log": "aar-consumer.log"
+    },
+    {
+      "command": "python3 scripts/generate-sample.py --check",
+      "result": "Verified local sample ZIP and configured SHA-256: 28069f115248f28f7bc5d8dc42799c2d75b9c641caa374549657042f2b3ab47b"
+    },
+    {
+      "command": "git diff --check",
+      "result": "通过"
+    }
+  ],
+  "notVerified": [
+    "设备UI/真实生命周期",
+    "设备Main/StrictMode",
+    "系统WebView资源缓存运行",
+    "X5运行",
+    "真实后端成功/失败HTTP编码及上传",
+    "远端正式坐标解析/tag/实现提交"
+  ],
+  "environment": {
+    "java": "OpenJDK JBR 17.0.14+1-b1367.22",
+    "gradle": "8.11.1",
+    "agp": "8.10.1",
+    "kotlin": "2.0.21",
+    "minSdk": 24,
+    "compileSdk": 35
+  }
+}

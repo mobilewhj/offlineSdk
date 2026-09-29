@@ -1,0 +1,246 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :offlineSdk:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :offlineSdk:preBuild UP-TO-DATE
+> Task :offlineSdk:preDebugBuild UP-TO-DATE
+> Task :offlineSdk:generateDebugResValues UP-TO-DATE
+> Task :offlineSdk:generateDebugResources UP-TO-DATE
+> Task :offlineSdk:packageDebugResources UP-TO-DATE
+> Task :offlineSdk:parseDebugLocalResources UP-TO-DATE
+> Task :offlineSdk:generateDebugRFile UP-TO-DATE
+> Task :offlineSdk:compileDebugKotlin UP-TO-DATE
+> Task :offlineSdk:javaPreCompileDebug UP-TO-DATE
+> Task :offlineSdk:compileDebugJavaWithJavac NO-SOURCE
+> Task :offlineSdk:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :offlineSdk:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :offlineSdk:preDebugUnitTestBuild UP-TO-DATE
+> Task :offlineSdk:generateDebugUnitTestStubRFile UP-TO-DATE
+> Task :offlineSdk:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :offlineSdk:processDebugJavaRes UP-TO-DATE
+> Task :offlineSdk:preReleaseBuild UP-TO-DATE
+> Task :offlineSdk:generateReleaseResValues UP-TO-DATE
+> Task :offlineSdk:generateReleaseResources UP-TO-DATE
+> Task :offlineSdk:packageReleaseResources UP-TO-DATE
+> Task :offlineSdk:parseReleaseLocalResources UP-TO-DATE
+> Task :offlineSdk:generateReleaseRFile UP-TO-DATE
+> Task :offlineSdk:javaPreCompileRelease UP-TO-DATE
+> Task :offlineSdk:extractProguardFiles UP-TO-DATE
+> Task :offlineSdk:processReleaseManifest UP-TO-DATE
+> Task :offlineSdk:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :offlineSdk:mergeReleaseNativeLibs NO-SOURCE
+> Task :offlineSdk:stripReleaseDebugSymbols NO-SOURCE
+> Task :offlineSdk:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :offlineSdk:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :offlineSdk:mergeReleaseShaders UP-TO-DATE
+> Task :offlineSdk:compileReleaseShaders NO-SOURCE
+> Task :offlineSdk:generateReleaseAssets UP-TO-DATE
+> Task :offlineSdk:mergeReleaseAssets UP-TO-DATE
+> Task :offlineSdk:prepareLintJarForPublish UP-TO-DATE
+> Task :offlineSdk:prepareReleaseArtProfile UP-TO-DATE
+> Task :offlineSdk:writeReleaseAarMetadata UP-TO-DATE
+> Task :offlineSdk:preReleaseUnitTestBuild UP-TO-DATE
+> Task :offlineSdk:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :offlineSdk:preDebugAndroidTestBuild UP-TO-DATE
+> Task :offlineSdk:writeDebugAarMetadata UP-TO-DATE
+> Task :offlineSdk:checkDebugAndroidTestAarMetadata UP-TO-DATE
+> Task :offlineSdk:compileDebugLibraryResources UP-TO-DATE
+> Task :offlineSdk:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :offlineSdk:mapDebugAndroidTestSourceSetPaths UP-TO-DATE
+> Task :offlineSdk:generateDebugAndroidTestResources UP-TO-DATE
+> Task :offlineSdk:mergeDebugAndroidTestResources UP-TO-DATE
+> Task :offlineSdk:extractDeepLinksDebug UP-TO-DATE
+> Task :offlineSdk:processDebugManifest UP-TO-DATE
+> Task :offlineSdk:processDebugAndroidTestManifest UP-TO-DATE
+> Task :offlineSdk:processDebugAndroidTestResources UP-TO-DATE
+> Task :offlineSdk:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :offlineSdk:mergeReleaseResources UP-TO-DATE
+> Task :offlineSdk:verifyReleaseResources UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:dataBindingMergeDependencyArtifactsDebug UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :offlineSdk:compileDebugAndroidTestKotlin
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:dataBindingGenBaseClassesDebug UP-TO-DATE
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :offlineSdk:mergeDebugJniLibFolders UP-TO-DATE
+> Task :offlineSdk:mergeDebugNativeLibs NO-SOURCE
+> Task :offlineSdk:stripDebugDebugSymbols NO-SOURCE
+> Task :offlineSdk:copyDebugJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :offlineSdk:extractDebugAnnotations
+> Task :offlineSdk:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :offlineSdk:mergeDebugShaders UP-TO-DATE
+> Task :offlineSdk:compileDebugShaders NO-SOURCE
+> Task :offlineSdk:generateDebugAssets UP-TO-DATE
+> Task :offlineSdk:mergeDebugAssets UP-TO-DATE
+> Task :offlineSdk:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :offlineSdk:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :offlineSdk:prepareDebugArtProfile UP-TO-DATE
+> Task :offlineSdk:mergeDebugJavaResource UP-TO-DATE
+> Task :offlineSdk:syncDebugLibJars
+> Task :offlineSdk:bundleDebugLocalLintAar
+> Task :app:preDebugAndroidTestBuild SKIPPED
+> Task :app:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :offlineSdk:createFullJarDebug
+> Task :offlineSdk:writeDebugLintModelMetadata UP-TO-DATE
+> Task :app:extractProguardFiles UP-TO-DATE
+> Task :offlineSdk:generateDebugLintModel
+> Task :offlineSdk:generateDebugAndroidTestLintModel
+> Task :offlineSdk:generateDebugUnitTestLintModel
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:compressDebugAssets UP-TO-DATE
+> Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :app:mergeExtDexDebug UP-TO-DATE
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :offlineSdk:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:stripDebugDebugSymbols NO-SOURCE
+> Task :app:validateSigningDebug UP-TO-DATE
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :offlineSdk:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :offlineSdk:bundleLibRuntimeToDirDebug
+> Task :app:mergeReleaseNativeLibs NO-SOURCE
+> Task :app:stripReleaseDebugSymbols NO-SOURCE
+> Task :app:extractReleaseNativeSymbolTables NO-SOURCE
+> Task :app:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :app:buildKotlinToolingMetadata UP-TO-DATE
+> Task :app:checkReleaseDuplicateClasses UP-TO-DATE
+> Task :app:dataBindingMergeDependencyArtifactsRelease UP-TO-DATE
+> Task :app:generateReleaseResValues UP-TO-DATE
+> Task :app:generateReleaseResources UP-TO-DATE
+> Task :app:mergeReleaseResources UP-TO-DATE
+> Task :app:packageReleaseResources UP-TO-DATE
+> Task :app:parseReleaseLocalResources UP-TO-DATE
+> Task :app:dataBindingGenBaseClassesRelease UP-TO-DATE
+> Task :app:generateReleaseBuildConfig UP-TO-DATE
+> Task :app:checkReleaseAarMetadata UP-TO-DATE
+> Task :app:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :app:createReleaseCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksRelease UP-TO-DATE
+> Task :offlineSdk:extractDeepLinksRelease UP-TO-DATE
+> Task :app:processReleaseMainManifest UP-TO-DATE
+> Task :app:processReleaseManifest UP-TO-DATE
+> Task :app:processReleaseManifestForPackage UP-TO-DATE
+> Task :offlineSdk:compileReleaseLibraryResources UP-TO-DATE
+> Task :app:processReleaseResources UP-TO-DATE
+> Task :app:javaPreCompileRelease UP-TO-DATE
+> Task :app:mergeReleaseArtProfile UP-TO-DATE
+> Task :app:mergeReleaseStartupProfile UP-TO-DATE
+> Task :app:mergeReleaseShaders UP-TO-DATE
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :app:mergeReleaseAssets UP-TO-DATE
+> Task :app:compressReleaseAssets UP-TO-DATE
+> Task :app:extractReleaseVersionControlInfo UP-TO-DATE
+> Task :app:optimizeReleaseResources UP-TO-DATE
+> Task :app:collectReleaseDependencies UP-TO-DATE
+> Task :app:sdkReleaseDependencyData UP-TO-DATE
+> Task :app:writeReleaseAppMetadata UP-TO-DATE
+> Task :app:writeReleaseSigningConfigVersions UP-TO-DATE
+> Task :app:mergeLibDexDebug
+> Task :offlineSdk:compileReleaseKotlin
+> Task :offlineSdk:compileReleaseJavaWithJavac NO-SOURCE
+> Task :offlineSdk:generateReleaseLintReportModel
+> Task :offlineSdk:extractReleaseAnnotations
+> Task :offlineSdk:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :offlineSdk:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :offlineSdk:processReleaseJavaRes UP-TO-DATE
+> Task :offlineSdk:mergeReleaseJavaResource UP-TO-DATE
+> Task :offlineSdk:syncReleaseLibJars
+> Task :offlineSdk:bundleReleaseLocalLintAar
+> Task :offlineSdk:bundleLibRuntimeToJarRelease
+> Task :offlineSdk:bundleReleaseAar
+> Task :offlineSdk:createFullJarRelease
+> Task :offlineSdk:generateReleaseUnitTestLintModel
+> Task :offlineSdk:assembleRelease
+> Task :offlineSdk:exportReleaseConsumerProguardFiles UP-TO-DATE
+> Task :offlineSdk:bundleLibCompileToJarRelease
+> Task :offlineSdk:generateReleaseLintModel
+> Task :offlineSdk:generateReleaseLintVitalModel
+> Task :app:compileDebugKotlin
+> Task :app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :app:processDebugJavaRes UP-TO-DATE
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:generateDebugLintReportModel
+> Task :app:generateDebugAndroidTestLintModel
+> Task :app:generateDebugUnitTestLintModel
+> Task :app:dexBuilderDebug
+> Task :app:mergeDebugGlobalSynthetics UP-TO-DATE
+> Task :app:mergeDebugJavaResource UP-TO-DATE
+> Task :app:mergeProjectDexDebug
+> Task :app:compileDebugUnitTestKotlin
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes UP-TO-DATE
+> Task :offlineSdk:lintAnalyzeDebugAndroidTest
+> Task :app:compileReleaseKotlin
+> Task :offlineSdk:compileDebugUnitTestKotlin
+> Task :app:testDebugUnitTest
+> Task :offlineSdk:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :offlineSdk:processDebugUnitTestJavaRes UP-TO-DATE
+WARNING: A terminally deprecated method in java.lang.System has been called
+WARNING: System::setSecurityManager has been called by com.offline.tool.ManagedOfflineRegressionTest$pageCommitUsesPreparedFactsWithoutReadingPackageFiles$1 (file:$SDK_REPO/offlineSdk/build/tmp/kotlin-classes/debugUnitTest/)
+WARNING: Please consider reporting this to the maintainers of com.offline.tool.ManagedOfflineRegressionTest$pageCommitUsesPreparedFactsWithoutReadingPackageFiles$1
+WARNING: System::setSecurityManager will be removed in a future release
+> Task :offlineSdk:lintAnalyzeDebug
+> Task :offlineSdk:lintAnalyzeDebugUnitTest
+> Task :offlineSdk:testDebugUnitTest
+> Task :app:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :app:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :app:processReleaseJavaRes UP-TO-DATE
+> Task :app:mergeReleaseJavaResource UP-TO-DATE
+> Task :app:generateReleaseLintVitalReportModel
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleDebug
+> Task :app:expandReleaseArtProfileWildcards
+> Task :app:lintAnalyzeDebug
+> Task :offlineSdk:lintAnalyzeRelease
+> Task :app:lintAnalyzeDebugAndroidTest
+> Task :app:lintAnalyzeDebugUnitTest
+> Task :offlineSdk:lintAnalyzeReleaseUnitTest
+
+> Task :app:lintReportDebug
+Wrote HTML report to file://$SDK_REPO/app/build/reports/lint-results-debug.html
+
+> Task :app:lintDebug
+
+> Task :offlineSdk:lintReportRelease
+Wrote HTML report to file://$SDK_REPO/offlineSdk/build/reports/lint-results-release.html
+
+> Task :offlineSdk:lintRelease
+> Task :offlineSdk:lintVitalAnalyzeRelease
+> Task :app:lintVitalAnalyzeRelease
+> Task :app:lintVitalReportRelease UP-TO-DATE
+> Task :app:lintVitalRelease
+> Task :app:minifyReleaseWithR8
+> Task :app:compileReleaseArtProfile
+> Task :app:packageRelease
+> Task :app:createReleaseApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleRelease
+
+BUILD SUCCESSFUL in 20s
+192 actionable tasks: 56 executed, 136 up-to-date

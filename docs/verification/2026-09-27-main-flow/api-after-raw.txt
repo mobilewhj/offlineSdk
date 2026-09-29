@@ -1,0 +1,164 @@
+Compiled from "ManagedOfflineSdk.kt"
+public final class com.offline.tool.ManagedOfflineSdk {
+  public com.offline.tool.ManagedOfflineSdk(java.io.File, com.offline.tool.ManagedOfflineStorage, com.offline.tool.ManagedConfigProvider, int, kotlin.jvm.functions.Function1<? super com.offline.tool.InstallationOutcome, kotlin.Unit>, kotlin.jvm.functions.Function1<? super com.offline.tool.ManagedFailure, kotlin.Unit>, kotlinx.coroutines.CoroutineDispatcher, kotlinx.coroutines.CoroutineDispatcher, long, kotlin.jvm.functions.Function0<java.lang.Long>, okhttp3.OkHttpClient, long);
+    descriptor: (Ljava/io/File;Lcom/offline/tool/ManagedOfflineStorage;Lcom/offline/tool/ManagedConfigProvider;ILkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;JLkotlin/jvm/functions/Function0;Lokhttp3/OkHttpClient;J)V
+
+  public com.offline.tool.ManagedOfflineSdk(java.io.File, com.offline.tool.ManagedOfflineStorage, com.offline.tool.ManagedConfigProvider, int, kotlin.jvm.functions.Function1, kotlin.jvm.functions.Function1, kotlinx.coroutines.CoroutineDispatcher, kotlinx.coroutines.CoroutineDispatcher, long, kotlin.jvm.functions.Function0, okhttp3.OkHttpClient, long, int, kotlin.jvm.internal.DefaultConstructorMarker);
+    descriptor: (Ljava/io/File;Lcom/offline/tool/ManagedOfflineStorage;Lcom/offline/tool/ManagedConfigProvider;ILkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;JLkotlin/jvm/functions/Function0;Lokhttp3/OkHttpClient;JILkotlin/jvm/internal/DefaultConstructorMarker;)V
+
+  public final kotlinx.coroutines.flow.StateFlow<com.offline.tool.ManagedSnapshot> getState();
+    descriptor: ()Lkotlinx/coroutines/flow/StateFlow;
+
+  public final java.lang.Object startupDecision(kotlin.coroutines.Continuation<? super com.offline.tool.StartupDecision>);
+    descriptor: (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+
+  public final java.lang.Object prepareFirst(kotlin.jvm.functions.Function1<? super com.offline.tool.ManagedActivity, kotlin.Unit>, kotlin.jvm.functions.Function1<? super com.offline.tool.ManagedProgress, kotlin.Unit>, kotlin.coroutines.Continuation<? super com.offline.tool.FirstPreparationResult>);
+    descriptor: (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+
+  public static java.lang.Object prepareFirst$default(com.offline.tool.ManagedOfflineSdk, kotlin.jvm.functions.Function1, kotlin.jvm.functions.Function1, kotlin.coroutines.Continuation, int, java.lang.Object);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+
+  public final void setConditions(boolean, boolean);
+    descriptor: (ZZ)V
+
+  public final java.lang.Object requestCheck(kotlin.coroutines.Continuation<? super com.offline.tool.CheckResult>);
+    descriptor: (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+
+  public final java.lang.Object preparePage(kotlin.coroutines.Continuation<? super com.offline.tool.PagePreparation>);
+    descriptor: (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+
+  public final com.offline.tool.PageDecision commitPage(com.offline.tool.PagePreparation, java.lang.String, java.lang.String, com.offline.tool.ManagedPageCallbacks, boolean, kotlin.jvm.functions.Function2<? super java.lang.String, ? super java.lang.String, kotlin.Unit>);
+    descriptor: (Lcom/offline/tool/PagePreparation;Ljava/lang/String;Ljava/lang/String;Lcom/offline/tool/ManagedPageCallbacks;ZLkotlin/jvm/functions/Function2;)Lcom/offline/tool/PageDecision;
+
+  public static com.offline.tool.PageDecision commitPage$default(com.offline.tool.ManagedOfflineSdk, com.offline.tool.PagePreparation, java.lang.String, java.lang.String, com.offline.tool.ManagedPageCallbacks, boolean, kotlin.jvm.functions.Function2, int, java.lang.Object);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lcom/offline/tool/PagePreparation;Ljava/lang/String;Ljava/lang/String;Lcom/offline/tool/ManagedPageCallbacks;ZLkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lcom/offline/tool/PageDecision;
+
+  public final void shutdown();
+    descriptor: ()V
+
+  public static final java.lang.Object access$getGate$p(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)Ljava/lang/Object;
+
+  public static final kotlinx.coroutines.sync.Mutex access$getOperation$p(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)Lkotlinx/coroutines/sync/Mutex;
+
+  public static final void access$startPollingIfEligible(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)V
+
+  public static final boolean access$getPrivacyAllowed$p(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)Z
+
+  public static final boolean access$getClosed$p(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)Z
+
+  public static final boolean access$getForeground$p(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)Z
+
+  public static final boolean access$getInitialFinished(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)Z
+
+  public static final boolean access$getUsable$p(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)Z
+
+  public static final java.lang.Object access$initializeLocked(com.offline.tool.ManagedOfflineSdk, kotlin.coroutines.Continuation);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+
+  public static final com.offline.tool.CheckResult$Failed access$initializationFailure(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)Lcom/offline/tool/CheckResult$Failed;
+
+  public static final java.lang.Object access$ensureColdCleanup(com.offline.tool.ManagedOfflineSdk, kotlin.coroutines.Continuation);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+
+  public static final java.lang.Object access$executeCheck(com.offline.tool.ManagedOfflineSdk, boolean, kotlin.jvm.functions.Function1, kotlin.jvm.functions.Function1, com.offline.tool.ManagedOfflineSdk$Terminal, kotlin.coroutines.Continuation);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;ZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcom/offline/tool/ManagedOfflineSdk$Terminal;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+
+  public static final com.offline.tool.CheckResult$Failed access$recordCheckFailure(com.offline.tool.ManagedOfflineSdk, com.offline.tool.ManagedFailure);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lcom/offline/tool/ManagedFailure;)Lcom/offline/tool/CheckResult$Failed;
+
+  public static final com.offline.tool.ManagedFailure access$localFailure(com.offline.tool.ManagedOfflineSdk, com.offline.tool.ManagedFailureReason, com.offline.tool.ManagedStage);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lcom/offline/tool/ManagedFailureReason;Lcom/offline/tool/ManagedStage;)Lcom/offline/tool/ManagedFailure;
+
+  public static final void access$offerCheckDiagnostic(com.offline.tool.ManagedOfflineSdk, com.offline.tool.CheckResult);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lcom/offline/tool/CheckResult;)V
+
+  public static final java.lang.Object access$finishFirst(com.offline.tool.ManagedOfflineSdk, kotlin.coroutines.Continuation);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+
+  public static final void access$setActivity$p(com.offline.tool.ManagedOfflineSdk, com.offline.tool.ManagedActivity);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lcom/offline/tool/ManagedActivity;)V
+
+  public static final void access$publishState(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)V
+
+  public static final void access$offerOutcome(com.offline.tool.ManagedOfflineSdk, com.offline.tool.InstallationOutcome);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lcom/offline/tool/InstallationOutcome;)V
+
+  public static final java.lang.Object access$writeHistoryBestEffort(com.offline.tool.ManagedOfflineSdk, com.offline.tool.PreparationHistory, kotlin.coroutines.Continuation);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lcom/offline/tool/PreparationHistory;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+
+  public static final long access$millisUntilNextCheck(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)J
+
+  public static final com.offline.tool.PreparationHistory access$getHistory$p(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)Lcom/offline/tool/PreparationHistory;
+
+  public static final com.offline.tool.PackageInstaller access$getInstaller$p(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)Lcom/offline/tool/PackageInstaller;
+
+  public static final java.lang.Object access$updateOperation(com.offline.tool.ManagedOfflineSdk, kotlin.jvm.functions.Function1, kotlin.coroutines.Continuation);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+
+  public static final java.util.Set access$getUpdateJobs$p(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)Ljava/util/Set;
+
+  public static final boolean access$canStartUpdate(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)Z
+
+  public static final com.offline.tool.ManagedConfigProvider access$getConfigProvider$p(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)Lcom/offline/tool/ManagedConfigProvider;
+
+  public static final void access$setLastCheck$p(com.offline.tool.ManagedOfflineSdk, java.lang.Long);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Ljava/lang/Long;)V
+
+  public static final kotlin.jvm.functions.Function0 access$getMonotonicMillis$p(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)Lkotlin/jvm/functions/Function0;
+
+  public static final java.lang.Object access$applyConfiguration(com.offline.tool.ManagedOfflineSdk, com.offline.tool.OfflineConfiguration, kotlin.coroutines.Continuation);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lcom/offline/tool/OfflineConfiguration;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+
+  public static final com.offline.tool.ManagedOfflineStorage access$getStorage$p(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)Lcom/offline/tool/ManagedOfflineStorage;
+
+  public static final java.lang.Object access$installCandidate(com.offline.tool.ManagedOfflineSdk, com.offline.tool.OfflineCandidate, kotlin.jvm.functions.Function1, kotlin.jvm.functions.Function1, com.offline.tool.ManagedOfflineSdk$Terminal, kotlin.coroutines.Continuation);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lcom/offline/tool/OfflineCandidate;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lcom/offline/tool/ManagedOfflineSdk$Terminal;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+
+  public static final java.lang.Object access$prepareTargetDirectory(com.offline.tool.ManagedOfflineSdk, com.offline.tool.PackageRecord, kotlin.coroutines.Continuation);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lcom/offline/tool/PackageRecord;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+
+  public static final java.lang.Object access$installPackage(com.offline.tool.ManagedOfflineSdk, com.offline.tool.OfflineCandidate, kotlin.jvm.functions.Function1, kotlin.coroutines.Continuation);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lcom/offline/tool/OfflineCandidate;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+
+  public static final java.lang.Object access$saveAndConfirmActive(com.offline.tool.ManagedOfflineSdk, com.offline.tool.PackageRecord, com.offline.tool.PackageRecord, kotlin.jvm.functions.Function1, kotlin.coroutines.Continuation);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lcom/offline/tool/PackageRecord;Lcom/offline/tool/PackageRecord;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+
+  public static final java.lang.Object access$writeHistory(com.offline.tool.ManagedOfflineSdk, com.offline.tool.PreparationHistory, kotlin.coroutines.Continuation);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lcom/offline/tool/PreparationHistory;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+
+  public static final kotlin.text.Regex access$getSHA256$cp();
+    descriptor: ()Lkotlin/text/Regex;
+
+  public static final java.util.Set access$getClaimedRoots$cp();
+    descriptor: ()Ljava/util/Set;
+
+  public static final boolean access$isPollingEligible(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)Z
+
+  public static final kotlinx.coroutines.CoroutineScope access$getProcessScope$p(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)Lkotlinx/coroutines/CoroutineScope;
+
+  public static final long access$getCheckIntervalMillis$p(com.offline.tool.ManagedOfflineSdk);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;)J
+
+  public static final void access$offerDiagnostic(com.offline.tool.ManagedOfflineSdk, com.offline.tool.ManagedFailure);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lcom/offline/tool/ManagedFailure;)V
+}

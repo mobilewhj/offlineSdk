@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.offline.tool.sample.ui.welcome.WelcomeViewModelTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-09-28T10:28:09" hostname="mobilewhjdeMacBook-Pro.local" time="1.121">
+  <properties/>
+  <testcase name="survivingWaiterDoesNotRestartAfterOwnerCancellationUntilExplicitRetry" classname="com.offline.tool.sample.ui.welcome.WelcomeViewModelTest" time="0.321"/>
+  <testcase name="directlyInjectedManagerUsesCurrentPrivacyConditions" classname="com.offline.tool.sample.ui.welcome.WelcomeViewModelTest" time="0.167"/>
+  <testcase name="suspendedLaterStartupStaysNeutralAndRepeatedEntryDoesNotStartAnotherCall" classname="com.offline.tool.sample.ui.welcome.WelcomeViewModelTest" time="0.15"/>
+  <testcase name="directlyInjectedManagerRespectsBackgroundWithoutHostPublication" classname="com.offline.tool.sample.ui.welcome.WelcomeViewModelTest" time="0.153"/>
+  <testcase name="missingPrivacyUsesTypedReasonInsteadOfExceptionMessage" classname="com.offline.tool.sample.ui.welcome.WelcomeViewModelTest" time="0.163"/>
+  <testcase name="firstStartupShowsProgressOnlyAfterDecisionAndPrivacyCancellationOffersRecovery" classname="com.offline.tool.sample.ui.welcome.WelcomeViewModelTest" time="0.167"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

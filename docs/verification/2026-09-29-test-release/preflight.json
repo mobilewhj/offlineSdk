@@ -1,0 +1,44 @@
+{
+  "version": "0.3.0-rc.1",
+  "candidate": "local release preflight before push",
+  "manager_sha256": "2930808d110dabe57d719d632e41a160ba12795ab93cdacdd1d2a46efd91f53f",
+  "artifacts": {
+    ".aar": {
+      "sha256": "cbfb3d35b8da06b6727643399daca82562bdadf60bcb2e25add916d1685333d3",
+      "bytes": 233619,
+      "sidecar_matches": true
+    },
+    "-sources.jar": {
+      "sha256": "8e4ae3dc4c2dfbf69ea68c7e615ad797619058fbd9946360df8ed4bc52783cc4",
+      "bytes": 36887,
+      "sidecar_matches": true
+    },
+    ".pom": {
+      "sha256": "e9908ee3f2e8be85b21efd78a6162bece93dc8c37fcb9626fe374c7225d82c3a",
+      "bytes": 2388,
+      "sidecar_matches": true
+    },
+    ".module": {
+      "sha256": "dbf227969616c8560e4dfc349b76a1d636b037fbd68037560d6afb78f15d4a98",
+      "bytes": 3973,
+      "sidecar_matches": true
+    }
+  },
+  "tests": {
+    "offlineSdk": {
+      "xml_files": 13,
+      "tests": 129,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "app": {
+      "xml_files": 3,
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "release_aar_matches_local_maven": true
+}

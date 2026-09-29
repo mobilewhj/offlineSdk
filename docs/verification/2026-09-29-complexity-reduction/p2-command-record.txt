@@ -1,0 +1,17 @@
+2026-09-29 P2 本地候选重建与消费补验
+执行根：$SDK_REPO
+
+1. Release 与工程本地 Maven 0.3.0 候选，退出码 0
+./gradlew :offlineSdk:assembleRelease :offlineSdk:publishReleasePublicationToLocalReleaseRepository -PsdkVersion=0.3.0 --offline --no-daemon --console=plain
+日志：local-aar-p2.log
+
+2. 从工程本地 Maven AAR 解析并编译 Demo 消费链，退出码 0
+./gradlew :app:verifyOfflineSdkAar :app:dependencyInsight --configuration debugRuntimeClasspath --dependency offlineSdk :app:assembleDebug :app:assembleRelease :app:testDebugUnitTest :app:lintDebug -PsdkVersion=0.3.0 -PsmokeSdkVersion=0.3.0 -I scripts/aar-consumer-smoke.init.gradle --offline --no-daemon --console=plain
+日志：aar-consumer-p2.log
+
+3. P2 后 SDK Release lint 与两模块 AndroidTest Kotlin 源码编译，退出码 0
+./gradlew :offlineSdk:lintRelease :offlineSdk:compileDebugAndroidTestKotlin :app:compileDebugAndroidTestKotlin --offline --no-daemon --console=plain
+日志：android-lint-p2.log
+
+产物身份、四项 SHA-256 sidecar、Release AAR 等价性与 15/15 SDK sources JAR 逐字节匹配：artifact-verification-p2.json。
+初次沙箱内执行 Gradle Wrapper 时因 ~/.gradle 用户缓存锁无写权限而未启动构建；上述三次成功执行使用了已批准的本地缓存权限。没有提交、推送、打 tag 或远端发布。

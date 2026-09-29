@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.offline.tool.ManagedInitializationTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-09-29T13:55:51" hostname="mobilewhjdeMacBook-Pro.local" time="0.044">
+  <properties/>
+  <testcase name="allInitialStorageReadsUseIoAndExistingHistorySkipsLegacy" classname="com.offline.tool.ManagedInitializationTest" time="0.005"/>
+  <testcase name="oldUsableDirectoryFinishesPreparationWithoutInventingActiveRecord" classname="com.offline.tool.ManagedInitializationTest" time="0.003"/>
+  <testcase name="cancelledOrClosedInitializationDoesNotClaimRootAfterIoReturns" classname="com.offline.tool.ManagedInitializationTest" time="0.004"/>
+  <testcase name="incompleteLocalReadsPreserveDirectoriesAndRetryBeforeCommitting" classname="com.offline.tool.ManagedInitializationTest" time="0.007"/>
+  <testcase name="validActiveCompletesInitialQualificationWithoutRewritingExistingHistory" classname="com.offline.tool.ManagedInitializationTest" time="0.002"/>
+  <testcase name="mainConstructionDefersCanonicalIoAndSameManagerRecoversAfterPreparationFault" classname="com.offline.tool.ManagedInitializationTest" time="0.005"/>
+  <testcase name="concurrentManagersOfSameCanonicalRootOnlyOneMayInitialize" classname="com.offline.tool.ManagedInitializationTest" time="0.002"/>
+  <testcase name="cacheReadFailureKeepsActiveAndRequiresResourceCacheClearing" classname="com.offline.tool.ManagedInitializationTest" time="0.013"/>
+  <testcase name="pageEntryCanRecoverAfterAnEarlierLocalReadFailure" classname="com.offline.tool.ManagedInitializationTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

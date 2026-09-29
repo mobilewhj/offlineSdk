@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.offline.tool.ManagedOfflineSdkTest" tests="34" skipped="0" failures="0" errors="0" timestamp="2026-09-27T16:48:59" hostname="mobilewhjdeMacBook-Pro.local" time="1.36">
+  <properties/>
+  <testcase name="failedCacheFlagWriteIsRetriedOnNextOnlinePage" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.002"/>
+  <testcase name="pagePreparationDoesNotWaitForLongInstallationAndBoundDirectorySurvives" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.021"/>
+  <testcase name="cancelledProviderPastTtlCanBeCheckedAgainWithoutExtraCooldown" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.017"/>
+  <testcase name="sustainedForegroundPollsAndBackgroundStopsFutureRequests" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.592"/>
+  <testcase name="firstConfigurationReturningInBackgroundDoesNotStartInstallation" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.007"/>
+  <testcase name="concurrentFirstCallersShareOneConfigurationAndInstallation" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.008"/>
+  <testcase name="legacyFailureMigratesCompletionButDoesNotBecomeAProcessBan" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.016"/>
+  <testcase name="validOldActiveRecordKeepsFirstPreparationFinishedWhenFileIsMissing" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.002"/>
+  <testcase name="cancellingFirstWaiterDoesNotCancelOwnerOrHostSibling" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.005"/>
+  <testcase name="cancellingFirstOwnerEndsWaitingAttemptWithoutAutomaticRetry" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.005"/>
+  <testcase name="configurationFailureIsASeparateDiagnosticAndFinishesFirstPreparation" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.001"/>
+  <testcase name="firstPagePreparationWaitsForLocalInitializationButNotTheFollowingLongInstall" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.005"/>
+  <testcase name="pageCommitAllowsHttpAndHttpsDefaultPortsButRejectsTraversalPaths" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.006"/>
+  <testcase name="fiveMinuteLimitUsesActualRequestStartAndBackgroundDoesNotStartChecks" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.202"/>
+  <testcase name="regularDiagnosticHistoryCancellationDoesNotEmitInstallationOutcome" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.035"/>
+  <testcase name="failedVersionBlocksSameAndLowerVersionsButHigherVersionCanRun" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.068"/>
+  <testcase name="firstSuccessPersistsHistoryAndEmitsOneCompletedInstallation" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.006"/>
+  <testcase name="boundPageProtectsAnExistingTargetDirectoryFromReplacement" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.02"/>
+  <testcase name="distinctDownloadVerifyAndPublishFailuresHaveOneTypedOutcomeEach" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.017"/>
+  <testcase name="regularHistoryCancellationKeepsCommittedInstallationOutcomeOnce" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.059"/>
+  <testcase name="outcomeCallbackExceptionCannotChangeInstalledResultOrTriggerAnotherAttempt" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.002"/>
+  <testcase name="resumedPollingWaitsForCancelledSilentCheckToFinishCleanup" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.118"/>
+  <testcase name="disabledConfigurationWinsBeforeInvalidCandidateValidation" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.002"/>
+  <testcase name="historyWritesFollowFirstCompletionAndLaterTerminalResultsOnly" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.074"/>
+  <testcase name="failedHistoryWriteStillCompletesFirstPreparationInThisProcess" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.004"/>
+  <testcase name="cancelledFirstPreparationDoesNotInventFailureOrCompletion" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.006"/>
+  <testcase name="cancellationDuringFirstHistoryWriteDoesNotFinishPreparation" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.002"/>
+  <testcase name="finalPageCommitRechecksEnabledAndConsumesCacheOnOnlinePath" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.02"/>
+  <testcase name="managedRootRejectsOtherLowLevelMutationsButKeepsReadOnlyCompatibility" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.004"/>
+  <testcase name="cancelledBeforeFirstOwnerRunsAllowsLaterExplicitRetry" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.004"/>
+  <testcase name="completedInstallationOutcomeIsOfferedOnceIfFirstHistoryWriteIsCancelled" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.005"/>
+  <testcase name="activeSaveFailureReportsOneTargetFailureAndKeepsPreviousActive" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.018"/>
+  <testcase name="synchronousCacheStorageCancellationPropagatesFromReadAndPageCommit" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.001"/>
+  <testcase name="withdrawingPrivacyCancelsTheActiveFirstCallWhenAnotherCallerIsWaiting" classname="com.offline.tool.ManagedOfflineSdkTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

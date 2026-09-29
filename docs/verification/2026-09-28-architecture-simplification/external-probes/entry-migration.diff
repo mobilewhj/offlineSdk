@@ -1,0 +1,159 @@
+--- original-ReviewRegressionTest.kt
++++ ReviewRegressionTest.kt
+@@ -8,7 +8,6 @@
+ import java.util.zip.ZipOutputStream
+ import kotlinx.coroutines.CancellationException
+ import kotlinx.coroutines.CompletableDeferred
+-import kotlinx.coroutines.CoroutineStart
+ import kotlinx.coroutines.ExperimentalCoroutinesApi
+ import kotlinx.coroutines.async
+ import kotlinx.coroutines.cancelAndJoin
+@@ -26,7 +25,7 @@
+ import org.junit.rules.TemporaryFolder
+ 
+ /**
+- * 独立验收探针：断言描述应有行为，待审版本预期失败。
++ * 独立验收探针：原六项行为断言沿 SDK 自有静默任务入口重放。
+  * 通过临时源集注入，不修改 SDK 或 App 产品文件。
+  */
+ @OptIn(ExperimentalCoroutinesApi::class)
+@@ -43,7 +42,7 @@
+         try {
+             assertEquals(StartupDecision.CONTINUE, sdk.startupDecision())
+             sdk.setConditions(privacyAllowed = true, foreground = true)
+-            sdk.requestCheck()
++            runCurrent()
+ 
+             assertEquals("Missing files must not erase the saved version downgrade guard", saved, store.active)
+             assertFalse("A lower candidate must not be activated", store.activeWrites.contains(lower.record))
+@@ -53,7 +52,7 @@
+     }
+ 
+     @Test
+-    fun privacyRevocationCancelsExternallyRequestedCheckBeforeActivation() = runTest {
++    fun privacyRevocationCancelsSdkSilentCheckBeforeActivation() = runTest {
+         val bytes = zip("new version")
+         val target = candidate(100001, bytes)
+         val entered = CompletableDeferred<Unit>()
+@@ -62,26 +61,29 @@
+             activeWriteEntered = entered
+             activeWriteRelease = release
+         }
+-        val sdk = manager(temporary.newFolder().canonicalFile, store, response(target))
+-        try {
+-            sdk.startupDecision()
+-            sdk.setConditions(privacyAllowed = true, foreground = true)
+-            // UNDISPATCHED 先于已排定的轮询取得共享操作许可。
+-            // 调用者属于宿主作用域，不属于管理器的轮询作用域。
+-            val check = async(start = CoroutineStart.UNDISPATCHED) { sdk.requestCheck() }
++        val outcomes = mutableListOf<InstallationOutcome>()
++        val sdk = manager(temporary.newFolder().canonicalFile, store, response(target), onOutcome = { outcomes += it })
++        try {
++            sdk.startupDecision()
++            sdk.setConditions(privacyAllowed = true, foreground = true)
++            // 无关宿主任务仍归调用者所有，隐私撤回只取消 SDK 实际静默检查。
++            val hostSibling = async { release.await() }
+             try {
+                 runCurrent()
+-                assertTrue("The public request must reach the activation storage boundary", entered.isCompleted)
++                assertTrue("The SDK silent task must reach the activation storage boundary", entered.isCompleted)
+                 sdk.setConditions(privacyAllowed = false, foreground = true)
+                 runCurrent()
++                assertTrue("Privacy withdrawal must leave the host sibling active", hostSibling.isActive)
+                 release.complete(Unit)
+                 runCurrent()
+ 
+                 assertEquals("Revoked work must not activate a package", null, store.active)
+-                assertTrue("The in-flight public request must receive cancellation", check.isCancelled)
++                assertTrue("Cancellation must occur before writing active", store.activeWrites.isEmpty())
++                assertTrue("Cancellation must not fabricate an installation terminal", outcomes.isEmpty())
++                assertTrue("Unrelated host sibling must finish normally", hostSibling.isCompleted && !hostSibling.isCancelled)
+             } finally {
+                 release.complete(Unit)
+-                check.cancelAndJoin()
++                hostSibling.cancelAndJoin()
+             }
+         } finally {
+             sdk.shutdown()
+@@ -106,7 +108,6 @@
+             sdk.startupDecision()
+             val preparedBeforeConfig = sdk.preparePage()
+             sdk.setConditions(privacyAllowed = true, foreground = true)
+-            val check = async(start = CoroutineStart.UNDISPATCHED) { sdk.requestCheck() }
+             try {
+                 runCurrent()
+                 assertTrue("Configuration must already be applied before storage suspends", entered.isCompleted)
+@@ -118,7 +119,7 @@
+                 assertEquals(0, callbacks.offlineLoads)
+             } finally {
+                 release.complete(Unit)
+-                check.cancelAndJoin()
++                runCurrent()
+             }
+         } finally {
+             sdk.shutdown()
+@@ -140,6 +141,10 @@
+             assertTrue("Unknown active after storage IO failure must not authorize clearing its directory", entry.isFile)
+             assertEquals("The durable active record is still recoverable", saved, store.readActive())
+             assertEquals("recoverable current package", entry.readText())
++            val preparation = sdk.preparePage()
++            val base = "https://offline.example/app/"
++            assertEquals("The next legal entry must recover the durable active", saved, sdk.state.value.active)
++            assertEquals(PageDecision.Offline(saved), sdk.commitPage(preparation, base, base, PageCallbacks()))
+         } finally {
+             sdk.shutdown()
+         }
+@@ -158,9 +163,10 @@
+             sdk.startupDecision()
+             val preparedBeforeConfig = sdk.preparePage()
+             sdk.setConditions(privacyAllowed = true, foreground = true)
+-            val result = sdk.requestCheck()
+-            assertTrue("必须实际触发开关保存失败", result is CheckResult.Failed)
+-            assertEquals(ManagedStage.SAVE_ENABLED, (result as CheckResult.Failed).failure.stage)
++            runCurrent()
++            val failure = sdk.state.value.latestFailure
++            assertTrue("必须实际触发开关保存失败", failure != null)
++            assertEquals(ManagedStage.SAVE_ENABLED, failure!!.stage)
+ 
+             val callbacks = PageCallbacks()
+             val base = "https://offline.example/app/"
+@@ -180,32 +186,29 @@
+         val target = candidate(100001, zip("committed installation"))
+         val store = MemoryStorage()
+         var callbackCalls = 0
++        var observedOutcome: InstallationOutcome? = null
+         val sdk = manager(
+             temporary.newFolder().canonicalFile,
+             store,
+             response(target),
+-            onOutcome = {
++            onOutcome = { outcome ->
+                 callbackCalls++
++                observedOutcome = outcome
+                 throw CancellationException("宿主结果观察回调异常")
+             },
+         )
+         try {
+             sdk.startupDecision()
+             sdk.setConditions(privacyAllowed = true, foreground = true)
+-            var result: CheckResult? = null
+-            var callbackCancellation: CancellationException? = null
+-            try {
+-                result = sdk.requestCheck()
+-            } catch (cancelled: CancellationException) {
+-                callbackCancellation = cancelled
+-            }
++            runCurrent()
+ 
+             // 证明这是观察回调自行抛出的异常，并非操作的 Job 被真实取消。
+             assertTrue("实际操作 Job 应仍为活动状态", currentCoroutineContext().isActive)
+             assertEquals("安装必须已持久化成功", target.record, store.active)
+             assertEquals(1, callbackCalls)
+-            assertEquals("观察回调不能把已提交安装的结果改写为取消", null, callbackCancellation)
+-            assertEquals(CheckResult.Installed(target.record), result)
++            assertEquals("观察回调不能把已提交安装的结果改写为取消", InstallationOutcome.Installed(target.record), observedOutcome)
++            assertEquals("成功状态不能被观察回调改写", null, sdk.state.value.latestFailure)
++            assertEquals(target.record, sdk.state.value.active)
+         } finally {
+             sdk.shutdown()
+         }

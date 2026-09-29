@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.offline.tool.PackageInstallerFactsTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-28T10:24:45" hostname="mobilewhjdeMacBook-Pro.local" time="0.336">
+  <properties/>
+  <testcase name="checkingOldPackageDoesNotWaitForNewPackageDownload" classname="com.offline.tool.PackageInstallerFactsTest" time="0.006"/>
+  <testcase name="entryCheckIsReadOnlyAndRejectsMissingEmptyAndLinkedPaths" classname="com.offline.tool.PackageInstallerFactsTest" time="0.004"/>
+  <testcase name="failedVerificationExtractionAndPublicationNeverClaimPublication" classname="com.offline.tool.PackageInstallerFactsTest" time="0.004"/>
+  <testcase name="unreadableEntryReturnsFalseWithoutChangingFiles" classname="com.offline.tool.PackageInstallerFactsTest" time="0.001"/>
+  <testcase name="requestStartedIsPerCallAndBeginsBeforeAnyResponseOrProgress" classname="com.offline.tool.PackageInstallerFactsTest" time="0.321"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[9月 28, 2026 6:24:45 下午 okhttp3.mockwebserver.MockWebServer$SocketHandler handle
+警告: MockWebServer[56774] connection from /127.0.0.1 didn't make a request
+]]></system-err>
+</testsuite>

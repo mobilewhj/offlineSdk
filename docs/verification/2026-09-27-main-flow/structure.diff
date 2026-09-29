@@ -1,0 +1,579 @@
+--- before/offlineSdk/src/main/java/com/offline/tool/ManagedOfflineSdk.kt
++++ after/offlineSdk/src/main/java/com/offline/tool/ManagedOfflineSdk.kt
+@@ -56,7 +56,7 @@
+     init { installer.claimManagedRoot() }
+     // 更新许可覆盖配置、安装、active 与 History 收尾；页面 IO 不等待这段长操作。
+     private val operation = Mutex()
+-    // 只协调首次事实读取与提交，防止多入口重复迁移；不替代更新许可。
++    // 协调首次读取、状态提交及初始化收尾，不覆盖长安装流程。
+     private val initialization = Mutex()
+     // 运行事实与页面最终提交共用短锁；辅助规则和事实读取函数都不拥有这些状态。
+     private val gate = Any()
+@@ -299,7 +299,7 @@
+     private suspend fun initializeLocked(): Boolean = initialization.withLock {
+         if (synchronized(gate) { initialized }) return@withLock true
+         val facts = when (val read = readInitialLocalFacts(
+-            root, storage, minimumVersion, ioDispatcher, ::validRecord, installer::isUsable,
++            root, storage, minimumVersion, ioDispatcher, { validRecord(it, minimumVersion) }, installer::isUsable,
+         )) {
+             InitialLocalRead.Failed -> {
+                 // 事实未知时只给出诊断；不提交空状态、不保存迁移记录、不授予清理资格。
+@@ -362,15 +362,9 @@
+         val current = synchronized(gate) { active }
+         val currentUsable = current != null && installer.isUsable(current.version)
+         synchronized(gate) { usable = currentUsable; publishState() }
+-        if (first && synchronized(gate) { !foreground || !privacyAllowed }) {
+-            throw CancellationException("First preparation left foreground")
+-        }
+-        if (!first && synchronized(gate) { !foreground || !privacyAllowed }) {
+-            setActivity(ManagedActivity.Idle, onActivity)
+-            return CheckResult.Backgrounded
+-        }
++        if (!canStartUpdate()) return interruptedCheck(first, onActivity)
+         val response = try { withContext(ioDispatcher) {
+-            if (synchronized(gate) { !foreground || !privacyAllowed }) null
++            if (!canStartUpdate()) null
+             else {
+                 synchronized(gate) { lastCheck = monotonicMillis() }
+                 configProvider.fetch(if (currentUsable) current.version else 0)
+@@ -379,11 +373,7 @@
+             catch (cancelled: CancellationException) { throw cancelled }
+             catch (error: Exception) { ConfigResponse.Failure(ConfigFailureReason.REQUEST, error.message) }
+         currentCoroutineContext().ensureActive()
+-        if (response == null) {
+-            if (first) throw CancellationException("First preparation left foreground")
+-            setActivity(ManagedActivity.Idle, onActivity)
+-            return CheckResult.Backgrounded
+-        }
++        if (response == null) return interruptedCheck(first, onActivity)
+         if (response is ConfigResponse.Failure) {
+             val reason = when (response.reason) {
+                 ConfigFailureReason.REQUEST -> ManagedFailureReason.CONFIG_REQUEST
+@@ -395,46 +385,30 @@
+         val config = (response as ConfigResponse.Success).config
+         val applied = applyConfiguration(config)
+         if (applied != null) return recordCheckFailure(applied)
+-        if (!config.enabled) {
+-            setActivity(ManagedActivity.Idle, onActivity)
+-            return CheckResult.Disabled
+-        }
+-        if (first && synchronized(gate) { !foreground || !privacyAllowed }) {
+-            throw CancellationException("First preparation left foreground")
+-        }
+-        if (!first && synchronized(gate) { !foreground || !privacyAllowed }) {
+-            setActivity(ManagedActivity.Idle, onActivity)
+-            return CheckResult.Backgrounded
+-        }
+-        val version = config.onlineVersion
+-        if (version == null || version < minimumVersion) {
+-            return recordCheckFailure(localFailure(ManagedFailureReason.INVALID_CONFIG, ManagedStage.CONFIG))
+-        }
+-        val candidate = config.candidate
+-        if (candidate == null) {
+-            if (currentUsable && current.version >= version) {
++        // 关闭先于元数据校验；启用配置在存储挂起后仍须重新检查启动资格。
++        if (config.enabled && !canStartUpdate()) return interruptedCheck(first, onActivity)
++        return when (val decision = decideCandidate(
++            config, current, currentUsable, minimumVersion, synchronized(gate) { failedVersion },
++        )) {
++            is CandidateDecision.Install -> installCandidate(decision.candidate, onActivity, onProgress, terminal)
++            is CandidateDecision.Skip -> {
+                 setActivity(ManagedActivity.Idle, onActivity)
+-                return CheckResult.UpToDate
+-            }
+-            return recordCheckFailure(localFailure(ManagedFailureReason.INVALID_CONFIG, ManagedStage.CONFIG))
+-        }
+-        if (!validRecord(candidate.record) || candidate.record.version != version || !validSource(candidate.source)) {
+-            return recordCheckFailure(localFailure(ManagedFailureReason.INVALID_CONFIG, ManagedStage.CONFIG))
+-        }
+-        if (current != null && current.version == candidate.record.version && current.sha256 != candidate.record.sha256) {
+-            return recordCheckFailure(localFailure(ManagedFailureReason.INVALID_CONFIG, ManagedStage.CONFIG))
+-        }
+-        if (current != null && (current.version > candidate.record.version ||
+-                (currentUsable && current.version == candidate.record.version))) {
+-            setActivity(ManagedActivity.Idle, onActivity)
+-            return CheckResult.UpToDate
+-        }
+-        if (synchronized(gate) { failedVersion?.let { candidate.record.version <= it } == true }) {
+-            setActivity(ManagedActivity.Idle, onActivity)
+-            return CheckResult.BlockedVersion
+-        }
+-        return installCandidate(candidate, onActivity, onProgress, terminal)
+-    }
++                decision.result
++            }
++            CandidateDecision.InvalidConfiguration -> recordCheckFailure(
++                localFailure(ManagedFailureReason.INVALID_CONFIG, ManagedStage.CONFIG),
++            )
++        }
++    }
++
++    /** 同一资格丢失在首次调用中传播取消，在常规检查中只结束本次检查，不生成安装终态。 */
++    private fun interruptedCheck(first: Boolean, onActivity: (ManagedActivity) -> Unit): CheckResult {
++        if (first) throw CancellationException("First preparation left foreground")
++        setActivity(ManagedActivity.Idle, onActivity)
++        return CheckResult.Backgrounded
++    }
++
++    private fun canStartUpdate(): Boolean = synchronized(gate) { !closed && privacyAllowed && foreground }
+ 
+     /** 内存配置事实必须一起生效；存储挂起或失败都不能让页面继续绑定已观察到摘要冲突的旧包。 */
+     private suspend fun applyConfiguration(config: OfflineConfiguration): ManagedFailure? {
+@@ -444,9 +418,7 @@
+             val changed = enabled != config.enabled || (effective &&
+                 (!configSeen || (config.enabled && onlineVersion != validOnlineVersion)))
+             enabled = config.enabled
+-            val candidate = config.candidate?.record
+-            shaConflict = config.enabled && active != null && candidate != null &&
+-                active!!.version == candidate.version && active!!.sha256 != candidate.sha256
++            shaConflict = config.enabled && hasShaConflict(active, config.candidate?.record)
+             if (config.enabled && validOnlineVersion != null) onlineVersion = validOnlineVersion
+             if (effective) configSeen = true
+             publishState()
+@@ -483,21 +455,37 @@
+         currentCoroutineContext().ensureActive()
+         if (!mayStart) return CheckResult.Backgrounded
+         setActivity(ManagedActivity.Installing(target.version), onActivity)
++        prepareTargetDirectory(target)?.let { return recordInstallationFailure(it, terminal) }
++        installPackage(candidate, onProgress)?.let { return recordInstallationFailure(it, terminal) }
++        val previous = synchronized(gate) { active }
++        saveAndConfirmActive(target, previous, onProgress)?.let { return recordInstallationFailure(it, terminal) }
++        val result = commitInstallationSuccess(target, terminal)
++        safelyFinishedCallback { onActivity(ManagedActivity.Idle) }
++        safelyFinishedCallback { onProgress(ManagedProgress.Complete) }
++        return result
++    }
++
++    /** 只准备目标目录；删除授权与页面提交共用短锁，挂起清理后必须释放授权。 */
++    private suspend fun prepareTargetDirectory(target: PackageRecord): ManagedFailure? {
+         val exists = withContext(ioDispatcher) { installer.directory(target.version).exists() }
+-        if (exists) {
+-            val mayDiscard = synchronized(gate) {
+-                if (pagesBound) false
+-                else { cleanupInProgress = true; directoryGeneration++; true }
+-            }
+-            if (!mayDiscard) {
+-                return recordInstallationFailure(targetFailure(ManagedFailureReason.TARGET_IN_USE, ManagedStage.PREPARE, target), terminal)
+-            }
+-            val discarded = try { installer.discardUnboundVersion(target.version) }
+-                finally { synchronized(gate) { cleanupInProgress = false } }
+-            if (!discarded) {
+-                return recordInstallationFailure(targetFailure(ManagedFailureReason.LOCAL_PREPARATION, ManagedStage.PREPARE, target), terminal)
+-            }
+-        }
++        if (!exists) return null
++        val mayDiscard = synchronized(gate) {
++            if (pagesBound) false
++            else { cleanupInProgress = true; directoryGeneration++; true }
++        }
++        if (!mayDiscard) return targetFailure(ManagedFailureReason.TARGET_IN_USE, ManagedStage.PREPARE, target)
++        val discarded = try { installer.discardUnboundVersion(target.version) }
++            finally { synchronized(gate) { cleanupInProgress = false } }
++        return if (discarded) null
++        else targetFailure(ManagedFailureReason.LOCAL_PREPARATION, ManagedStage.PREPARE, target)
++    }
++
++    /** 下载、校验、解压及发布仍由安装器负责；此处仅适配来源、进度和失败类型，取消直接传播。 */
++    private suspend fun installPackage(
++        candidate: OfflineCandidate,
++        onProgress: (ManagedProgress) -> Unit,
++    ): ManagedFailure? {
++        val target = candidate.record
+         val installed = try {
+             when (val source = candidate.source) {
+                 is PackageSource.Remote -> installer.install(
+@@ -517,49 +505,64 @@
+             }
+         } catch (cancelled: CancellationException) { throw cancelled }
+             catch (_: Exception) {
+-                return recordInstallationFailure(targetFailure(ManagedFailureReason.INSTALL, ManagedStage.PREPARE, target), terminal)
+-            }
+-        if (installed is InstallResult.Failure) {
+-            val stage = when (installed.stage) {
+-                InstallStage.INSTALL, InstallStage.PREPARE -> ManagedStage.PREPARE
+-                InstallStage.DOWNLOAD -> ManagedStage.DOWNLOAD
+-                InstallStage.VERIFY -> ManagedStage.VERIFY
+-                InstallStage.EXTRACT -> ManagedStage.EXTRACT
+-                InstallStage.PUBLISH -> ManagedStage.PUBLISH
+-                InstallStage.CLEANUP -> ManagedStage.CLEANUP
+-            }
+-            return recordInstallationFailure(targetFailure(
+-                ManagedFailureReason.INSTALL, stage, target,
+-                installReason = installed.reason, httpStatus = installed.httpStatus,
+-            ), terminal)
+-        }
++                return targetFailure(ManagedFailureReason.INSTALL, ManagedStage.PREPARE, target)
++            }
++        return when (installed) {
++            is InstallResult.Success -> null
++            is InstallResult.Failure -> {
++                val stage = when (installed.stage) {
++                    InstallStage.INSTALL, InstallStage.PREPARE -> ManagedStage.PREPARE
++                    InstallStage.DOWNLOAD -> ManagedStage.DOWNLOAD
++                    InstallStage.VERIFY -> ManagedStage.VERIFY
++                    InstallStage.EXTRACT -> ManagedStage.EXTRACT
++                    InstallStage.PUBLISH -> ManagedStage.PUBLISH
++                    InstallStage.CLEANUP -> ManagedStage.CLEANUP
++                }
++                targetFailure(
++                    ManagedFailureReason.INSTALL, stage, target,
++                    installReason = installed.reason, httpStatus = installed.httpStatus,
++                )
++            }
++        }
++    }
++
++    /** 在 IO 保存 active 并复核入口，复核失败时尝试恢复传入的旧记录；不提交管理器内存状态。
++     * 安装已经开始，普通退后台允许完成保存；调用方或隐私取消仍由挂起边界传播。 */
++    private suspend fun saveAndConfirmActive(
++        target: PackageRecord,
++        previous: PackageRecord?,
++        onProgress: (ManagedProgress) -> Unit,
++    ): ManagedFailure? {
+         if (!installer.isUsable(target.version)) {
+-            return recordInstallationFailure(targetFailure(ManagedFailureReason.PACKAGE_UNUSABLE, ManagedStage.VERIFY_ACTIVE, target), terminal)
++            return targetFailure(ManagedFailureReason.PACKAGE_UNUSABLE, ManagedStage.VERIFY_ACTIVE, target)
+         }
+         safelyProgress(onProgress, ManagedProgress.Saving)
+-        val previous = synchronized(gate) { active }
+         currentCoroutineContext().ensureActive()
+         val saved = try { withContext(ioDispatcher) { storage.writeActive(target) } }
+             catch (cancelled: CancellationException) { throw cancelled }
+             catch (_: Exception) { false }
+-        if (!saved) {
+-            return recordInstallationFailure(targetFailure(ManagedFailureReason.STORAGE_WRITE, ManagedStage.SAVE_ACTIVE, target), terminal)
+-        }
++        if (!saved) return targetFailure(ManagedFailureReason.STORAGE_WRITE, ManagedStage.SAVE_ACTIVE, target)
+         if (!installer.isUsable(target.version)) {
+             val rolledBack = try { withContext(ioDispatcher) { storage.writeActive(previous) } }
+                 catch (cancelled: CancellationException) { throw cancelled }
+                 catch (_: Exception) { false }
+-            val failure = targetFailure(ManagedFailureReason.PACKAGE_UNUSABLE, ManagedStage.VERIFY_ACTIVE, target)
++            return targetFailure(ManagedFailureReason.PACKAGE_UNUSABLE, ManagedStage.VERIFY_ACTIVE, target)
+                 .copy(activeRollbackFailed = !rolledBack)
+-            return recordInstallationFailure(failure, terminal)
+-        }
+-        synchronized(gate) { active = target; usable = true; history = history.copy(latestFailure = null); publishState() }
+-        terminal.outcome = InstallationOutcome.Installed(target)
+-        synchronized(gate) { activity = ManagedActivity.Idle; publishState() }
+-        safelyFinishedCallback { onActivity(ManagedActivity.Idle) }
+-        safelyFinishedCallback { onProgress(ManagedProgress.Complete) }
+-        return CheckResult.Installed(target)
+-    }
++        }
++        return null
++    }
++
++    /** 激活已经保存且确认可用，完整成功快照只发布一次；随后 History 保存取消不能撤销此终态。 */
++    private fun commitInstallationSuccess(target: PackageRecord, terminal: Terminal): CheckResult.Installed =
++        synchronized(gate) {
++            active = target
++            usable = true
++            history = history.copy(latestFailure = null)
++            activity = ManagedActivity.Idle
++            terminal.outcome = InstallationOutcome.Installed(target)
++            publishState()
++            CheckResult.Installed(target)
++        }
+ 
+     /** 检查诊断没有安装目标，不提升失败版本门槛，也不生成安装终态。 */
+     private fun recordCheckFailure(failure: ManagedFailure): CheckResult.Failed {
+@@ -607,17 +610,6 @@
+         catch (cancelled: CancellationException) { throw cancelled }
+         catch (_: Exception) { false }
+ 
+-    private fun validRecord(record: PackageRecord): Boolean =
+-        record.version >= minimumVersion && SHA256.matches(record.sha256)
+-
+-    private fun validSource(source: PackageSource): Boolean = when (source) {
+-        is PackageSource.Local -> true
+-        is PackageSource.Remote -> try {
+-            val uri = URI(source.url)
+-            (uri.scheme == "http" || uri.scheme == "https") && uri.host != null && uri.userInfo == null
+-        } catch (_: Exception) { false }
+-    }
+-
+     private fun setActivity(value: ManagedActivity, callback: (ManagedActivity) -> Unit) {
+         synchronized(gate) { activity = value; publishState() }
+         try { callback(value) } catch (cancelled: CancellationException) { throw cancelled }
+@@ -648,24 +640,26 @@
+         try { onDiagnostic(value) } catch (_: Exception) { /* 尽力通知，不递归上报诊断故障。 */ }
+     }
+ 
++    /** 轮询始终使用同一资格；等待之后及启动独立检查任务前均重新查询，不把它用于首次安装。 */
++    private fun isPollingEligible(): Boolean = synchronized(gate) {
++        !closed && initialized && initialFinished && privacyAllowed && foreground
++    }
++
+     private fun startPollingIfEligible() {
+         synchronized(gate) {
+-            if (closed || !initialized || !initialFinished || !privacyAllowed || !foreground || pollingJob?.isActive == true) return
++            if (!isPollingEligible() || pollingJob?.isActive == true) return
+             pollingJob = processScope.launch {
+-                while (synchronized(gate) { !closed && privacyAllowed && foreground && initialFinished }) {
++                while (isPollingEligible()) {
+                     val wait = synchronized(gate) { millisUntilNextCheck() }
+                     if (wait > 0) delay(wait)
+-                    if (!synchronized(gate) { !closed && privacyAllowed && foreground && initialFinished }) break
++                    if (!isPollingEligible()) break
+                     if (operation.isLocked) {
+                         delay(1_000)
+                         continue
+                     }
+                     var checkResult: CheckResult? = null
+                     val job = processScope.launch(start = CoroutineStart.LAZY) { checkResult = requestCheck() }
+-                    val mayStartCheck = synchronized(gate) {
+-                        !(closed || !privacyAllowed || !foreground || !initialFinished)
+-                    }
+-                    if (!mayStartCheck) {
++                    if (!isPollingEligible()) {
+                         job.cancel()
+                         break
+                     }
+@@ -714,9 +708,59 @@
+         httpStatus: Int? = null,
+     ) = ManagedFailure(reason, stage, target.version, target.sha256, installReason, httpStatus)
+ 
++    private sealed interface CandidateDecision {
++        data class Install(val candidate: OfflineCandidate) : CandidateDecision
++        data class Skip(val result: CheckResult) : CandidateDecision
++        data object InvalidConfiguration : CandidateDecision
++    }
++
+     private class Terminal(var outcome: InstallationOutcome? = null)
+ 
+     private companion object {
++        /** 只解释本次传入的事实，不读运行状态、不执行 IO，也不生成含时钟事实的失败记录。 */
++        fun decideCandidate(
++            config: OfflineConfiguration,
++            current: PackageRecord?,
++            currentUsable: Boolean,
++            minimumVersion: Int,
++            failedVersion: Int?,
++        ): CandidateDecision {
++            if (!config.enabled) return CandidateDecision.Skip(CheckResult.Disabled)
++            val version = config.onlineVersion
++            if (version == null || version < minimumVersion) return CandidateDecision.InvalidConfiguration
++            val candidate = config.candidate
++            if (candidate == null) {
++                return if (current != null && currentUsable && current.version >= version) {
++                    CandidateDecision.Skip(CheckResult.UpToDate)
++                } else CandidateDecision.InvalidConfiguration
++            }
++            val target = candidate.record
++            if (!validRecord(target, minimumVersion) || target.version != version || !validSource(candidate.source) ||
++                hasShaConflict(current, target)) return CandidateDecision.InvalidConfiguration
++            // active 记录承担防降级；文件可用性只决定同版是否需要修复。
++            if (current != null && (current.version > target.version || (currentUsable && current.version == target.version))) {
++                return CandidateDecision.Skip(CheckResult.UpToDate)
++            }
++            if (failedVersion != null && target.version <= failedVersion) {
++                return CandidateDecision.Skip(CheckResult.BlockedVersion)
++            }
++            return CandidateDecision.Install(candidate)
++        }
++
++        private fun hasShaConflict(current: PackageRecord?, candidate: PackageRecord?): Boolean =
++            current != null && candidate != null && current.version == candidate.version && current.sha256 != candidate.sha256
++
++        private fun validRecord(record: PackageRecord, minimumVersion: Int): Boolean =
++            record.version >= minimumVersion && SHA256.matches(record.sha256)
++
++        private fun validSource(source: PackageSource): Boolean = when (source) {
++            is PackageSource.Local -> true
++            is PackageSource.Remote -> try {
++                val uri = URI(source.url)
++                (uri.scheme == "http" || uri.scheme == "https") && uri.host != null && uri.userInfo == null
++            } catch (_: Exception) { false }
++        }
++
+         val SHA256 = Regex("[0-9a-f]{64}")
+         val claimedRoots = mutableSetOf<String>()
+     }
+--- before/offlineSdk/src/test/java/com/offline/tool/ManagedOfflineRegressionTest.kt
++++ after/offlineSdk/src/test/java/com/offline/tool/ManagedOfflineRegressionTest.kt
+@@ -16,9 +16,12 @@
+ import kotlinx.coroutines.cancelAndJoin
+ import kotlinx.coroutines.coroutineScope
+ import kotlinx.coroutines.currentCoroutineContext
++import kotlinx.coroutines.flow.collect
+ import kotlinx.coroutines.isActive
++import kotlinx.coroutines.launch
+ import kotlinx.coroutines.test.StandardTestDispatcher
+ import kotlinx.coroutines.test.TestScope
++import kotlinx.coroutines.test.UnconfinedTestDispatcher
+ import kotlinx.coroutines.test.runCurrent
+ import kotlinx.coroutines.test.runTest
+ import okhttp3.OkHttpClient
+@@ -39,6 +42,151 @@
+ @OptIn(ExperimentalCoroutinesApi::class)
+ class ManagedOfflineRegressionTest {
+     @get:Rule val temporary = TemporaryFolder()
++
++    @Test
++    fun firstAndRegularActivationPublishOnlyCompleteSuccessSnapshots() = runTest {
++        for (firstFinished in listOf(false, true)) {
++            val target = candidate(100001, zip("complete success snapshot"))
++            val previousFailure = ManagedFailure(ManagedFailureReason.CONFIG_REQUEST, ManagedStage.CONFIG)
++            val store = MemoryStorage().apply {
++                history = PreparationHistory(firstFinished, previousFailure)
++            }
++            val outcomes = mutableListOf<InstallationOutcome>()
++            val sdk = manager(temporary.newFolder().canonicalFile, store, response(target), { outcomes += it })
++            val snapshots = mutableListOf<ManagedSnapshot>()
++            // 同步收集每次公开快照，避免 StateFlow 合并中间值掩盖半提交状态。
++            val observer = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
++                sdk.state.collect { snapshots += it }
++            }
++            try {
++                sdk.startupDecision()
++                assertEquals(previousFailure, sdk.state.value.latestFailure)
++                sdk.setConditions(privacyAllowed = true, foreground = true)
++                val result = if (firstFinished) sdk.requestCheck() else {
++                    (sdk.prepareFirst() as FirstPreparationResult.Finished).check
++                }
++
++                assertEquals(CheckResult.Installed(target.record), result)
++                val activated = snapshots.filter { it.active == target.record }
++                assertTrue("至少收到一次新 active 的成功快照", activated.isNotEmpty())
++                activated.forEach { snapshot ->
++                    assertTrue("新 active 必须同时确认可用", snapshot.usablePackage)
++                    assertEquals("激活提交不暴露 Installing 中间状态", ManagedActivity.Idle, snapshot.activity)
++                    assertEquals("成功提交同时清除历史失败", null, snapshot.latestFailure)
++                    if (firstFinished) assertTrue(snapshot.initialPreparationFinished)
++                }
++                assertEquals(PreparationHistory(initialPreparationFinished = true), store.history)
++                assertEquals(listOf(InstallationOutcome.Installed(target.record)), outcomes)
++            } finally {
++                observer.cancelAndJoin()
++                sdk.shutdown()
++            }
++        }
++    }
++
++    @Test
++    fun invalidHigherCandidateAndSkipsKeepTheInstallationFailureThreshold() = runTest {
++        val store = MemoryStorage()
++        val failed = candidate(100002, "not a ZIP".toByteArray())
++        var configuration = response(failed)
++        var now = 0L
++        val outcomes = mutableListOf<InstallationOutcome>()
++        val diagnostics = mutableListOf<ManagedFailure>()
++        val dispatcher = StandardTestDispatcher(testScheduler)
++        val sdk = ManagedOfflineSdk(
++            root = temporary.newFolder().canonicalFile,
++            storage = store,
++            configProvider = ManagedConfigProvider { configuration },
++            minimumVersion = 100000,
++            onInstallationOutcome = { outcomes += it },
++            onDiagnostic = { diagnostics += it },
++            ioDispatcher = dispatcher,
++            mainDispatcher = dispatcher,
++            monotonicMillis = { now },
++        )
++        suspend fun check(next: ConfigResponse.Success): CheckResult {
++            configuration = next
++            now += 300_001L
++            return sdk.requestCheck()
++        }
++        try {
++            sdk.startupDecision()
++            sdk.setConditions(privacyAllowed = true, foreground = true)
++            val failedResult = sdk.requestCheck() as CheckResult.Failed
++            assertEquals(ManagedStage.EXTRACT, failedResult.failure.stage)
++            assertEquals(1, outcomes.size)
++
++            val invalidHigher = OfflineCandidate(
++                PackageRecord(100004, "a".repeat(64)), PackageSource.Remote("file:///invalid.zip"),
++            )
++            val invalidResult = check(response(invalidHigher)) as CheckResult.Failed
++            assertEquals(ManagedFailureReason.INVALID_CONFIG, invalidResult.failure.reason)
++            assertEquals(null, invalidResult.failure.targetVersion)
++            assertEquals(listOf(invalidResult.failure), diagnostics)
++            assertEquals(1, outcomes.size)
++
++            // 配置诊断覆盖最近失败，但既不清除旧门槛，也不把非法的更高版本纳入门槛。
++            assertEquals(CheckResult.BlockedVersion, check(response(candidate(100002, zip("same repaired")))))
++            assertEquals(CheckResult.BlockedVersion, check(response(candidate(100001, zip("lower")))))
++            assertEquals(invalidResult.failure, sdk.state.value.latestFailure)
++            assertEquals(
++                CheckResult.Disabled,
++                check(ConfigResponse.Success(OfflineConfiguration(enabled = false, candidate = invalidHigher))),
++            )
++            assertTrue(store.activeWrites.isEmpty())
++            assertEquals(1, outcomes.size)
++
++            val higher = candidate(100003, zip("higher allowed"))
++            assertEquals(CheckResult.Installed(higher.record), check(response(higher)))
++            assertEquals(CheckResult.UpToDate, check(response(higher)))
++            assertEquals(listOf(higher.record), store.activeWrites)
++            assertEquals(2, outcomes.size)
++            assertEquals(InstallationOutcome.Installed(higher.record), outcomes.last())
++        } finally {
++            sdk.shutdown()
++        }
++    }
++
++    @Test
++    fun finalUsabilityFailureRollsBackActiveAndReportsTheRollbackResultOnce() = runTest {
++        for (rollbackSucceeds in listOf(true, false)) {
++            val root = temporary.newFolder().canonicalFile
++            val oldBytes = zip("previous active")
++            val old = candidate(100001, oldBytes).record
++            installBeforeManager(root, old, oldBytes)
++            val target = candidate(100002, zip("lost after active save"))
++            val store = MemoryStorage(old).apply {
++                activeWriteAction = { record ->
++                    if (record == target.record) {
++                        // 模拟保存 active 成功后入口文件丢失，强制经过最终可用性与回滚边界。
++                        assertTrue(root.resolve("100002/index.html").delete())
++                        true
++                    } else rollbackSucceeds
++                }
++            }
++            val outcomes = mutableListOf<InstallationOutcome>()
++            val sdk = manager(root, store, response(target), { outcomes += it })
++            try {
++                sdk.startupDecision()
++                sdk.setConditions(privacyAllowed = true, foreground = true)
++                val result = sdk.requestCheck() as CheckResult.Failed
++
++                assertEquals(ManagedFailureReason.PACKAGE_UNUSABLE, result.failure.reason)
++                assertEquals(ManagedStage.VERIFY_ACTIVE, result.failure.stage)
++                assertEquals(target.record.version, result.failure.targetVersion)
++                assertEquals(!rollbackSucceeds, result.failure.activeRollbackFailed)
++                assertEquals(listOf(target.record, old), store.activeWrites)
++                assertEquals(if (rollbackSucceeds) old else target.record, store.active)
++                assertEquals(old, sdk.state.value.active)
++                assertTrue(sdk.state.value.usablePackage)
++                assertEquals(result.failure, sdk.state.value.latestFailure)
++                assertEquals(listOf(InstallationOutcome.Failed(result.failure)), outcomes)
++                assertEquals("previous active", root.resolve("100001/index.html").readText())
++            } finally {
++                sdk.shutdown()
++            }
++        }
++    }
+ 
+     @Test
+     fun missingActiveFilesMustNotPermitDowngrade() = runTest {
+@@ -592,6 +740,7 @@
+         var activeReadFailuresRemaining = 0
+         var activeWriteEntered: CompletableDeferred<Unit>? = null
+         var activeWriteRelease: CompletableDeferred<Unit>? = null
++        var activeWriteAction: ((PackageRecord?) -> Boolean)? = null
+         var enabledWriteEntered: CompletableDeferred<Unit>? = null
+         var enabledWriteRelease: CompletableDeferred<Unit>? = null
+         var enabledWriteSucceeds = true
+@@ -608,8 +757,9 @@
+             activeWriteEntered?.complete(Unit)
+             activeWriteRelease?.await()
+             activeWrites += record
+-            active = record
+-            return true
++            val succeeds = activeWriteAction?.invoke(record) ?: true
++            if (succeeds) active = record
++            return succeeds
+         }
+         override suspend fun readEnabled() = enabled
+         override suspend fun writeEnabled(enabled: Boolean): Boolean {

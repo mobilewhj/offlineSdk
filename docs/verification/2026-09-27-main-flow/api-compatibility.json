@@ -1,0 +1,442 @@
+{
+  "generated_at_utc": "2026-09-27T15:06:47.876868+00:00",
+  "status": "passed",
+  "scope": "固定基线 AAR 与本轮 AAR 的 ManagedOfflineSdk 公开 JVM 签名比较；同时校验 sources JAR 与源码身份。",
+  "limits": [
+    "javap -public -s 比较声明、泛型显示及 JVM 描述符；过滤 access$ 编译器内部桥接。",
+    "保留主构造器、带 DefaultConstructorMarker 的默认参数构造器、state getter、7 个公开方法及 2 个 $default 入口。",
+    "不是完整 ABI 工具验证：未穷尽 Kotlin 元数据、全部类的二进制属性、跨版本编译器兼容性或运行时链接。",
+    "其他 14 个生产源文件逐字节未变，仅证明源码身份不变，不单独声称全库二进制 ABI 已验证。"
+  ],
+  "artifacts": {
+    "before": {
+      "aar": {
+        "path": "build/reports/main-flow-baseline/artifacts/offlineSdk-0.3.0.aar",
+        "sha256": "159f24bb0a470602033ea9cb754ba8670146df72f243084687e33bace4cdb09b"
+      },
+      "sources": {
+        "path": "build/reports/main-flow-baseline/artifacts/offlineSdk-0.3.0-sources.jar",
+        "sha256": "9d632bcba128a4c2e6e35f6e0498e1ae8158e8075a662ed742f7cc53aff192b8"
+      },
+      "classes_sha256": "89031741a6f325bf31f759dc8621ee4fd42a2e44f0d0e3f7d3f95179db1438df"
+    },
+    "after": {
+      "aar": {
+        "path": "build/repo/com/github/mobilewhj/offlineSdk/offlineSdk/0.3.0/offlineSdk-0.3.0.aar",
+        "sha256": "77e60fbcaeceaa4ac13826c1774ac88ab9af062bb994d016dc2db1f5f12101c0"
+      },
+      "sources": {
+        "path": "build/repo/com/github/mobilewhj/offlineSdk/offlineSdk/0.3.0/offlineSdk-0.3.0-sources.jar",
+        "sha256": "ed25b5c295cb3d93f5836760cb1e3cfb9f16cf0acd61e9bee9b62a413ba7fc05"
+      },
+      "classes_sha256": "b4ad55021f6058b45e7df01e0bc28de884dff2f63b713fa72cc53042cda2abbe"
+    }
+  },
+  "checks": {
+    "baseline_sources_match_frozen_workspace": true,
+    "baseline_manager_matches_frozen_workspace": true,
+    "current_sources_match_workspace": true,
+    "current_manager_contains_decideCandidate": true,
+    "manager_public_jvm_signatures_equal": true,
+    "expected_public_surface_retained": true,
+    "public_types_source_unchanged": true,
+    "only_manager_production_source_changed": true
+  },
+  "baseline_sources_vs_frozen_workspace": {
+    "archive_count": 15,
+    "filesystem_count": 15,
+    "matches": 15,
+    "missing_from_archive": [],
+    "extra_in_archive": [],
+    "files": [
+      {
+        "path": "com/offline/tool/FailureReason.kt",
+        "archive_sha256": "77b14af11405e65308167b537e75bbb3fcf8d0667954c67b45d6f7ac664a0cee",
+        "filesystem_sha256": "77b14af11405e65308167b537e75bbb3fcf8d0667954c67b45d6f7ac664a0cee",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/InitialLocalFacts.kt",
+        "archive_sha256": "ee77b15aab131c807853f366f3ca32466bb42e86089d3dfc04ce3e581f2d96f6",
+        "filesystem_sha256": "ee77b15aab131c807853f366f3ca32466bb42e86089d3dfc04ce3e581f2d96f6",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/InstallException.kt",
+        "archive_sha256": "4654d9e87b87bf8d013e514a4d29fc47229dd3a60c0b0d4f254f690801dca604",
+        "filesystem_sha256": "4654d9e87b87bf8d013e514a4d29fc47229dd3a60c0b0d4f254f690801dca604",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/InstallResult.kt",
+        "archive_sha256": "4832d7329e15188abecb343726d1a867ffa5ac6d909f11f2b7bfaea59cd5072f",
+        "filesystem_sha256": "4832d7329e15188abecb343726d1a867ffa5ac6d909f11f2b7bfaea59cd5072f",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/InstallStage.kt",
+        "archive_sha256": "6537e2c3a736138c2b2cfd80ffb6e3a157cc6ca204a6402de208f8a5999d82c8",
+        "filesystem_sha256": "6537e2c3a736138c2b2cfd80ffb6e3a157cc6ca204a6402de208f8a5999d82c8",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/ManagedOfflineSdk.kt",
+        "archive_sha256": "0f1020bb8cd6ea7733bbec145931da58f1aa7bf4c93a66b3c629a80daaa6a304",
+        "filesystem_sha256": "0f1020bb8cd6ea7733bbec145931da58f1aa7bf4c93a66b3c629a80daaa6a304",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/ManagedOfflineTypes.kt",
+        "archive_sha256": "d2541b37b3d3530cab609fdd7374e35e2bcf191fc4fd939617a176e4f6b2695a",
+        "filesystem_sha256": "d2541b37b3d3530cab609fdd7374e35e2bcf191fc4fd939617a176e4f6b2695a",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/OfflineInterceptor.kt",
+        "archive_sha256": "0429a5e56ff558c32d4f41b51e8c350003cfc0701a7f1f15ef4d95f27ec7369a",
+        "filesystem_sha256": "0429a5e56ff558c32d4f41b51e8c350003cfc0701a7f1f15ef4d95f27ec7369a",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/OfflineUrlRules.kt",
+        "archive_sha256": "595bb281cb734495d766eff661221f4025353c3d47fb32de39882007baf0c3c6",
+        "filesystem_sha256": "595bb281cb734495d766eff661221f4025353c3d47fb32de39882007baf0c3c6",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/PackageArchive.kt",
+        "archive_sha256": "c2c222872b11c4573e9791fae8209d332c2d251c2e89939bdb30ec00392e00ee",
+        "filesystem_sha256": "c2c222872b11c4573e9791fae8209d332c2d251c2e89939bdb30ec00392e00ee",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/PackageDownloader.kt",
+        "archive_sha256": "1b88914f19c3fbc5ff6e9b16da446f1cbfe49fd5c6474572e0f14add74053534",
+        "filesystem_sha256": "1b88914f19c3fbc5ff6e9b16da446f1cbfe49fd5c6474572e0f14add74053534",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/PackageEntry.kt",
+        "archive_sha256": "56e570112ebfcc8ca06bfb374ff68390cfdf35cac9c9bccc408ed51c710b46de",
+        "filesystem_sha256": "56e570112ebfcc8ca06bfb374ff68390cfdf35cac9c9bccc408ed51c710b46de",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/PackageInstaller.kt",
+        "archive_sha256": "bbd0a546425f74d2943a7b3c41da3a36a1abaa5ac5c6f8f94f880351273eeb44",
+        "filesystem_sha256": "bbd0a546425f74d2943a7b3c41da3a36a1abaa5ac5c6f8f94f880351273eeb44",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/PackageRecord.kt",
+        "archive_sha256": "94b3ec2390643200fafc12cfe9791d4832eca4e44acef5b0b034aab082bc30a0",
+        "filesystem_sha256": "94b3ec2390643200fafc12cfe9791d4832eca4e44acef5b0b034aab082bc30a0",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/x5/X5OfflineResponse.kt",
+        "archive_sha256": "e8b97f79f32a7da53735515991669f206e77eb20a3dc19e1502263d99a3dab38",
+        "filesystem_sha256": "e8b97f79f32a7da53735515991669f206e77eb20a3dc19e1502263d99a3dab38",
+        "matches": true
+      }
+    ]
+  },
+  "current_sources_vs_workspace": {
+    "archive_count": 15,
+    "filesystem_count": 15,
+    "matches": 15,
+    "missing_from_archive": [],
+    "extra_in_archive": [],
+    "files": [
+      {
+        "path": "com/offline/tool/FailureReason.kt",
+        "archive_sha256": "77b14af11405e65308167b537e75bbb3fcf8d0667954c67b45d6f7ac664a0cee",
+        "filesystem_sha256": "77b14af11405e65308167b537e75bbb3fcf8d0667954c67b45d6f7ac664a0cee",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/InitialLocalFacts.kt",
+        "archive_sha256": "ee77b15aab131c807853f366f3ca32466bb42e86089d3dfc04ce3e581f2d96f6",
+        "filesystem_sha256": "ee77b15aab131c807853f366f3ca32466bb42e86089d3dfc04ce3e581f2d96f6",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/InstallException.kt",
+        "archive_sha256": "4654d9e87b87bf8d013e514a4d29fc47229dd3a60c0b0d4f254f690801dca604",
+        "filesystem_sha256": "4654d9e87b87bf8d013e514a4d29fc47229dd3a60c0b0d4f254f690801dca604",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/InstallResult.kt",
+        "archive_sha256": "4832d7329e15188abecb343726d1a867ffa5ac6d909f11f2b7bfaea59cd5072f",
+        "filesystem_sha256": "4832d7329e15188abecb343726d1a867ffa5ac6d909f11f2b7bfaea59cd5072f",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/InstallStage.kt",
+        "archive_sha256": "6537e2c3a736138c2b2cfd80ffb6e3a157cc6ca204a6402de208f8a5999d82c8",
+        "filesystem_sha256": "6537e2c3a736138c2b2cfd80ffb6e3a157cc6ca204a6402de208f8a5999d82c8",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/ManagedOfflineSdk.kt",
+        "archive_sha256": "ca1af3321960b4012d92afc1b779b90c00ff77fce624621f7edebe1b9ca02a22",
+        "filesystem_sha256": "ca1af3321960b4012d92afc1b779b90c00ff77fce624621f7edebe1b9ca02a22",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/ManagedOfflineTypes.kt",
+        "archive_sha256": "d2541b37b3d3530cab609fdd7374e35e2bcf191fc4fd939617a176e4f6b2695a",
+        "filesystem_sha256": "d2541b37b3d3530cab609fdd7374e35e2bcf191fc4fd939617a176e4f6b2695a",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/OfflineInterceptor.kt",
+        "archive_sha256": "0429a5e56ff558c32d4f41b51e8c350003cfc0701a7f1f15ef4d95f27ec7369a",
+        "filesystem_sha256": "0429a5e56ff558c32d4f41b51e8c350003cfc0701a7f1f15ef4d95f27ec7369a",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/OfflineUrlRules.kt",
+        "archive_sha256": "595bb281cb734495d766eff661221f4025353c3d47fb32de39882007baf0c3c6",
+        "filesystem_sha256": "595bb281cb734495d766eff661221f4025353c3d47fb32de39882007baf0c3c6",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/PackageArchive.kt",
+        "archive_sha256": "c2c222872b11c4573e9791fae8209d332c2d251c2e89939bdb30ec00392e00ee",
+        "filesystem_sha256": "c2c222872b11c4573e9791fae8209d332c2d251c2e89939bdb30ec00392e00ee",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/PackageDownloader.kt",
+        "archive_sha256": "1b88914f19c3fbc5ff6e9b16da446f1cbfe49fd5c6474572e0f14add74053534",
+        "filesystem_sha256": "1b88914f19c3fbc5ff6e9b16da446f1cbfe49fd5c6474572e0f14add74053534",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/PackageEntry.kt",
+        "archive_sha256": "56e570112ebfcc8ca06bfb374ff68390cfdf35cac9c9bccc408ed51c710b46de",
+        "filesystem_sha256": "56e570112ebfcc8ca06bfb374ff68390cfdf35cac9c9bccc408ed51c710b46de",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/PackageInstaller.kt",
+        "archive_sha256": "bbd0a546425f74d2943a7b3c41da3a36a1abaa5ac5c6f8f94f880351273eeb44",
+        "filesystem_sha256": "bbd0a546425f74d2943a7b3c41da3a36a1abaa5ac5c6f8f94f880351273eeb44",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/PackageRecord.kt",
+        "archive_sha256": "94b3ec2390643200fafc12cfe9791d4832eca4e44acef5b0b034aab082bc30a0",
+        "filesystem_sha256": "94b3ec2390643200fafc12cfe9791d4832eca4e44acef5b0b034aab082bc30a0",
+        "matches": true
+      },
+      {
+        "path": "com/offline/tool/x5/X5OfflineResponse.kt",
+        "archive_sha256": "e8b97f79f32a7da53735515991669f206e77eb20a3dc19e1502263d99a3dab38",
+        "filesystem_sha256": "e8b97f79f32a7da53735515991669f206e77eb20a3dc19e1502263d99a3dab38",
+        "matches": true
+      }
+    ]
+  },
+  "production_source_comparison": [
+    {
+      "path": "com/offline/tool/FailureReason.kt",
+      "before_sha256": "77b14af11405e65308167b537e75bbb3fcf8d0667954c67b45d6f7ac664a0cee",
+      "after_sha256": "77b14af11405e65308167b537e75bbb3fcf8d0667954c67b45d6f7ac664a0cee",
+      "unchanged": true
+    },
+    {
+      "path": "com/offline/tool/InitialLocalFacts.kt",
+      "before_sha256": "ee77b15aab131c807853f366f3ca32466bb42e86089d3dfc04ce3e581f2d96f6",
+      "after_sha256": "ee77b15aab131c807853f366f3ca32466bb42e86089d3dfc04ce3e581f2d96f6",
+      "unchanged": true
+    },
+    {
+      "path": "com/offline/tool/InstallException.kt",
+      "before_sha256": "4654d9e87b87bf8d013e514a4d29fc47229dd3a60c0b0d4f254f690801dca604",
+      "after_sha256": "4654d9e87b87bf8d013e514a4d29fc47229dd3a60c0b0d4f254f690801dca604",
+      "unchanged": true
+    },
+    {
+      "path": "com/offline/tool/InstallResult.kt",
+      "before_sha256": "4832d7329e15188abecb343726d1a867ffa5ac6d909f11f2b7bfaea59cd5072f",
+      "after_sha256": "4832d7329e15188abecb343726d1a867ffa5ac6d909f11f2b7bfaea59cd5072f",
+      "unchanged": true
+    },
+    {
+      "path": "com/offline/tool/InstallStage.kt",
+      "before_sha256": "6537e2c3a736138c2b2cfd80ffb6e3a157cc6ca204a6402de208f8a5999d82c8",
+      "after_sha256": "6537e2c3a736138c2b2cfd80ffb6e3a157cc6ca204a6402de208f8a5999d82c8",
+      "unchanged": true
+    },
+    {
+      "path": "com/offline/tool/ManagedOfflineSdk.kt",
+      "before_sha256": "0f1020bb8cd6ea7733bbec145931da58f1aa7bf4c93a66b3c629a80daaa6a304",
+      "after_sha256": "ca1af3321960b4012d92afc1b779b90c00ff77fce624621f7edebe1b9ca02a22",
+      "unchanged": false
+    },
+    {
+      "path": "com/offline/tool/ManagedOfflineTypes.kt",
+      "before_sha256": "d2541b37b3d3530cab609fdd7374e35e2bcf191fc4fd939617a176e4f6b2695a",
+      "after_sha256": "d2541b37b3d3530cab609fdd7374e35e2bcf191fc4fd939617a176e4f6b2695a",
+      "unchanged": true
+    },
+    {
+      "path": "com/offline/tool/OfflineInterceptor.kt",
+      "before_sha256": "0429a5e56ff558c32d4f41b51e8c350003cfc0701a7f1f15ef4d95f27ec7369a",
+      "after_sha256": "0429a5e56ff558c32d4f41b51e8c350003cfc0701a7f1f15ef4d95f27ec7369a",
+      "unchanged": true
+    },
+    {
+      "path": "com/offline/tool/OfflineUrlRules.kt",
+      "before_sha256": "595bb281cb734495d766eff661221f4025353c3d47fb32de39882007baf0c3c6",
+      "after_sha256": "595bb281cb734495d766eff661221f4025353c3d47fb32de39882007baf0c3c6",
+      "unchanged": true
+    },
+    {
+      "path": "com/offline/tool/PackageArchive.kt",
+      "before_sha256": "c2c222872b11c4573e9791fae8209d332c2d251c2e89939bdb30ec00392e00ee",
+      "after_sha256": "c2c222872b11c4573e9791fae8209d332c2d251c2e89939bdb30ec00392e00ee",
+      "unchanged": true
+    },
+    {
+      "path": "com/offline/tool/PackageDownloader.kt",
+      "before_sha256": "1b88914f19c3fbc5ff6e9b16da446f1cbfe49fd5c6474572e0f14add74053534",
+      "after_sha256": "1b88914f19c3fbc5ff6e9b16da446f1cbfe49fd5c6474572e0f14add74053534",
+      "unchanged": true
+    },
+    {
+      "path": "com/offline/tool/PackageEntry.kt",
+      "before_sha256": "56e570112ebfcc8ca06bfb374ff68390cfdf35cac9c9bccc408ed51c710b46de",
+      "after_sha256": "56e570112ebfcc8ca06bfb374ff68390cfdf35cac9c9bccc408ed51c710b46de",
+      "unchanged": true
+    },
+    {
+      "path": "com/offline/tool/PackageInstaller.kt",
+      "before_sha256": "bbd0a546425f74d2943a7b3c41da3a36a1abaa5ac5c6f8f94f880351273eeb44",
+      "after_sha256": "bbd0a546425f74d2943a7b3c41da3a36a1abaa5ac5c6f8f94f880351273eeb44",
+      "unchanged": true
+    },
+    {
+      "path": "com/offline/tool/PackageRecord.kt",
+      "before_sha256": "94b3ec2390643200fafc12cfe9791d4832eca4e44acef5b0b034aab082bc30a0",
+      "after_sha256": "94b3ec2390643200fafc12cfe9791d4832eca4e44acef5b0b034aab082bc30a0",
+      "unchanged": true
+    },
+    {
+      "path": "com/offline/tool/x5/X5OfflineResponse.kt",
+      "before_sha256": "e8b97f79f32a7da53735515991669f206e77eb20a3dc19e1502263d99a3dab38",
+      "after_sha256": "e8b97f79f32a7da53735515991669f206e77eb20a3dc19e1502263d99a3dab38",
+      "unchanged": true
+    }
+  ],
+  "manager_public_signature_entry_count": 12,
+  "method_counts": {
+    "com.offline.tool.ManagedOfflineSdk": 2,
+    "getState": 1,
+    "startupDecision": 1,
+    "prepareFirst": 1,
+    "prepareFirst$default": 1,
+    "setConditions": 1,
+    "requestCheck": 1,
+    "preparePage": 1,
+    "commitPage": 1,
+    "commitPage$default": 1,
+    "shutdown": 1
+  },
+  "filtered_synthetic_bridges": {
+    "before": [
+      "public static final java.lang.Object access$getGate$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final kotlinx.coroutines.sync.Mutex access$getOperation$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final void access$startPollingIfEligible(com.offline.tool.ManagedOfflineSdk);",
+      "public static final boolean access$getPrivacyAllowed$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final boolean access$getClosed$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final boolean access$getForeground$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final boolean access$getInitialFinished(com.offline.tool.ManagedOfflineSdk);",
+      "public static final boolean access$getUsable$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final java.lang.Object access$initializeLocked(com.offline.tool.ManagedOfflineSdk, kotlin.coroutines.Continuation);",
+      "public static final com.offline.tool.CheckResult$Failed access$initializationFailure(com.offline.tool.ManagedOfflineSdk);",
+      "public static final java.lang.Object access$ensureColdCleanup(com.offline.tool.ManagedOfflineSdk, kotlin.coroutines.Continuation);",
+      "public static final java.lang.Object access$executeCheck(com.offline.tool.ManagedOfflineSdk, boolean, kotlin.jvm.functions.Function1, kotlin.jvm.functions.Function1, com.offline.tool.ManagedOfflineSdk$Terminal, kotlin.coroutines.Continuation);",
+      "public static final com.offline.tool.CheckResult$Failed access$recordCheckFailure(com.offline.tool.ManagedOfflineSdk, com.offline.tool.ManagedFailure);",
+      "public static final com.offline.tool.ManagedFailure access$localFailure(com.offline.tool.ManagedOfflineSdk, com.offline.tool.ManagedFailureReason, com.offline.tool.ManagedStage);",
+      "public static final void access$offerCheckDiagnostic(com.offline.tool.ManagedOfflineSdk, com.offline.tool.CheckResult);",
+      "public static final java.lang.Object access$finishFirst(com.offline.tool.ManagedOfflineSdk, kotlin.coroutines.Continuation);",
+      "public static final void access$setActivity$p(com.offline.tool.ManagedOfflineSdk, com.offline.tool.ManagedActivity);",
+      "public static final void access$publishState(com.offline.tool.ManagedOfflineSdk);",
+      "public static final void access$offerOutcome(com.offline.tool.ManagedOfflineSdk, com.offline.tool.InstallationOutcome);",
+      "public static final java.lang.Object access$writeHistoryBestEffort(com.offline.tool.ManagedOfflineSdk, com.offline.tool.PreparationHistory, kotlin.coroutines.Continuation);",
+      "public static final long access$millisUntilNextCheck(com.offline.tool.ManagedOfflineSdk);",
+      "public static final com.offline.tool.PreparationHistory access$getHistory$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final com.offline.tool.PackageInstaller access$getInstaller$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final java.lang.Object access$updateOperation(com.offline.tool.ManagedOfflineSdk, kotlin.jvm.functions.Function1, kotlin.coroutines.Continuation);",
+      "public static final java.util.Set access$getUpdateJobs$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final com.offline.tool.ManagedConfigProvider access$getConfigProvider$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final void access$setLastCheck$p(com.offline.tool.ManagedOfflineSdk, java.lang.Long);",
+      "public static final kotlin.jvm.functions.Function0 access$getMonotonicMillis$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final java.lang.Object access$applyConfiguration(com.offline.tool.ManagedOfflineSdk, com.offline.tool.OfflineConfiguration, kotlin.coroutines.Continuation);",
+      "public static final com.offline.tool.ManagedOfflineStorage access$getStorage$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final java.lang.Object access$installCandidate(com.offline.tool.ManagedOfflineSdk, com.offline.tool.OfflineCandidate, kotlin.jvm.functions.Function1, kotlin.jvm.functions.Function1, com.offline.tool.ManagedOfflineSdk$Terminal, kotlin.coroutines.Continuation);",
+      "public static final java.lang.Object access$writeHistory(com.offline.tool.ManagedOfflineSdk, com.offline.tool.PreparationHistory, kotlin.coroutines.Continuation);",
+      "public static final kotlin.text.Regex access$getSHA256$cp();",
+      "public static final java.util.Set access$getClaimedRoots$cp();",
+      "public static final boolean access$validRecord(com.offline.tool.ManagedOfflineSdk, com.offline.tool.PackageRecord);",
+      "public static final kotlinx.coroutines.CoroutineScope access$getProcessScope$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final long access$getCheckIntervalMillis$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final void access$offerDiagnostic(com.offline.tool.ManagedOfflineSdk, com.offline.tool.ManagedFailure);"
+    ],
+    "after": [
+      "public static final java.lang.Object access$getGate$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final kotlinx.coroutines.sync.Mutex access$getOperation$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final void access$startPollingIfEligible(com.offline.tool.ManagedOfflineSdk);",
+      "public static final boolean access$getPrivacyAllowed$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final boolean access$getClosed$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final boolean access$getForeground$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final boolean access$getInitialFinished(com.offline.tool.ManagedOfflineSdk);",
+      "public static final boolean access$getUsable$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final java.lang.Object access$initializeLocked(com.offline.tool.ManagedOfflineSdk, kotlin.coroutines.Continuation);",
+      "public static final com.offline.tool.CheckResult$Failed access$initializationFailure(com.offline.tool.ManagedOfflineSdk);",
+      "public static final java.lang.Object access$ensureColdCleanup(com.offline.tool.ManagedOfflineSdk, kotlin.coroutines.Continuation);",
+      "public static final java.lang.Object access$executeCheck(com.offline.tool.ManagedOfflineSdk, boolean, kotlin.jvm.functions.Function1, kotlin.jvm.functions.Function1, com.offline.tool.ManagedOfflineSdk$Terminal, kotlin.coroutines.Continuation);",
+      "public static final com.offline.tool.CheckResult$Failed access$recordCheckFailure(com.offline.tool.ManagedOfflineSdk, com.offline.tool.ManagedFailure);",
+      "public static final com.offline.tool.ManagedFailure access$localFailure(com.offline.tool.ManagedOfflineSdk, com.offline.tool.ManagedFailureReason, com.offline.tool.ManagedStage);",
+      "public static final void access$offerCheckDiagnostic(com.offline.tool.ManagedOfflineSdk, com.offline.tool.CheckResult);",
+      "public static final java.lang.Object access$finishFirst(com.offline.tool.ManagedOfflineSdk, kotlin.coroutines.Continuation);",
+      "public static final void access$setActivity$p(com.offline.tool.ManagedOfflineSdk, com.offline.tool.ManagedActivity);",
+      "public static final void access$publishState(com.offline.tool.ManagedOfflineSdk);",
+      "public static final void access$offerOutcome(com.offline.tool.ManagedOfflineSdk, com.offline.tool.InstallationOutcome);",
+      "public static final java.lang.Object access$writeHistoryBestEffort(com.offline.tool.ManagedOfflineSdk, com.offline.tool.PreparationHistory, kotlin.coroutines.Continuation);",
+      "public static final long access$millisUntilNextCheck(com.offline.tool.ManagedOfflineSdk);",
+      "public static final com.offline.tool.PreparationHistory access$getHistory$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final com.offline.tool.PackageInstaller access$getInstaller$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final java.lang.Object access$updateOperation(com.offline.tool.ManagedOfflineSdk, kotlin.jvm.functions.Function1, kotlin.coroutines.Continuation);",
+      "public static final java.util.Set access$getUpdateJobs$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final boolean access$canStartUpdate(com.offline.tool.ManagedOfflineSdk);",
+      "public static final com.offline.tool.ManagedConfigProvider access$getConfigProvider$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final void access$setLastCheck$p(com.offline.tool.ManagedOfflineSdk, java.lang.Long);",
+      "public static final kotlin.jvm.functions.Function0 access$getMonotonicMillis$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final java.lang.Object access$applyConfiguration(com.offline.tool.ManagedOfflineSdk, com.offline.tool.OfflineConfiguration, kotlin.coroutines.Continuation);",
+      "public static final com.offline.tool.ManagedOfflineStorage access$getStorage$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final java.lang.Object access$installCandidate(com.offline.tool.ManagedOfflineSdk, com.offline.tool.OfflineCandidate, kotlin.jvm.functions.Function1, kotlin.jvm.functions.Function1, com.offline.tool.ManagedOfflineSdk$Terminal, kotlin.coroutines.Continuation);",
+      "public static final java.lang.Object access$prepareTargetDirectory(com.offline.tool.ManagedOfflineSdk, com.offline.tool.PackageRecord, kotlin.coroutines.Continuation);",
+      "public static final java.lang.Object access$installPackage(com.offline.tool.ManagedOfflineSdk, com.offline.tool.OfflineCandidate, kotlin.jvm.functions.Function1, kotlin.coroutines.Continuation);",
+      "public static final java.lang.Object access$saveAndConfirmActive(com.offline.tool.ManagedOfflineSdk, com.offline.tool.PackageRecord, com.offline.tool.PackageRecord, kotlin.jvm.functions.Function1, kotlin.coroutines.Continuation);",
+      "public static final java.lang.Object access$writeHistory(com.offline.tool.ManagedOfflineSdk, com.offline.tool.PreparationHistory, kotlin.coroutines.Continuation);",
+      "public static final kotlin.text.Regex access$getSHA256$cp();",
+      "public static final java.util.Set access$getClaimedRoots$cp();",
+      "public static final boolean access$isPollingEligible(com.offline.tool.ManagedOfflineSdk);",
+      "public static final kotlinx.coroutines.CoroutineScope access$getProcessScope$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final long access$getCheckIntervalMillis$p(com.offline.tool.ManagedOfflineSdk);",
+      "public static final void access$offerDiagnostic(com.offline.tool.ManagedOfflineSdk, com.offline.tool.ManagedFailure);"
+    ]
+  },
+  "commands": [
+    "cd $SDK_REPO",
+    "python3 build/reports/main-flow-refactor/api-compare.py",
+    "'/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/javap' -public -s -classpath $SDK_REPO/build/reports/main-flow-refactor/api-before-classes.jar com.offline.tool.ManagedOfflineSdk",
+    "'/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/javap' -public -s -classpath $SDK_REPO/build/reports/main-flow-refactor/api-after-classes.jar com.offline.tool.ManagedOfflineSdk"
+  ],
+  "script_sha256": "e2aa214d9699c17e97ad579ef46c9489facf9910c54f06343f24f825d71b9e1a"
+}

@@ -1,0 +1,15 @@
+  com.offline.tool.ManagedOfflineSdk(java.io.File, com.offline.tool.ManagedOfflineStorage, com.offline.tool.ManagedConfigProvider, int, kotlin.jvm.functions.Function1, kotlin.jvm.functions.Function1, kotlinx.coroutines.CoroutineDispatcher, kotlinx.coroutines.CoroutineDispatcher, long, kotlin.jvm.functions.Function0, okhttp3.OkHttpClient, long, int, kotlin.jvm.internal.DefaultConstructorMarker);
+    descriptor: (Ljava/io/File;Lcom/offline/tool/ManagedOfflineStorage;Lcom/offline/tool/ManagedConfigProvider;ILkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;JLkotlin/jvm/functions/Function0;Lokhttp3/OkHttpClient;JILkotlin/jvm/internal/DefaultConstructorMarker;)V
+    flags: (0x1000) ACC_SYNTHETIC
+--
+  public com.offline.tool.ManagedOfflineSdk(java.io.File, com.offline.tool.ManagedOfflineStorage, com.offline.tool.ManagedConfigProvider, int, kotlin.jvm.functions.Function1<? super com.offline.tool.InstallationOutcome, kotlin.Unit>, kotlin.jvm.functions.Function1<? super com.offline.tool.ManagedFailure, kotlin.Unit>, okhttp3.OkHttpClient);
+    descriptor: (Ljava/io/File;Lcom/offline/tool/ManagedOfflineStorage;Lcom/offline/tool/ManagedConfigProvider;ILkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lokhttp3/OkHttpClient;)V
+    flags: (0x0001) ACC_PUBLIC
+--
+  public com.offline.tool.ManagedOfflineSdk(java.io.File, com.offline.tool.ManagedOfflineStorage, com.offline.tool.ManagedConfigProvider, int, kotlin.jvm.functions.Function1, kotlin.jvm.functions.Function1, okhttp3.OkHttpClient, int, kotlin.jvm.internal.DefaultConstructorMarker);
+    descriptor: (Ljava/io/File;Lcom/offline/tool/ManagedOfflineStorage;Lcom/offline/tool/ManagedConfigProvider;ILkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lokhttp3/OkHttpClient;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+    flags: (0x1001) ACC_PUBLIC, ACC_SYNTHETIC
+--
+  public com.offline.tool.ManagedOfflineSdk(java.io.File, com.offline.tool.ManagedOfflineStorage, com.offline.tool.ManagedConfigProvider, int, kotlin.jvm.functions.Function1, kotlin.jvm.functions.Function1, kotlinx.coroutines.CoroutineDispatcher, kotlinx.coroutines.CoroutineDispatcher, long, kotlin.jvm.functions.Function0, okhttp3.OkHttpClient, long, kotlin.jvm.internal.DefaultConstructorMarker);
+    descriptor: (Ljava/io/File;Lcom/offline/tool/ManagedOfflineStorage;Lcom/offline/tool/ManagedConfigProvider;ILkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;JLkotlin/jvm/functions/Function0;Lokhttp3/OkHttpClient;JLkotlin/jvm/internal/DefaultConstructorMarker;)V
+    flags: (0x1001) ACC_PUBLIC, ACC_SYNTHETIC

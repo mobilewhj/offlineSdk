@@ -1,5 +1,9 @@
 # Android 离线包 SDK
 
+`0.3.0-rc.1` 是接入测试候选，正式 `0.3.0` 未发布。`ManagedOfflineSdk` 高层入口统一同一根目录的本地准备、配置检查、安装、active 保存、页面保护与缓存失效；配置/存储/条件/结果通知由宿主提供。代码与结构范围已复审接受，JitPack 远端构建和消费仍待本轮核验；预期多模块坐标为 `com.github.mobilewhj.offlineSdk:offlineSdk:0.3.0-rc.1`，仓库配置、详细签名与迁移说明见[托管接入文档](../docs/MIGRATION-MANAGED-0.3.0.md)，Demo 见[示例说明](../docs/DEMO.md)。已发布 `0.2.2` 的低层 API 继续保留；以下内容描述这些低层 API，使用托管根目录时不要再用独立安装器并发修改该目录。
+
+托管首装由单条 `prepareFirst(onProgress)` 进度回调呈现；页面仅调用挂起的 `loadPage(url, baseUrl, callbacks)`，由 SDK 内部完成 IO 观察与 Main 最终复核。
+
 SDK 负责离线 ZIP 的下载、校验、安装和 WebView 资源映射。版本选择、元数据持久化及页面切换由调用方负责。
 
 | 文件 | 职责 |

@@ -1,0 +1,209 @@
+ M CHANGELOG.md
+ M README.en.md
+ M README.md
+ M app/src/main/java/com/offline/tool/sample/DemoApplication.kt
+ M app/src/main/java/com/offline/tool/sample/MainActivity.kt
+ D app/src/main/java/com/offline/tool/sample/offline/DemoOfflinePackages.kt
+ D app/src/main/java/com/offline/tool/sample/offline/InstallOfflinePackageUseCase.kt
+ D app/src/main/java/com/offline/tool/sample/offline/OfflinePageAdapter.kt
+ D app/src/main/java/com/offline/tool/sample/offline/OfflineUrlRules.kt
+ D app/src/main/java/com/offline/tool/sample/ui/welcome/OfflineUpdatePlan.kt
+ M app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeActivity.kt
+ D app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeRepository.kt
+ M app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeViewModel.kt
+ M app/src/main/res/layout/act_welcome.xml
+ M app/src/main/res/values/strings.xml
+ D app/src/test/java/com/offline/tool/sample/offline/OfflineUrlRulesTest.kt
+ D app/src/test/java/com/offline/tool/sample/ui/welcome/OfflineUpdatePlanTest.kt
+ D app/src/test/java/com/offline/tool/sample/ui/welcome/WelcomeFlowTest.kt
+ M docs/DEMO.md
+ M offlineSdk/README.md
+ M offlineSdk/build.gradle.kts
+ M offlineSdk/src/androidTest/java/com/offline/tool/OfflineAndroidTest.kt
+ M offlineSdk/src/main/java/com/offline/tool/FailureReason.kt
+ M offlineSdk/src/main/java/com/offline/tool/OfflineInterceptor.kt
+ M offlineSdk/src/main/java/com/offline/tool/PackageInstaller.kt
+ M scripts/aar-consumer-smoke.init.gradle
+ M scripts/aar-consumer-smoke/src/com/offline/tool/sample/OfflineSdkAarSmoke.kt
+ M scripts/generate-sample.py
+?? app/src/main/java/com/offline/tool/sample/offline/DemoManagedStorage.kt
+?? app/src/main/java/com/offline/tool/sample/offline/DemoOutcomeReporter.kt
+?? app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeProgressPresentation.kt
+?? app/src/test/java/com/offline/tool/sample/offline/DemoOutcomeReporterTest.kt
+?? app/src/test/java/com/offline/tool/sample/ui/welcome/WelcomeProgressPresentationTest.kt
+?? app/src/test/java/com/offline/tool/sample/ui/welcome/WelcomeViewModelTest.kt
+?? docs/MIGRATION-MANAGED-0.3.0.md
+?? docs/SDK-CODE-QUALITY-REFACTOR.md
+?? docs/SDK-MANAGED-REFACTOR-DELIVERY.md
+?? docs/verification/2026-09-27-code-quality/aar-consumer-first.log
+?? docs/verification/2026-09-27-code-quality/aar-consumer.log
+?? docs/verification/2026-09-27-code-quality/app-repository-tests/TEST-com.offline.tool.sample.offline.DemoOutcomeReporterTest.xml
+?? docs/verification/2026-09-27-code-quality/app-repository-tests/TEST-com.offline.tool.sample.ui.welcome.WelcomeProgressPresentationTest.xml
+?? docs/verification/2026-09-27-code-quality/app-repository-tests/TEST-com.offline.tool.sample.ui.welcome.WelcomeViewModelTest.xml
+?? docs/verification/2026-09-27-code-quality/external-regressions.log
+?? docs/verification/2026-09-27-code-quality/full-build.log
+?? docs/verification/2026-09-27-code-quality/git-status.txt
+?? docs/verification/2026-09-27-code-quality/initial-tests.log
+?? docs/verification/2026-09-27-code-quality/local-candidate.log
+?? docs/verification/2026-09-27-code-quality/offlineSdk-external-tests/TEST-com.offline.tool.ManagedInitializationTest.xml
+?? docs/verification/2026-09-27-code-quality/offlineSdk-external-tests/TEST-com.offline.tool.ManagedOfflineRegressionTest.xml
+?? docs/verification/2026-09-27-code-quality/offlineSdk-external-tests/TEST-com.offline.tool.ManagedOfflineSdkTest.xml
+?? docs/verification/2026-09-27-code-quality/offlineSdk-external-tests/TEST-com.offline.tool.OfflineUrlRulesTest.xml
+?? docs/verification/2026-09-27-code-quality/offlineSdk-external-tests/TEST-com.offline.tool.PackageArchiveTest.xml
+?? docs/verification/2026-09-27-code-quality/offlineSdk-external-tests/TEST-com.offline.tool.PackageDownloaderTest.xml
+?? docs/verification/2026-09-27-code-quality/offlineSdk-external-tests/TEST-com.offline.tool.PackageInstallerCleanupTest.xml
+?? docs/verification/2026-09-27-code-quality/offlineSdk-external-tests/TEST-com.offline.tool.PackageInstallerFactsTest.xml
+?? docs/verification/2026-09-27-code-quality/offlineSdk-external-tests/TEST-com.offline.tool.PackageInstallerPathTest.xml
+?? docs/verification/2026-09-27-code-quality/offlineSdk-external-tests/TEST-com.offline.tool.PackageInstallerTest.xml
+?? docs/verification/2026-09-27-code-quality/offlineSdk-external-tests/TEST-com.offline.tool.ReviewRegressionTest.xml
+?? docs/verification/2026-09-27-code-quality/offlineSdk-repository-tests/TEST-com.offline.tool.ManagedInitializationTest.xml
+?? docs/verification/2026-09-27-code-quality/offlineSdk-repository-tests/TEST-com.offline.tool.ManagedOfflineRegressionTest.xml
+?? docs/verification/2026-09-27-code-quality/offlineSdk-repository-tests/TEST-com.offline.tool.ManagedOfflineSdkTest.xml
+?? docs/verification/2026-09-27-code-quality/offlineSdk-repository-tests/TEST-com.offline.tool.OfflineUrlRulesTest.xml
+?? docs/verification/2026-09-27-code-quality/offlineSdk-repository-tests/TEST-com.offline.tool.PackageArchiveTest.xml
+?? docs/verification/2026-09-27-code-quality/offlineSdk-repository-tests/TEST-com.offline.tool.PackageDownloaderTest.xml
+?? docs/verification/2026-09-27-code-quality/offlineSdk-repository-tests/TEST-com.offline.tool.PackageInstallerCleanupTest.xml
+?? docs/verification/2026-09-27-code-quality/offlineSdk-repository-tests/TEST-com.offline.tool.PackageInstallerFactsTest.xml
+?? docs/verification/2026-09-27-code-quality/offlineSdk-repository-tests/TEST-com.offline.tool.PackageInstallerPathTest.xml
+?? docs/verification/2026-09-27-code-quality/offlineSdk-repository-tests/TEST-com.offline.tool.PackageInstallerTest.xml
+?? docs/verification/2026-09-27-code-quality/source-sha256.txt
+?? docs/verification/2026-09-27-code-quality/structure.diff
+?? docs/verification/2026-09-27-code-quality/verification.json
+?? docs/verification/2026-09-27-main-flow/aar-consumer.log
+?? docs/verification/2026-09-27-main-flow/api-after-raw.txt
+?? docs/verification/2026-09-27-main-flow/api-after.txt
+?? docs/verification/2026-09-27-main-flow/api-before-raw.txt
+?? docs/verification/2026-09-27-main-flow/api-before.txt
+?? docs/verification/2026-09-27-main-flow/api-commands.txt
+?? docs/verification/2026-09-27-main-flow/api-compare.py
+?? docs/verification/2026-09-27-main-flow/api-compatibility.json
+?? docs/verification/2026-09-27-main-flow/api-signature.diff
+?? docs/verification/2026-09-27-main-flow/app-aar-tests/TEST-com.offline.tool.sample.offline.DemoOutcomeReporterTest.xml
+?? docs/verification/2026-09-27-main-flow/app-aar-tests/TEST-com.offline.tool.sample.ui.welcome.WelcomeProgressPresentationTest.xml
+?? docs/verification/2026-09-27-main-flow/app-aar-tests/TEST-com.offline.tool.sample.ui.welcome.WelcomeViewModelTest.xml
+?? docs/verification/2026-09-27-main-flow/app-repository-tests/TEST-com.offline.tool.sample.offline.DemoOutcomeReporterTest.xml
+?? docs/verification/2026-09-27-main-flow/app-repository-tests/TEST-com.offline.tool.sample.ui.welcome.WelcomeProgressPresentationTest.xml
+?? docs/verification/2026-09-27-main-flow/app-repository-tests/TEST-com.offline.tool.sample.ui.welcome.WelcomeViewModelTest.xml
+?? docs/verification/2026-09-27-main-flow/baseline-source-manifest.json
+?? docs/verification/2026-09-27-main-flow/diff-check.log
+?? docs/verification/2026-09-27-main-flow/external-regressions.log
+?? docs/verification/2026-09-27-main-flow/full-build.log
+?? docs/verification/2026-09-27-main-flow/git-status.txt
+?? docs/verification/2026-09-27-main-flow/local-candidate.log
+?? docs/verification/2026-09-27-main-flow/offlineSdk-external-tests/TEST-com.offline.tool.ManagedInitializationTest.xml
+?? docs/verification/2026-09-27-main-flow/offlineSdk-external-tests/TEST-com.offline.tool.ManagedOfflineRegressionTest.xml
+?? docs/verification/2026-09-27-main-flow/offlineSdk-external-tests/TEST-com.offline.tool.ManagedOfflineSdkTest.xml
+?? docs/verification/2026-09-27-main-flow/offlineSdk-external-tests/TEST-com.offline.tool.OfflineUrlRulesTest.xml
+?? docs/verification/2026-09-27-main-flow/offlineSdk-external-tests/TEST-com.offline.tool.PackageArchiveTest.xml
+?? docs/verification/2026-09-27-main-flow/offlineSdk-external-tests/TEST-com.offline.tool.PackageDownloaderTest.xml
+?? docs/verification/2026-09-27-main-flow/offlineSdk-external-tests/TEST-com.offline.tool.PackageInstallerCleanupTest.xml
+?? docs/verification/2026-09-27-main-flow/offlineSdk-external-tests/TEST-com.offline.tool.PackageInstallerFactsTest.xml
+?? docs/verification/2026-09-27-main-flow/offlineSdk-external-tests/TEST-com.offline.tool.PackageInstallerPathTest.xml
+?? docs/verification/2026-09-27-main-flow/offlineSdk-external-tests/TEST-com.offline.tool.PackageInstallerTest.xml
+?? docs/verification/2026-09-27-main-flow/offlineSdk-external-tests/TEST-com.offline.tool.ReviewRegressionTest.xml
+?? docs/verification/2026-09-27-main-flow/offlineSdk-repository-tests/TEST-com.offline.tool.ManagedInitializationTest.xml
+?? docs/verification/2026-09-27-main-flow/offlineSdk-repository-tests/TEST-com.offline.tool.ManagedOfflineRegressionTest.xml
+?? docs/verification/2026-09-27-main-flow/offlineSdk-repository-tests/TEST-com.offline.tool.ManagedOfflineSdkTest.xml
+?? docs/verification/2026-09-27-main-flow/offlineSdk-repository-tests/TEST-com.offline.tool.OfflineUrlRulesTest.xml
+?? docs/verification/2026-09-27-main-flow/offlineSdk-repository-tests/TEST-com.offline.tool.PackageArchiveTest.xml
+?? docs/verification/2026-09-27-main-flow/offlineSdk-repository-tests/TEST-com.offline.tool.PackageDownloaderTest.xml
+?? docs/verification/2026-09-27-main-flow/offlineSdk-repository-tests/TEST-com.offline.tool.PackageInstallerCleanupTest.xml
+?? docs/verification/2026-09-27-main-flow/offlineSdk-repository-tests/TEST-com.offline.tool.PackageInstallerFactsTest.xml
+?? docs/verification/2026-09-27-main-flow/offlineSdk-repository-tests/TEST-com.offline.tool.PackageInstallerPathTest.xml
+?? docs/verification/2026-09-27-main-flow/offlineSdk-repository-tests/TEST-com.offline.tool.PackageInstallerTest.xml
+?? docs/verification/2026-09-27-main-flow/package-evidence.py
+?? docs/verification/2026-09-27-main-flow/sample-check.log
+?? docs/verification/2026-09-27-main-flow/source-sha256.txt
+?? docs/verification/2026-09-27-main-flow/structure.diff
+?? docs/verification/2026-09-27-main-flow/verification.json
+?? docs/verification/2026-09-27-repair/aar-consumer.log
+?? docs/verification/2026-09-27-repair/app-test-results/TEST-com.offline.tool.sample.offline.DemoOutcomeReporterTest.xml
+?? docs/verification/2026-09-27-repair/app-test-results/TEST-com.offline.tool.sample.ui.welcome.WelcomeProgressPresentationTest.xml
+?? docs/verification/2026-09-27-repair/app-test-results/TEST-com.offline.tool.sample.ui.welcome.WelcomeViewModelTest.xml
+?? docs/verification/2026-09-27-repair/external-regressions.log
+?? docs/verification/2026-09-27-repair/full-build.log
+?? docs/verification/2026-09-27-repair/git-status.txt
+?? docs/verification/2026-09-27-repair/local-publish.log
+?? docs/verification/2026-09-27-repair/offlineSdk-test-results/TEST-com.offline.tool.ManagedOfflineRegressionTest.xml
+?? docs/verification/2026-09-27-repair/offlineSdk-test-results/TEST-com.offline.tool.ManagedOfflineSdkTest.xml
+?? docs/verification/2026-09-27-repair/offlineSdk-test-results/TEST-com.offline.tool.PackageArchiveTest.xml
+?? docs/verification/2026-09-27-repair/offlineSdk-test-results/TEST-com.offline.tool.PackageDownloaderTest.xml
+?? docs/verification/2026-09-27-repair/offlineSdk-test-results/TEST-com.offline.tool.PackageInstallerCleanupTest.xml
+?? docs/verification/2026-09-27-repair/offlineSdk-test-results/TEST-com.offline.tool.PackageInstallerFactsTest.xml
+?? docs/verification/2026-09-27-repair/offlineSdk-test-results/TEST-com.offline.tool.PackageInstallerPathTest.xml
+?? docs/verification/2026-09-27-repair/offlineSdk-test-results/TEST-com.offline.tool.PackageInstallerTest.xml
+?? docs/verification/2026-09-27-repair/offlineSdk-test-results/TEST-com.offline.tool.ReviewRegressionTest.xml
+?? docs/verification/2026-09-27-repair/source-sha256.txt
+?? docs/verification/2026-09-27-repair/verification.json
+?? docs/verification/2026-09-28-architecture-simplification/INTERMEDIATE-FAILURE.md
+?? docs/verification/2026-09-28-architecture-simplification/PRODUCTION-COMPARISON.md
+?? docs/verification/2026-09-28-architecture-simplification/REGRESSION-MAPPING.md
+?? docs/verification/2026-09-28-architecture-simplification/aar-consumer-smoke/OfflineSdkAarSmoke.kt
+?? docs/verification/2026-09-28-architecture-simplification/aar-consumer-smoke/aar-consumer-smoke.init.gradle
+?? docs/verification/2026-09-28-architecture-simplification/aar-consumer.log
+?? docs/verification/2026-09-28-architecture-simplification/app-repository-tests/TEST-com.offline.tool.sample.offline.DemoOutcomeReporterTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/app-repository-tests/TEST-com.offline.tool.sample.ui.welcome.WelcomeProgressPresentationTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/app-repository-tests/TEST-com.offline.tool.sample.ui.welcome.WelcomeViewModelTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/artifact-verification.json
+?? docs/verification/2026-09-28-architecture-simplification/baseline-production-stats.json
+?? docs/verification/2026-09-28-architecture-simplification/diff-check.log
+?? docs/verification/2026-09-28-architecture-simplification/external-probes/MAPPING.md
+?? docs/verification/2026-09-28-architecture-simplification/external-probes/ReviewRegressionTest.kt
+?? docs/verification/2026-09-28-architecture-simplification/external-probes/entry-migration.diff
+?? docs/verification/2026-09-28-architecture-simplification/external-probes/original-ReviewRegressionTest.kt
+?? docs/verification/2026-09-28-architecture-simplification/external-regressions.log
+?? docs/verification/2026-09-28-architecture-simplification/full-build.log
+?? docs/verification/2026-09-28-architecture-simplification/git-identity.json
+?? docs/verification/2026-09-28-architecture-simplification/git-status.txt
+?? docs/verification/2026-09-28-architecture-simplification/local-candidate.log
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-external-tests/TEST-com.offline.tool.ManagedInitializationTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-external-tests/TEST-com.offline.tool.ManagedOfflineRegressionTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-external-tests/TEST-com.offline.tool.ManagedOfflineSdkTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-external-tests/TEST-com.offline.tool.OfflineUrlRulesTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-external-tests/TEST-com.offline.tool.PackageArchiveTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-external-tests/TEST-com.offline.tool.PackageDownloaderTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-external-tests/TEST-com.offline.tool.PackageInstallerCleanupTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-external-tests/TEST-com.offline.tool.PackageInstallerFactsTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-external-tests/TEST-com.offline.tool.PackageInstallerPathTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-external-tests/TEST-com.offline.tool.PackageInstallerTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-external-tests/TEST-com.offline.tool.ReviewRegressionTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-repository-tests/TEST-com.offline.tool.ManagedInitializationTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-repository-tests/TEST-com.offline.tool.ManagedOfflineRegressionTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-repository-tests/TEST-com.offline.tool.ManagedOfflineSdkTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-repository-tests/TEST-com.offline.tool.OfflineUrlRulesTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-repository-tests/TEST-com.offline.tool.PackageArchiveTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-repository-tests/TEST-com.offline.tool.PackageDownloaderTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-repository-tests/TEST-com.offline.tool.PackageInstallerCleanupTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-repository-tests/TEST-com.offline.tool.PackageInstallerFactsTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-repository-tests/TEST-com.offline.tool.PackageInstallerPathTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/offlineSdk-repository-tests/TEST-com.offline.tool.PackageInstallerTest.xml
+?? docs/verification/2026-09-28-architecture-simplification/production-comparison.json
+?? docs/verification/2026-09-28-architecture-simplification/production-sha256.txt
+?? docs/verification/2026-09-28-architecture-simplification/sample-check.log
+?? docs/verification/2026-09-28-architecture-simplification/source-sha256.txt
+?? docs/verification/2026-09-28-architecture-simplification/structure.diff
+?? docs/verification/2026-09-28-architecture-simplification/test-summary.json
+?? docs/verification/2026-09-28-architecture-simplification/xml-provenance.json
+?? docs/verification/2026-09-28-sdk-init-api-v2/aar-consumer.log
+?? docs/verification/2026-09-28-sdk-init-api-v2/api-constructor-flags.txt
+?? docs/verification/2026-09-28-sdk-init-api-v2/api-javap.txt
+?? docs/verification/2026-09-28-sdk-init-api-v2/artifact-verification.json
+?? docs/verification/2026-09-28-sdk-init-api-v2/diff-check.log
+?? docs/verification/2026-09-28-sdk-init-api-v2/external-probes/MAPPING.md
+?? docs/verification/2026-09-28-sdk-init-api-v2/external-probes/ReviewRegressionTest.kt
+?? docs/verification/2026-09-28-sdk-init-api-v2/external-regressions.log
+?? docs/verification/2026-09-28-sdk-init-api-v2/full-build.log
+?? docs/verification/2026-09-28-sdk-init-api-v2/git-status.txt
+?? docs/verification/2026-09-28-sdk-init-api-v2/local-candidate.log
+?? docs/verification/2026-09-28-sdk-init-api-v2/production-compare.json
+?? docs/verification/2026-09-28-sdk-init-api-v2/sample-check.log
+?? docs/verification/2026-09-28-sdk-init-api-v2/structure.diff
+?? docs/verification/2026-09-28-sdk-init-api-v2/test-summary.json
+?? offlineSdk/src/main/java/com/offline/tool/InitialLocalFacts.kt
+?? offlineSdk/src/main/java/com/offline/tool/ManagedOfflineSdk.kt
+?? offlineSdk/src/main/java/com/offline/tool/ManagedOfflineTypes.kt
+?? offlineSdk/src/main/java/com/offline/tool/OfflineUrlRules.kt
+?? offlineSdk/src/test/java/com/offline/tool/ManagedInitializationTest.kt
+?? offlineSdk/src/test/java/com/offline/tool/ManagedOfflineRegressionTest.kt
+?? offlineSdk/src/test/java/com/offline/tool/ManagedOfflineSdkTest.kt
+?? offlineSdk/src/test/java/com/offline/tool/OfflineUrlRulesTest.kt

@@ -1,0 +1,127 @@
+{
+  "generated_at_utc": "2026-09-29T13:55:23.503905+00:00",
+  "candidate": "local 0.3.0 P2 rebuild",
+  "artifacts": {
+    "offlineSdk-0.3.0.aar": {
+      "sha256": "cbfb3d35b8da06b6727643399daca82562bdadf60bcb2e25add916d1685333d3",
+      "sidecar_sha256": "cbfb3d35b8da06b6727643399daca82562bdadf60bcb2e25add916d1685333d3",
+      "sidecar_matches": true,
+      "bytes": 233619
+    },
+    "offlineSdk-0.3.0-sources.jar": {
+      "sha256": "8e4ae3dc4c2dfbf69ea68c7e615ad797619058fbd9946360df8ed4bc52783cc4",
+      "sidecar_sha256": "8e4ae3dc4c2dfbf69ea68c7e615ad797619058fbd9946360df8ed4bc52783cc4",
+      "sidecar_matches": true,
+      "bytes": 36887
+    },
+    "offlineSdk-0.3.0.pom": {
+      "sha256": "5379399a9f112b88872a69b491d24881a4fe4c358ff1d3c7b1acba10672bb0b3",
+      "sidecar_sha256": "5379399a9f112b88872a69b491d24881a4fe4c358ff1d3c7b1acba10672bb0b3",
+      "sidecar_matches": true,
+      "bytes": 2383
+    },
+    "offlineSdk-0.3.0.module": {
+      "sha256": "9cd123871b5e3d88d9c26c96d23bff93c8b9637d3a1694721553640883a84cad",
+      "sidecar_sha256": "9cd123871b5e3d88d9c26c96d23bff93c8b9637d3a1694721553640883a84cad",
+      "sidecar_matches": true,
+      "bytes": 3938
+    }
+  },
+  "release_aar_sha256": "cbfb3d35b8da06b6727643399daca82562bdadf60bcb2e25add916d1685333d3",
+  "release_matches_local_maven": true,
+  "consumer_aar_sha256": "cbfb3d35b8da06b6727643399daca82562bdadf60bcb2e25add916d1685333d3",
+  "consumer_matches_local_maven": true,
+  "source_count_workspace": 15,
+  "source_count_packed": 15,
+  "source_match_count": 15,
+  "source_extra_entries": [],
+  "sources": [
+    {
+      "entry": "com/offline/tool/FailureReason.kt",
+      "workspace_sha256": "77b14af11405e65308167b537e75bbb3fcf8d0667954c67b45d6f7ac664a0cee",
+      "matches": true
+    },
+    {
+      "entry": "com/offline/tool/InitialLocalFacts.kt",
+      "workspace_sha256": "ee77b15aab131c807853f366f3ca32466bb42e86089d3dfc04ce3e581f2d96f6",
+      "matches": true
+    },
+    {
+      "entry": "com/offline/tool/InstallException.kt",
+      "workspace_sha256": "4654d9e87b87bf8d013e514a4d29fc47229dd3a60c0b0d4f254f690801dca604",
+      "matches": true
+    },
+    {
+      "entry": "com/offline/tool/InstallResult.kt",
+      "workspace_sha256": "4832d7329e15188abecb343726d1a867ffa5ac6d909f11f2b7bfaea59cd5072f",
+      "matches": true
+    },
+    {
+      "entry": "com/offline/tool/InstallStage.kt",
+      "workspace_sha256": "6537e2c3a736138c2b2cfd80ffb6e3a157cc6ca204a6402de208f8a5999d82c8",
+      "matches": true
+    },
+    {
+      "entry": "com/offline/tool/ManagedOfflineSdk.kt",
+      "workspace_sha256": "2930808d110dabe57d719d632e41a160ba12795ab93cdacdd1d2a46efd91f53f",
+      "matches": true
+    },
+    {
+      "entry": "com/offline/tool/ManagedOfflineTypes.kt",
+      "workspace_sha256": "4185fa6c6a3a281d601612ac7b90060ecfa0621abf570a16551c1e3f11abb615",
+      "matches": true
+    },
+    {
+      "entry": "com/offline/tool/OfflineInterceptor.kt",
+      "workspace_sha256": "0429a5e56ff558c32d4f41b51e8c350003cfc0701a7f1f15ef4d95f27ec7369a",
+      "matches": true
+    },
+    {
+      "entry": "com/offline/tool/OfflineUrlRules.kt",
+      "workspace_sha256": "595bb281cb734495d766eff661221f4025353c3d47fb32de39882007baf0c3c6",
+      "matches": true
+    },
+    {
+      "entry": "com/offline/tool/PackageArchive.kt",
+      "workspace_sha256": "c2c222872b11c4573e9791fae8209d332c2d251c2e89939bdb30ec00392e00ee",
+      "matches": true
+    },
+    {
+      "entry": "com/offline/tool/PackageDownloader.kt",
+      "workspace_sha256": "1b88914f19c3fbc5ff6e9b16da446f1cbfe49fd5c6474572e0f14add74053534",
+      "matches": true
+    },
+    {
+      "entry": "com/offline/tool/PackageEntry.kt",
+      "workspace_sha256": "56e570112ebfcc8ca06bfb374ff68390cfdf35cac9c9bccc408ed51c710b46de",
+      "matches": true
+    },
+    {
+      "entry": "com/offline/tool/PackageInstaller.kt",
+      "workspace_sha256": "bbd0a546425f74d2943a7b3c41da3a36a1abaa5ac5c6f8f94f880351273eeb44",
+      "matches": true
+    },
+    {
+      "entry": "com/offline/tool/PackageRecord.kt",
+      "workspace_sha256": "94b3ec2390643200fafc12cfe9791d4832eca4e44acef5b0b034aab082bc30a0",
+      "matches": true
+    },
+    {
+      "entry": "com/offline/tool/x5/X5OfflineResponse.kt",
+      "workspace_sha256": "e8b97f79f32a7da53735515991669f206e77eb20a3dc19e1502263d99a3dab38",
+      "matches": true
+    }
+  ],
+  "manager_sha256": "2930808d110dabe57d719d632e41a160ba12795ab93cdacdd1d2a46efd91f53f",
+  "all_checks_pass": true,
+  "module_embedded_sha256": {
+    "offlineSdk-0.3.0.aar": [
+      "cbfb3d35b8da06b6727643399daca82562bdadf60bcb2e25add916d1685333d3",
+      "cbfb3d35b8da06b6727643399daca82562bdadf60bcb2e25add916d1685333d3"
+    ],
+    "offlineSdk-0.3.0-sources.jar": [
+      "8e4ae3dc4c2dfbf69ea68c7e615ad797619058fbd9946360df8ed4bc52783cc4"
+    ]
+  },
+  "module_embedded_sha256_matches": true
+}

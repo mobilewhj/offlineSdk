@@ -13,4 +13,5 @@ enum class FailureReason {
     FILE_IO,
     CLEANUP,
     PUBLISH,
+    MANAGED_ROOT,
 }

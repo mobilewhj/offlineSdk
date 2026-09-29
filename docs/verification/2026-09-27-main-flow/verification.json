@@ -1,0 +1,122 @@
+{
+  "date": "2026-09-27",
+  "scope": "Q1–Q3关闭后的ManagedOfflineSdk主流程继续优化；公开API与契约不变",
+  "branch": "main",
+  "head": "ef55eb17e659d9f77ee714a9a37a9bb9d0259921",
+  "implementationCommitted": false,
+  "pushed": false,
+  "tagged": false,
+  "formallyPublished": false,
+  "acceptance": "保留R1–R9及Q1–Q3已通过事实；本轮优化与候选交原规划任务复审，设备及正式发布未完成，业务App继续等待",
+  "environment": {
+    "java": "OpenJDK JBR 17.0.14+1-b1367.22",
+    "gradle": "8.11.1",
+    "agp": "8.10.1",
+    "kotlin": "2.0.21",
+    "minSdk": 24,
+    "compileSdk": 35
+  },
+  "testResults": {
+    "offlineSdk-repository-tests": {
+      "tests": 105,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "app-repository-tests": {
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "offlineSdk-external-tests": {
+      "tests": 111,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "app-aar-tests": {
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "sourceManifestFileCount": 70,
+  "sourceManifestSha256": "93ae8553c4d29b6e915f0222b59606f97fb4aa396354fc3f59bc8d7f3702ed95",
+  "sourceJarMatchesCurrentProductionSources": true,
+  "productionSourceCount": 15,
+  "changedSourceAndBuildFilesSinceRoundStart": [
+    "offlineSdk/src/main/java/com/offline/tool/ManagedOfflineSdk.kt",
+    "offlineSdk/src/test/java/com/offline/tool/ManagedOfflineRegressionTest.kt"
+  ],
+  "demoFilesChangedSinceRoundStart": [],
+  "demoFilesCompared": 20,
+  "publicManagerSignaturesEqual": true,
+  "apiComparisonScope": "管理器构造器、state、7方法及默认参数入口的javap声明和descriptor；过滤access$内部桥接；并非完整ABI工具验证",
+  "baselineDirectory": "$SDK_REPO/build/reports/main-flow-baseline",
+  "baselineSourceManifestSha256": "c67be54f05092bd9b6006f6c2e2c713bdbb6a89bc448bfd5218cdc93eab3a57b",
+  "baselineAarSha256": "159f24bb0a470602033ea9cb754ba8670146df72f243084687e33bace4cdb09b",
+  "localCoordinate": "com.github.mobilewhj.offlineSdk:offlineSdk:0.3.0",
+  "artifactDirectory": "$SDK_REPO/build/repo/com/github/mobilewhj/offlineSdk/offlineSdk/0.3.0",
+  "artifactSha256": {
+    "offlineSdk-0.3.0-sources.jar": "ed25b5c295cb3d93f5836760cb1e3cfb9f16cf0acd61e9bee9b62a413ba7fc05",
+    "offlineSdk-0.3.0.aar": "77e60fbcaeceaa4ac13826c1774ac88ab9af062bb994d016dc2db1f5f12101c0",
+    "offlineSdk-0.3.0.module": "0901e74bd273782ac80a2f9dfd3d885148e392c2114532596558d9a0660026bf",
+    "offlineSdk-0.3.0.pom": "5379399a9f112b88872a69b491d24881a4fe4c358ff1d3c7b1acba10672bb0b3"
+  },
+  "consumerResolvedAarSha256": "77e60fbcaeceaa4ac13826c1774ac88ab9af062bb994d016dc2db1f5f12101c0",
+  "generatedChecksumFilesVerified": 16,
+  "structureDiffBase": "本轮改动前完整工作区快照；其15个生产源码与已验收的159f24基线sources JAR逐字节一致。",
+  "commands": [
+    {
+      "command": "./gradlew :offlineSdk:testDebugUnitTest :offlineSdk:lintRelease :offlineSdk:compileDebugAndroidTestKotlin :offlineSdk:assembleRelease :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleRelease -I $TRACKING_REPO/.trellis/tasks/09-24-offline-sdk-managed-refactor/research/sdk-quality-acceptance-2026-09-27/rerun-tests.init.gradle --no-daemon --console=plain",
+      "result": "BUILD SUCCESSFUL；SDK105、Demo9；SDK/Demo lint、Release/R8、Android测试源码编译通过",
+      "log": "full-build.log"
+    },
+    {
+      "command": "./gradlew :offlineSdk:testDebugUnitTest -I $TRACKING_REPO/.trellis/tasks/09-24-offline-sdk-managed-refactor/research/sdk-acceptance-2026-09-27/review-probes.init.gradle -PreviewProbesDir=$TRACKING_REPO/.trellis/tasks/09-24-offline-sdk-managed-refactor/research/sdk-acceptance-2026-09-27 -I $TRACKING_REPO/.trellis/tasks/09-24-offline-sdk-managed-refactor/research/sdk-quality-acceptance-2026-09-27/rerun-tests.init.gradle --no-daemon --console=plain",
+      "result": "BUILD SUCCESSFUL；SDK111=仓库105+外部6，全部通过",
+      "log": "external-regressions.log"
+    },
+    {
+      "command": "./gradlew :offlineSdk:publishReleasePublicationToLocalReleaseRepository -PsdkVersion=0.3.0 --no-daemon --console=plain",
+      "result": "BUILD SUCCESSFUL；仅本地候选生成，不是正式发布",
+      "log": "local-candidate.log"
+    },
+    {
+      "command": "./gradlew :app:verifyOfflineSdkAar :app:dependencyInsight --configuration debugRuntimeClasspath --dependency offlineSdk :app:assembleDebug :app:assembleRelease :app:testDebugUnitTest :app:lintDebug -PsdkVersion=0.3.0 -PsmokeSdkVersion=0.3.0 -I scripts/aar-consumer-smoke.init.gradle -I $TRACKING_REPO/.trellis/tasks/09-24-offline-sdk-managed-refactor/research/sdk-quality-acceptance-2026-09-27/rerun-tests.init.gradle --no-daemon --console=plain",
+      "result": "BUILD SUCCESSFUL；消费者实际解析摘要相符，Debug/Release/R8、Demo9、lint通过",
+      "log": "aar-consumer.log"
+    },
+    {
+      "command": "python3 scripts/generate-sample.py --check",
+      "result": "通过；SHA-256=28069f115248f28f7bc5d8dc42799c2d75b9c641caa374549657042f2b3ab47b",
+      "log": "sample-check.log"
+    },
+    {
+      "command": "git diff --check",
+      "result": "通过",
+      "log": "diff-check.log"
+    },
+    {
+      "command": "python3 build/reports/main-flow-refactor/api-compare.py",
+      "result": "passed；固定源码及管理器公开JVM签名比较",
+      "log": "api-compatibility.json"
+    },
+    {
+      "command": "python3 /tmp/package_mainflow_evidence.py",
+      "result": "产物/消费/源码及生成校验文件一致；Demo文件集合和摘要未变",
+      "script": "package-evidence.py"
+    }
+  ],
+  "notVerified": [
+    "本轮继续优化的原规划任务复审与整体验收",
+    "设备UI及真实生命周期",
+    "设备Main/StrictMode",
+    "系统WebView/X5实际运行",
+    "真实后端成功/失败HTTP编码和上传",
+    "远端正式坐标解析/tag/实现提交",
+    "完整ABI工具验证"
+  ]
+}

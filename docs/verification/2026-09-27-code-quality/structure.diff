@@ -1,0 +1,667 @@
+--- a/offlineSdk/src/main/java/com/offline/tool/ManagedOfflineSdk.kt
++++ b/offlineSdk/src/main/java/com/offline/tool/ManagedOfflineSdk.kt
+@@ -54,8 +54,11 @@
+ 
+     private val installer = PackageInstaller(root, downloadClient, downloadTimeoutMillis, ioDispatcher)
+     init { installer.claimManagedRoot() }
++    // 更新许可覆盖配置、安装、active 与 History 收尾；页面 IO 不等待这段长操作。
+     private val operation = Mutex()
++    // 只协调首次事实读取与提交，防止多入口重复迁移；不替代更新许可。
+     private val initialization = Mutex()
++    // 运行事实与页面最终提交共用短锁；辅助规则和事实读取函数都不拥有这些状态。
+     private val gate = Any()
+     private val processScope = CoroutineScope(SupervisorJob() + mainDispatcher)
+     private val mutableState = MutableStateFlow(ManagedSnapshot())
+@@ -64,8 +67,8 @@
+     private var initialized = false
+     private var coldCleaned = false
+     private var cleanupInProgress = false
+-    private var initialFinished = false
+     private var history = PreparationHistory()
++    private val initialFinished: Boolean get() = history.initialPreparationFinished
+     private var active: PackageRecord? = null
+     private var usable = false
+     @Volatile private var enabled = true
+@@ -84,7 +87,6 @@
+     private val updateJobs = mutableSetOf<Job>()
+     private var directoryGeneration = 0L
+     private var activity: ManagedActivity = ManagedActivity.Idle
+-    private var deferHistorySave = false
+ 
+     /** 读取持久事实并完成安全冷清理。读取失败时放行在线流程，下一次合法入口重新读取。 */
+     suspend fun startupDecision(): StartupDecision {
+@@ -108,27 +110,22 @@
+         }
+         val terminal = Terminal()
+         try {
+-            val result = operation.withLock {
++            operation.withLock {
+                 if (!initializeLocked()) return@withLock FirstPreparationResult.Finished(initializationFailure(), false)
+                 if (synchronized(gate) { initialFinished || usable }) {
+                     return@withLock FirstPreparationResult.AlreadyFinished
+                 }
+                 if (synchronized(gate) { !privacyAllowed }) throw CancellationException("Privacy withdrawn")
+-                deferHistorySave = true
+-                try {
+-                    val execution = if (synchronized(gate) { coldCleaned } || retryColdCleanup()) {
+-                        executeCheck(first = true, onActivity, onProgress, terminal)
+-                    } else {
+-                        fail(localFailure(ManagedFailureReason.LOCAL_PREPARATION, ManagedStage.LOCAL), target = false, terminal)
+-                    }
+-                    finishFirst()
+-                    FirstPreparationResult.Finished(
+-                        execution,
+-                        synchronized(gate) { usable },
+-                    )
+-                } finally { deferHistorySave = false }
+-            }
+-            result
++                val check = if (ensureColdCleanup()) {
++                    executeCheck(first = true, onActivity, onProgress, terminal)
++                } else {
++                    recordCheckFailure(localFailure(ManagedFailureReason.LOCAL_PREPARATION, ManagedStage.LOCAL))
++                }
++                // 首次将完成标记与本次诊断一次保存；取消时不提前提交首次完成事实。
++                offerCheckDiagnostic(check)
++                finishFirst()
++                FirstPreparationResult.Finished(check, synchronized(gate) { usable })
++            }
+         } catch (cancelled: CancellationException) {
+             synchronized(gate) { activity = ManagedActivity.Idle; publishState() }
+             throw cancelled
+@@ -171,11 +168,17 @@
+             if (synchronized(gate) { !initialFinished }) return@updateOperation CheckResult.InitialPreparationPending
+             if (synchronized(gate) { !privacyAllowed || !foreground }) return@updateOperation CheckResult.Backgrounded
+             if (synchronized(gate) { millisUntilNextCheck() > 0L }) return@updateOperation CheckResult.TooSoon
+-            if (!synchronized(gate) { coldCleaned } && !retryColdCleanup()) {
+-                fail(localFailure(ManagedFailureReason.LOCAL_PREPARATION, ManagedStage.LOCAL), false, terminal)
++            val check = if (ensureColdCleanup()) {
++                executeCheck(first = false, onActivity = {}, onProgress = {}, terminal)
+             } else {
+-                executeCheck(first = false, onActivity = {}, onProgress = {}, terminal)
+-            }
++                recordCheckFailure(localFailure(ManagedFailureReason.LOCAL_PREPARATION, ManagedStage.LOCAL))
++            }
++            // 常规检查只保存本次安装成功或真实失败；关闭及其他跳过不重写历史。
++            if (check is CheckResult.Installed || check is CheckResult.Failed) {
++                writeHistoryBestEffort(synchronized(gate) { history })
++            }
++            offerCheckDiagnostic(check)
++            check
+         } catch (cancelled: CancellationException) {
+             synchronized(gate) { activity = ManagedActivity.Idle; publishState() }
+             throw cancelled
+@@ -236,7 +239,7 @@
+             val eligible = !closed && coldCleaned && !cleanupInProgress && enabled && !shaConflict && record != null &&
+                 active == record && (onlineVersion == null || onlineVersion == record.version) &&
+                 preparation.generation == directoryGeneration && preparation.directory != null &&
+-                matchesBase(url, baseUrl, allowHttpAndHttps)
++                OfflineUrlRules.matchesPage(url, baseUrl, allowHttpAndHttps)
+             val interceptor = if (eligible) {
+                 OfflineInterceptor.fromPreparedDirectory(
+                     checkNotNull(preparation.directory), baseUrl,
+@@ -295,75 +298,57 @@
+ 
+     private suspend fun initializeLocked(): Boolean = initialization.withLock {
+         if (synchronized(gate) { initialized }) return@withLock true
+-        val readActive: PackageRecord?
+-        val savedHistory: PreparationHistory?
+-        val legacy: LegacyPreparationEvidence?
+-        val storedEnabled: Boolean
+-        try {
+-            // 读取异常不是“没有记录”；事实未读全时不提交初始化、不写迁移记录，也不清理任何目录。
+-            readActive = withContext(ioDispatcher) { storage.readActive() }
+-            savedHistory = withContext(ioDispatcher) { storage.readHistory() }
+-            legacy = if (savedHistory == null) withContext(ioDispatcher) { storage.readLegacyEvidence() } else null
+-            storedEnabled = withContext(ioDispatcher) { storage.readEnabled() } != false
+-        } catch (cancelled: CancellationException) {
+-            throw cancelled
+-        } catch (_: Exception) {
+-            val failure = initializationFailure().failure
+-            synchronized(gate) { activity = ManagedActivity.Failed(failure); publishState() }
+-            offerDiagnostic(failure)
+-            return@withLock false
+-        }
+-        val validActive = readActive?.takeIf(::validRecord)
+-        val oldUsable = if (validActive == null && savedHistory == null) findOldUsableDirectory() else false
+-        val activeUsable = validActive != null && installer.isUsable(validActive.version)
+-        val migrated = savedHistory ?: PreparationHistory(
+-            initialPreparationFinished = validActive != null || oldUsable || legacy != null,
+-            latestFailure = legacy?.latestFailure,
+-        )
+-        val storedDirty = try { storage.readCacheDirty() }
+-            catch (cancelled: CancellationException) { throw cancelled }
+-            catch (_: Exception) {
+-                offerDiagnostic(localFailure(ManagedFailureReason.STORAGE_READ, ManagedStage.CACHE))
+-                null
+-            }
++        val facts = when (val read = readInitialLocalFacts(
++            root, storage, minimumVersion, ioDispatcher, ::validRecord, installer::isUsable,
++        )) {
++            InitialLocalRead.Failed -> {
++                // 事实未知时只给出诊断；不提交空状态、不保存迁移记录、不授予清理资格。
++                val failure = initializationFailure().failure
++                synchronized(gate) { activity = ManagedActivity.Failed(failure); publishState() }
++                offerDiagnostic(failure)
++                return@withLock false
++            }
++            is InitialLocalRead.Ready -> read
++        }
++        if (facts.cacheReadFailed) offerDiagnostic(localFailure(ManagedFailureReason.STORAGE_READ, ManagedStage.CACHE))
+         synchronized(gate) {
+-            active = validActive
+-            usable = activeUsable
+-            history = migrated
+-            initialFinished = migrated.initialPreparationFinished || validActive != null || oldUsable
+-            enabled = storedEnabled
+-            cacheDirty = storedDirty != false
++            active = facts.active
++            usable = facts.usablePackage
++            history = facts.history
++            enabled = facts.enabled
++            cacheDirty = facts.storedCacheDirty != false
+             initialized = true
+             activity = ManagedActivity.Idle
+             publishState()
+         }
+-        if (savedHistory == null && synchronized(gate) { initialFinished }) writeHistoryBestEffort(migrated)
+-        if (storedDirty == null) {
++        if (facts.historyMissing && facts.history.initialPreparationFinished) writeHistoryBestEffort(facts.history)
++        if (facts.storedCacheDirty == null) {
+             val saved = try { storage.writeCacheDirty(true) }
+                 catch (cancelled: CancellationException) { throw cancelled }
+                 catch (_: Exception) { false }
+             if (!saved) offerDiagnostic(localFailure(ManagedFailureReason.STORAGE_WRITE, ManagedStage.CACHE))
+         }
+-        synchronized(gate) { cleanupInProgress = true; directoryGeneration++ }
+-        val cleaned = try { installer.clearOldVersions(validActive?.takeIf { activeUsable }?.version) }
+-            finally { synchronized(gate) { cleanupInProgress = false } }
+-        synchronized(gate) { coldCleaned = cleaned }
+-        if (!cleaned) offerDiagnostic(localFailure(ManagedFailureReason.LOCAL_PREPARATION, ManagedStage.CLEANUP))
++        // 只有完整事实已提交，管理器才可依据 active 与页面保护授予冷清理资格。
++        if (!ensureColdCleanup()) offerDiagnostic(localFailure(ManagedFailureReason.LOCAL_PREPARATION, ManagedStage.CLEANUP))
+         true
+     }
+ 
+-    private suspend fun retryColdCleanup(): Boolean {
+-        if (synchronized(gate) { coldCleaned }) return true
++    private suspend fun ensureColdCleanup(): Boolean {
+         val record = synchronized(gate) {
+-            if (!initialized || pagesBound) return false
++            if (coldCleaned) return true
++            if (!initialized || pagesBound || cleanupInProgress) return false
+             cleanupInProgress = true
+             directoryGeneration++
+             active?.takeIf { usable }
+         }
+-        val cleaned = try { installer.clearOldVersions(record?.version) }
+-            finally { synchronized(gate) { cleanupInProgress = false } }
+-        synchronized(gate) { coldCleaned = cleaned }
+-        return cleaned
++        var cleaned = false
++        try {
++            cleaned = installer.clearOldVersions(record?.version)
++            return cleaned
++        } finally {
++            // 清理结果与授权释放一起提交，避免其他入口在两次状态更新之间再次获准删除。
++            synchronized(gate) { coldCleaned = cleaned; cleanupInProgress = false }
++        }
+     }
+ 
+     private suspend fun executeCheck(
+@@ -405,11 +390,11 @@
+                 ConfigFailureReason.PARSE -> ManagedFailureReason.CONFIG_PARSE
+                 ConfigFailureReason.UNAVAILABLE -> ManagedFailureReason.CONFIG_UNAVAILABLE
+             }
+-            return fail(localFailure(reason, ManagedStage.CONFIG), target = false, terminal)
++            return recordCheckFailure(localFailure(reason, ManagedStage.CONFIG))
+         }
+         val config = (response as ConfigResponse.Success).config
+         val applied = applyConfiguration(config)
+-        if (applied != null) return fail(applied, target = false, terminal)
++        if (applied != null) return recordCheckFailure(applied)
+         if (!config.enabled) {
+             setActivity(ManagedActivity.Idle, onActivity)
+             return CheckResult.Disabled
+@@ -423,7 +408,7 @@
+         }
+         val version = config.onlineVersion
+         if (version == null || version < minimumVersion) {
+-            return fail(localFailure(ManagedFailureReason.INVALID_CONFIG, ManagedStage.CONFIG), false, terminal)
++            return recordCheckFailure(localFailure(ManagedFailureReason.INVALID_CONFIG, ManagedStage.CONFIG))
+         }
+         val candidate = config.candidate
+         if (candidate == null) {
+@@ -431,13 +416,13 @@
+                 setActivity(ManagedActivity.Idle, onActivity)
+                 return CheckResult.UpToDate
+             }
+-            return fail(localFailure(ManagedFailureReason.INVALID_CONFIG, ManagedStage.CONFIG), false, terminal)
++            return recordCheckFailure(localFailure(ManagedFailureReason.INVALID_CONFIG, ManagedStage.CONFIG))
+         }
+         if (!validRecord(candidate.record) || candidate.record.version != version || !validSource(candidate.source)) {
+-            return fail(localFailure(ManagedFailureReason.INVALID_CONFIG, ManagedStage.CONFIG), false, terminal)
++            return recordCheckFailure(localFailure(ManagedFailureReason.INVALID_CONFIG, ManagedStage.CONFIG))
+         }
+         if (current != null && current.version == candidate.record.version && current.sha256 != candidate.record.sha256) {
+-            return fail(localFailure(ManagedFailureReason.INVALID_CONFIG, ManagedStage.CONFIG), false, terminal)
++            return recordCheckFailure(localFailure(ManagedFailureReason.INVALID_CONFIG, ManagedStage.CONFIG))
+         }
+         if (current != null && (current.version > candidate.record.version ||
+                 (currentUsable && current.version == candidate.record.version))) {
+@@ -505,12 +490,12 @@
+                 else { cleanupInProgress = true; directoryGeneration++; true }
+             }
+             if (!mayDiscard) {
+-                return fail(targetFailure(ManagedFailureReason.TARGET_IN_USE, ManagedStage.PREPARE, target), true, terminal)
++                return recordInstallationFailure(targetFailure(ManagedFailureReason.TARGET_IN_USE, ManagedStage.PREPARE, target), terminal)
+             }
+             val discarded = try { installer.discardUnboundVersion(target.version) }
+                 finally { synchronized(gate) { cleanupInProgress = false } }
+             if (!discarded) {
+-                return fail(targetFailure(ManagedFailureReason.LOCAL_PREPARATION, ManagedStage.PREPARE, target), true, terminal)
++                return recordInstallationFailure(targetFailure(ManagedFailureReason.LOCAL_PREPARATION, ManagedStage.PREPARE, target), terminal)
+             }
+         }
+         val installed = try {
+@@ -532,7 +517,7 @@
+             }
+         } catch (cancelled: CancellationException) { throw cancelled }
+             catch (_: Exception) {
+-                return fail(targetFailure(ManagedFailureReason.INSTALL, ManagedStage.PREPARE, target), true, terminal)
++                return recordInstallationFailure(targetFailure(ManagedFailureReason.INSTALL, ManagedStage.PREPARE, target), terminal)
+             }
+         if (installed is InstallResult.Failure) {
+             val stage = when (installed.stage) {
+@@ -543,13 +528,13 @@
+                 InstallStage.PUBLISH -> ManagedStage.PUBLISH
+                 InstallStage.CLEANUP -> ManagedStage.CLEANUP
+             }
+-            return fail(targetFailure(
++            return recordInstallationFailure(targetFailure(
+                 ManagedFailureReason.INSTALL, stage, target,
+                 installReason = installed.reason, httpStatus = installed.httpStatus,
+-            ), true, terminal)
++            ), terminal)
+         }
+         if (!installer.isUsable(target.version)) {
+-            return fail(targetFailure(ManagedFailureReason.PACKAGE_UNUSABLE, ManagedStage.VERIFY_ACTIVE, target), true, terminal)
++            return recordInstallationFailure(targetFailure(ManagedFailureReason.PACKAGE_UNUSABLE, ManagedStage.VERIFY_ACTIVE, target), terminal)
+         }
+         safelyProgress(onProgress, ManagedProgress.Saving)
+         val previous = synchronized(gate) { active }
+@@ -558,7 +543,7 @@
+             catch (cancelled: CancellationException) { throw cancelled }
+             catch (_: Exception) { false }
+         if (!saved) {
+-            return fail(targetFailure(ManagedFailureReason.STORAGE_WRITE, ManagedStage.SAVE_ACTIVE, target), true, terminal)
++            return recordInstallationFailure(targetFailure(ManagedFailureReason.STORAGE_WRITE, ManagedStage.SAVE_ACTIVE, target), terminal)
+         }
+         if (!installer.isUsable(target.version)) {
+             val rolledBack = try { withContext(ioDispatcher) { storage.writeActive(previous) } }
+@@ -566,38 +551,47 @@
+                 catch (_: Exception) { false }
+             val failure = targetFailure(ManagedFailureReason.PACKAGE_UNUSABLE, ManagedStage.VERIFY_ACTIVE, target)
+                 .copy(activeRollbackFailed = !rolledBack)
+-            return fail(failure, true, terminal)
++            return recordInstallationFailure(failure, terminal)
+         }
+         synchronized(gate) { active = target; usable = true; history = history.copy(latestFailure = null); publishState() }
+         terminal.outcome = InstallationOutcome.Installed(target)
+-        if (!deferHistorySave) writeHistoryBestEffort(synchronized(gate) { history })
+         synchronized(gate) { activity = ManagedActivity.Idle; publishState() }
+         safelyFinishedCallback { onActivity(ManagedActivity.Idle) }
+         safelyFinishedCallback { onProgress(ManagedProgress.Complete) }
+         return CheckResult.Installed(target)
+     }
+ 
+-    private suspend fun fail(failure: ManagedFailure, target: Boolean, terminal: Terminal): CheckResult {
++    /** 检查诊断没有安装目标，不提升失败版本门槛，也不生成安装终态。 */
++    private fun recordCheckFailure(failure: ManagedFailure): CheckResult.Failed {
++        require(failure.targetVersion == null)
++        return synchronized(gate) { recordFailure(failure) }
++    }
++
++    private fun recordInstallationFailure(failure: ManagedFailure, terminal: Terminal): CheckResult.Failed =
+         synchronized(gate) {
+-            if (target) failedVersion = maxOf(failedVersion ?: Int.MIN_VALUE, checkNotNull(failure.targetVersion))
+-            history = history.copy(latestFailure = failure)
+-            activity = ManagedActivity.Failed(failure)
+-            publishState()
+-        }
+-        if (target) terminal.outcome = InstallationOutcome.Failed(failure)
+-        if (!deferHistorySave) writeHistoryBestEffort(synchronized(gate) { history })
+-        if (!target) offerDiagnostic(failure)
++            failedVersion = maxOf(failedVersion ?: Int.MIN_VALUE, checkNotNull(failure.targetVersion))
++            terminal.outcome = InstallationOutcome.Failed(failure)
++            recordFailure(failure)
++        }
++
++    /** 两类失败共用内存提交；调用者持有 gate，持久化只由各入口的收尾负责。 */
++    private fun recordFailure(failure: ManagedFailure): CheckResult.Failed {
++        history = history.copy(latestFailure = failure)
++        activity = ManagedActivity.Failed(failure)
++        publishState()
+         return CheckResult.Failed(failure)
++    }
++
++    private fun offerCheckDiagnostic(check: CheckResult) {
++        val failure = (check as? CheckResult.Failed)?.failure ?: return
++        if (failure.targetVersion == null) offerDiagnostic(failure)
+     }
+ 
+     private suspend fun finishFirst() {
+         currentCoroutineContext().ensureActive()
+         val completed = synchronized(gate) { history.copy(initialPreparationFinished = true) }
+-        val saved = try { withContext(ioDispatcher) { storage.writeHistory(completed) } }
+-            catch (cancelled: CancellationException) { throw cancelled }
+-            catch (_: Exception) { false }
++        val saved = writeHistory(completed)
+         synchronized(gate) {
+-            initialFinished = true
+             history = completed
+             publishState()
+         }
+@@ -605,20 +599,13 @@
+     }
+ 
+     private suspend fun writeHistoryBestEffort(value: PreparationHistory) {
+-        val saved = try { withContext(ioDispatcher) { storage.writeHistory(value) } }
+-            catch (cancelled: CancellationException) { throw cancelled }
+-            catch (_: Exception) { false }
+-        if (!saved) offerDiagnostic(localFailure(ManagedFailureReason.STORAGE_WRITE, ManagedStage.HISTORY))
+-    }
+-
+-    private suspend fun findOldUsableDirectory(): Boolean = withContext(ioDispatcher) {
+-        val children = try { root.listFiles() } catch (_: Exception) { null } ?: return@withContext false
+-        for (child in children) {
+-            val version = child.name.toIntOrNull() ?: continue
+-            if (version >= minimumVersion && installer.isUsable(version)) return@withContext true
+-        }
+-        false
+-    }
++        if (!writeHistory(value)) offerDiagnostic(localFailure(ManagedFailureReason.STORAGE_WRITE, ManagedStage.HISTORY))
++    }
++
++    private suspend fun writeHistory(value: PreparationHistory): Boolean =
++        try { withContext(ioDispatcher) { storage.writeHistory(value) } }
++        catch (cancelled: CancellationException) { throw cancelled }
++        catch (_: Exception) { false }
+ 
+     private fun validRecord(record: PackageRecord): Boolean =
+         record.version >= minimumVersion && SHA256.matches(record.sha256)
+@@ -630,30 +617,6 @@
+             (uri.scheme == "http" || uri.scheme == "https") && uri.host != null && uri.userInfo == null
+         } catch (_: Exception) { false }
+     }
+-
+-    private fun matchesBase(url: String, baseUrl: String, allowHttpAndHttps: Boolean): Boolean = try {
+-        val page = URI(url)
+-        val base = URI(baseUrl)
+-        val pagePath = page.path?.ifEmpty { "/" }
+-        val baseSchemeValid = base.scheme.equals("http", true) || base.scheme.equals("https", true)
+-        val schemeMatches = if (allowHttpAndHttps) {
+-            page.scheme.equals("http", true) || page.scheme.equals("https", true)
+-        } else page.scheme.equals(base.scheme, true)
+-        val portsMatch = effectivePort(page) == effectivePort(base) ||
+-            (allowHttpAndHttps && effectivePort(page) == defaultPort(page) &&
+-                effectivePort(base) == defaultPort(base))
+-        baseSchemeValid && schemeMatches && portsMatch &&
+-            base.host != null && page.host != null && base.userInfo == null && page.userInfo == null &&
+-            page.host.equals(base.host, true) && base.path.endsWith('/') &&
+-            safePagePath(pagePath) && safePagePath(base.path) && pagePath!!.startsWith(base.path) &&
+-            base.query == null && base.fragment == null
+-    } catch (_: Exception) { false }
+-
+-    private fun safePagePath(path: String?): Boolean = path != null && !path.contains('\\') &&
+-        path.split('/').none { it == "." || it == ".." }
+-
+-    private fun defaultPort(uri: URI): Int = if (uri.scheme.equals("https", true)) 443 else 80
+-    private fun effectivePort(uri: URI): Int = if (uri.port >= 0) uri.port else defaultPort(uri)
+ 
+     private fun setActivity(value: ManagedActivity, callback: (ManagedActivity) -> Unit) {
+         synchronized(gate) { activity = value; publishState() }
+@@ -699,10 +662,10 @@
+                     }
+                     var checkResult: CheckResult? = null
+                     val job = processScope.launch(start = CoroutineStart.LAZY) { checkResult = requestCheck() }
+-                    val registered = synchronized(gate) {
++                    val mayStartCheck = synchronized(gate) {
+                         !(closed || !privacyAllowed || !foreground || !initialFinished)
+                     }
+-                    if (!registered) {
++                    if (!mayStartCheck) {
+                         job.cancel()
+                         break
+                     }
+@@ -726,7 +689,6 @@
+             bootstrapJob = processScope.launch {
+                 try {
+                     if (!initializeLocked()) return@launch
+-                    if (!synchronized(gate) { coldCleaned }) retryColdCleanup()
+                     startPollingIfEligible()
+                 } catch (cancelled: CancellationException) {
+                     throw cancelled
+--- a/offlineSdk/src/main/java/com/offline/tool/OfflineInterceptor.kt
++++ b/offlineSdk/src/main/java/com/offline/tool/OfflineInterceptor.kt
+@@ -9,7 +9,6 @@
+ import java.io.File
+ import java.io.FileInputStream
+ import java.io.IOException
+-import java.net.URI
+ import java.util.Locale
+ 
+ /**
+@@ -19,7 +18,7 @@
+ class OfflineInterceptor private constructor(
+     private val root: File,
+     baseUrl: String,
+-    private val allowHttpAndHttps: Boolean = false,
++    allowHttpAndHttps: Boolean = false,
+     private val debugLogging: Boolean = false,
+     private val onResourceFailure: ((reason: String, path: String) -> Unit)? = null,
+     private val isEnabled: () -> Boolean = { true },
+@@ -35,15 +34,7 @@
+     ) : this(directory.canonicalFile, baseUrl, allowHttpAndHttps, debugLogging, onResourceFailure, isEnabled, Unit)
+ 
+     private val rootPathPrefix = root.path + File.separator
+-    private val base = URI(baseUrl)
+-
+-    init {
+-        require(
+-            (base.scheme.equals("http", ignoreCase = true) || base.scheme.equals("https", ignoreCase = true)) &&
+-                base.host != null && base.userInfo == null
+-        )
+-        require(base.path.endsWith('/') && base.query == null && base.fragment == null)
+-    }
++    private val urlRules = OfflineUrlRules(baseUrl, allowHttpAndHttps)
+ 
+     override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest?): WebResourceResponse? =
+         request?.let {
+@@ -59,23 +50,7 @@
+     fun resolve(url: String, method: String = "GET", hasRange: Boolean = false): WebResourceResponse? {
+         if (!isEnabled()) return null
+         if (method != "GET" || hasRange) return null
+-        val request = try {
+-            URI(url)
+-        } catch (_: Exception) {
+-            return null
+-        }
+-        val schemeMatches = if (allowHttpAndHttps) {
+-            request.scheme.equals("http", true) || request.scheme.equals("https", true)
+-        } else request.scheme.equals(base.scheme, true)
+-        val portsMatch = port(request) == port(base) ||
+-            (allowHttpAndHttps && port(request) == defaultPort(request) && port(base) == defaultPort(base))
+-        if (!schemeMatches || !request.host.equals(
+-                base.host, true
+-            ) || !portsMatch || request.userInfo != null
+-        ) return null
+-        val path = request.path ?: return null
+-        if (!path.startsWith(base.path)) return null
+-        val relative = path.removePrefix(base.path).ifEmpty { "index.html" }
++        val relative = urlRules.resourcePath(url) ?: return null
+         return try {
+             val file = File(root, relative)
+             val canonical = file.canonicalFile
+@@ -151,7 +126,4 @@
+         )
+     }
+ 
+-    private fun defaultPort(uri: URI): Int = if (uri.scheme.equals("https", true)) 443 else 80
+-
+-    private fun port(uri: URI): Int = if (uri.port >= 0) uri.port else defaultPort(uri)
+ }
+--- a/offlineSdk/src/main/java/com/offline/tool/InitialLocalFacts.kt
++++ b/offlineSdk/src/main/java/com/offline/tool/InitialLocalFacts.kt
+@@ -0,0 +1,92 @@
++package com.offline.tool
++
++import kotlinx.coroutines.CancellationException
++import kotlinx.coroutines.CoroutineDispatcher
++import kotlinx.coroutines.withContext
++import java.io.File
++
++/** 只描述一次读取的结果；失败不能被解释为没有 active，也不能授予目录清理资格。 */
++internal sealed interface InitialLocalRead {
++    data object Failed : InitialLocalRead
++
++    data class Ready(
++        val active: PackageRecord?,
++        val usablePackage: Boolean,
++        val history: PreparationHistory,
++        val enabled: Boolean,
++        val storedCacheDirty: Boolean?,
++        val cacheReadFailed: Boolean,
++        val historyMissing: Boolean,
++    ) : InitialLocalRead
++}
++
++/**
++ * 在 IO 中读取并解释首次启动的本地事实。只返回不可变快照，不写存储、不删除目录，
++ * 也不保存运行状态；状态提交、迁移保存及冷清理资格仍由管理器统一决定。
++ * 包校验以只读函数传入，辅助实现不会获得安装器的目录修改权限。
++ */
++internal suspend fun readInitialLocalFacts(
++    root: File,
++    storage: ManagedOfflineStorage,
++    minimumVersion: Int,
++    ioDispatcher: CoroutineDispatcher,
++    isValidRecord: (PackageRecord) -> Boolean,
++    isPackageUsable: suspend (Int) -> Boolean,
++): InitialLocalRead = withContext(ioDispatcher) {
++    val storedActive: PackageRecord?
++    val storedHistory: PreparationHistory?
++    val legacy: LegacyPreparationEvidence?
++    val storedEnabled: Boolean?
++    try {
++        storedActive = storage.readActive()
++        storedHistory = storage.readHistory()
++        legacy = if (storedHistory == null) storage.readLegacyEvidence() else null
++        storedEnabled = storage.readEnabled()
++    } catch (cancelled: CancellationException) {
++        throw cancelled
++    } catch (_: Exception) {
++        return@withContext InitialLocalRead.Failed
++    }
++
++    val validActive = storedActive?.takeIf(isValidRecord)
++    val oldUsable = validActive == null && storedHistory == null &&
++        hasOldUsableDirectory(root, minimumVersion, isPackageUsable)
++    val activeUsable = validActive != null && isPackageUsable(validActive.version)
++    val interpretedHistory = storedHistory ?: PreparationHistory(
++        initialPreparationFinished = validActive != null || oldUsable || legacy != null,
++        latestFailure = legacy?.latestFailure,
++    )
++    val completed = interpretedHistory.initialPreparationFinished || validActive != null || oldUsable
++
++    // 缓存标记失败只触发保守清缓存，不否定已经完整读取的包事实；真实取消仍归调用任务所有。
++    var cacheReadFailed = false
++    val storedDirty = try { storage.readCacheDirty() }
++        catch (cancelled: CancellationException) { throw cancelled }
++        catch (_: Exception) { cacheReadFailed = true; null }
++
++    InitialLocalRead.Ready(
++        active = validActive,
++        usablePackage = activeUsable,
++        history = interpretedHistory.copy(initialPreparationFinished = completed),
++        enabled = storedEnabled != false,
++        storedCacheDirty = storedDirty,
++        cacheReadFailed = cacheReadFailed,
++        historyMissing = storedHistory == null,
++    )
++}
++
++/** 旧目录只证明历史首装已经尝试完成，不会据此伪造缺失的 active 记录。 */
++private suspend fun hasOldUsableDirectory(
++    root: File,
++    minimumVersion: Int,
++    isPackageUsable: suspend (Int) -> Boolean,
++): Boolean {
++    val children = try { root.listFiles() }
++        catch (cancelled: CancellationException) { throw cancelled }
++        catch (_: Exception) { null } ?: return false
++    for (child in children) {
++        val version = child.name.toIntOrNull() ?: continue
++        if (version >= minimumVersion && isPackageUsable(version)) return true
++    }
++    return false
++}
+--- a/offlineSdk/src/main/java/com/offline/tool/OfflineUrlRules.kt
++++ b/offlineSdk/src/main/java/com/offline/tool/OfflineUrlRules.kt
+@@ -0,0 +1,56 @@
++package com.offline.tool
++
++import java.net.URI
++
++/**
++ * 页面选择与资源查找共用的 URL 范围规则；只解释 URL，不读取文件或修改运行状态。
++ * 页面额外拒绝含点段、反斜杠的路径；资源文件的 canonical 安全校验仍由拦截器负责。
++ */
++internal class OfflineUrlRules(baseUrl: String, private val allowHttpAndHttps: Boolean) {
++    private val base = URI(baseUrl)
++
++    init {
++        require(isHttp(base) && base.host != null && base.userInfo == null)
++        require(base.path.endsWith('/') && base.query == null && base.fragment == null)
++    }
++
++    fun matchesPage(url: String): Boolean {
++        val path = matchingRequest(url)?.path?.ifEmpty { "/" } ?: return false
++        return safePagePath(base.path) && safePagePath(path) && relativePath(path) != null
++    }
++
++    fun resourcePath(url: String): String? {
++        val path = matchingRequest(url)?.path ?: return null
++        return relativePath(path)?.ifEmpty { "index.html" }
++    }
++
++    private fun matchingRequest(url: String): URI? {
++        val request = try { URI(url) } catch (_: Exception) { return null }
++        val schemeMatches = if (allowHttpAndHttps) isHttp(request) else request.scheme.equals(base.scheme, true)
++        val portsMatch = effectivePort(request) == effectivePort(base) ||
++            (allowHttpAndHttps && effectivePort(request) == defaultPort(request) &&
++                effectivePort(base) == defaultPort(base))
++        return request.takeIf {
++            schemeMatches && portsMatch && it.host.equals(base.host, true) && it.userInfo == null
++        }
++    }
++
++    private fun relativePath(path: String): String? =
++        if (path.startsWith(base.path)) path.removePrefix(base.path) else null
++
++    private fun safePagePath(path: String): Boolean =
++        !path.contains('\\') && path.split('/').none { it == "." || it == ".." }
++
++    private fun isHttp(uri: URI): Boolean =
++        uri.scheme.equals("http", true) || uri.scheme.equals("https", true)
++
++    private fun defaultPort(uri: URI): Int = if (uri.scheme.equals("https", true)) 443 else 80
++    private fun effectivePort(uri: URI): Int = if (uri.port >= 0) uri.port else defaultPort(uri)
++
++    companion object {
++        /** 页面入口收到无效 base 时正常回源；拦截器构造仍保留参数校验异常。 */
++        fun matchesPage(url: String, baseUrl: String, allowHttpAndHttps: Boolean): Boolean = try {
++            OfflineUrlRules(baseUrl, allowHttpAndHttps).matchesPage(url)
++        } catch (_: Exception) { false }
++    }
++}

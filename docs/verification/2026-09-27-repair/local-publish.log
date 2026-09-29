@@ -1,0 +1,40 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :offlineSdk:preBuild UP-TO-DATE
+> Task :offlineSdk:preReleaseBuild UP-TO-DATE
+> Task :offlineSdk:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :offlineSdk:mergeReleaseNativeLibs NO-SOURCE
+> Task :offlineSdk:stripReleaseDebugSymbols NO-SOURCE
+> Task :offlineSdk:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :offlineSdk:generateReleaseResValues UP-TO-DATE
+> Task :offlineSdk:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :offlineSdk:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :offlineSdk:generateReleaseResources UP-TO-DATE
+> Task :offlineSdk:packageReleaseResources UP-TO-DATE
+> Task :offlineSdk:parseReleaseLocalResources UP-TO-DATE
+> Task :offlineSdk:generateReleaseRFile UP-TO-DATE
+> Task :offlineSdk:compileReleaseKotlin UP-TO-DATE
+> Task :offlineSdk:extractReleaseAnnotations UP-TO-DATE
+> Task :offlineSdk:mergeReleaseShaders UP-TO-DATE
+> Task :offlineSdk:compileReleaseShaders NO-SOURCE
+> Task :offlineSdk:generateReleaseAssets UP-TO-DATE
+> Task :offlineSdk:mergeReleaseAssets UP-TO-DATE
+> Task :offlineSdk:javaPreCompileRelease UP-TO-DATE
+> Task :offlineSdk:compileReleaseJavaWithJavac NO-SOURCE
+> Task :offlineSdk:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :offlineSdk:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :offlineSdk:prepareLintJarForPublish UP-TO-DATE
+> Task :offlineSdk:prepareReleaseArtProfile UP-TO-DATE
+> Task :offlineSdk:processReleaseManifest UP-TO-DATE
+> Task :offlineSdk:processReleaseJavaRes UP-TO-DATE
+> Task :offlineSdk:mergeReleaseJavaResource UP-TO-DATE
+> Task :offlineSdk:syncReleaseLibJars UP-TO-DATE
+> Task :offlineSdk:writeReleaseAarMetadata UP-TO-DATE
+> Task :offlineSdk:bundleReleaseAar UP-TO-DATE
+> Task :offlineSdk:sourceReleaseJar
+> Task :offlineSdk:generateMetadataFileForReleasePublication
+> Task :offlineSdk:generatePomFileForReleasePublication
+> Task :offlineSdk:publishReleasePublicationToLocalReleaseRepository
+
+BUILD SUCCESSFUL in 4s
+27 actionable tasks: 4 executed, 23 up-to-date

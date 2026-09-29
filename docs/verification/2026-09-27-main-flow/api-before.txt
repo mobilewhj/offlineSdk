@@ -1,0 +1,35 @@
+  public com.offline.tool.ManagedOfflineSdk(java.io.File, com.offline.tool.ManagedOfflineStorage, com.offline.tool.ManagedConfigProvider, int, kotlin.jvm.functions.Function1<? super com.offline.tool.InstallationOutcome, kotlin.Unit>, kotlin.jvm.functions.Function1<? super com.offline.tool.ManagedFailure, kotlin.Unit>, kotlinx.coroutines.CoroutineDispatcher, kotlinx.coroutines.CoroutineDispatcher, long, kotlin.jvm.functions.Function0<java.lang.Long>, okhttp3.OkHttpClient, long);
+    descriptor: (Ljava/io/File;Lcom/offline/tool/ManagedOfflineStorage;Lcom/offline/tool/ManagedConfigProvider;ILkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;JLkotlin/jvm/functions/Function0;Lokhttp3/OkHttpClient;J)V
+
+  public com.offline.tool.ManagedOfflineSdk(java.io.File, com.offline.tool.ManagedOfflineStorage, com.offline.tool.ManagedConfigProvider, int, kotlin.jvm.functions.Function1, kotlin.jvm.functions.Function1, kotlinx.coroutines.CoroutineDispatcher, kotlinx.coroutines.CoroutineDispatcher, long, kotlin.jvm.functions.Function0, okhttp3.OkHttpClient, long, int, kotlin.jvm.internal.DefaultConstructorMarker);
+    descriptor: (Ljava/io/File;Lcom/offline/tool/ManagedOfflineStorage;Lcom/offline/tool/ManagedConfigProvider;ILkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlinx/coroutines/CoroutineDispatcher;Lkotlinx/coroutines/CoroutineDispatcher;JLkotlin/jvm/functions/Function0;Lokhttp3/OkHttpClient;JILkotlin/jvm/internal/DefaultConstructorMarker;)V
+
+  public final kotlinx.coroutines.flow.StateFlow<com.offline.tool.ManagedSnapshot> getState();
+    descriptor: ()Lkotlinx/coroutines/flow/StateFlow;
+
+  public final java.lang.Object startupDecision(kotlin.coroutines.Continuation<? super com.offline.tool.StartupDecision>);
+    descriptor: (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+
+  public final java.lang.Object prepareFirst(kotlin.jvm.functions.Function1<? super com.offline.tool.ManagedActivity, kotlin.Unit>, kotlin.jvm.functions.Function1<? super com.offline.tool.ManagedProgress, kotlin.Unit>, kotlin.coroutines.Continuation<? super com.offline.tool.FirstPreparationResult>);
+    descriptor: (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+
+  public static java.lang.Object prepareFirst$default(com.offline.tool.ManagedOfflineSdk, kotlin.jvm.functions.Function1, kotlin.jvm.functions.Function1, kotlin.coroutines.Continuation, int, java.lang.Object);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+
+  public final void setConditions(boolean, boolean);
+    descriptor: (ZZ)V
+
+  public final java.lang.Object requestCheck(kotlin.coroutines.Continuation<? super com.offline.tool.CheckResult>);
+    descriptor: (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+
+  public final java.lang.Object preparePage(kotlin.coroutines.Continuation<? super com.offline.tool.PagePreparation>);
+    descriptor: (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+
+  public final com.offline.tool.PageDecision commitPage(com.offline.tool.PagePreparation, java.lang.String, java.lang.String, com.offline.tool.ManagedPageCallbacks, boolean, kotlin.jvm.functions.Function2<? super java.lang.String, ? super java.lang.String, kotlin.Unit>);
+    descriptor: (Lcom/offline/tool/PagePreparation;Ljava/lang/String;Ljava/lang/String;Lcom/offline/tool/ManagedPageCallbacks;ZLkotlin/jvm/functions/Function2;)Lcom/offline/tool/PageDecision;
+
+  public static com.offline.tool.PageDecision commitPage$default(com.offline.tool.ManagedOfflineSdk, com.offline.tool.PagePreparation, java.lang.String, java.lang.String, com.offline.tool.ManagedPageCallbacks, boolean, kotlin.jvm.functions.Function2, int, java.lang.Object);
+    descriptor: (Lcom/offline/tool/ManagedOfflineSdk;Lcom/offline/tool/PagePreparation;Ljava/lang/String;Ljava/lang/String;Lcom/offline/tool/ManagedPageCallbacks;ZLkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lcom/offline/tool/PageDecision;
+
+  public final void shutdown();
+    descriptor: ()V

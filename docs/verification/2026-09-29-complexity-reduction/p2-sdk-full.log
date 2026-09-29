@@ -1,0 +1,38 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :offlineSdk:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :offlineSdk:preBuild UP-TO-DATE
+> Task :offlineSdk:preDebugBuild UP-TO-DATE
+> Task :offlineSdk:generateDebugResValues
+> Task :offlineSdk:generateDebugResources
+> Task :offlineSdk:packageDebugResources
+> Task :offlineSdk:preDebugUnitTestBuild UP-TO-DATE
+> Task :offlineSdk:javaPreCompileDebug
+> Task :offlineSdk:javaPreCompileDebugUnitTest
+> Task :offlineSdk:parseDebugLocalResources
+> Task :offlineSdk:generateDebugRFile
+> Task :offlineSdk:generateDebugUnitTestStubRFile
+> Task :offlineSdk:compileDebugKotlin
+> Task :offlineSdk:compileDebugJavaWithJavac NO-SOURCE
+> Task :offlineSdk:processDebugJavaRes
+> Task :offlineSdk:bundleLibRuntimeToJarDebug
+> Task :offlineSdk:bundleLibCompileToJarDebug
+> Task :offlineSdk:compileDebugUnitTestKotlin
+> Task :offlineSdk:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :offlineSdk:processDebugUnitTestJavaRes
+WARNING: A terminally deprecated method in java.lang.System has been called
+WARNING: System::setSecurityManager has been called by com.offline.tool.ColdCleanupDiagnosticReviewTest$pageRecoveryDuringSilentHistorySaveMustNotDuplicateCleanupDiagnostic$1 (file:$SDK_REPO/offlineSdk/build/tmp/kotlin-classes/debugUnitTest/)
+WARNING: Please consider reporting this to the maintainers of com.offline.tool.ColdCleanupDiagnosticReviewTest$pageRecoveryDuringSilentHistorySaveMustNotDuplicateCleanupDiagnostic$1
+WARNING: System::setSecurityManager will be removed in a future release
+WARNING: A terminally deprecated method in java.lang.System has been called
+WARNING: System::setSecurityManager has been called by com.offline.tool.ManagedOfflineRegressionTest$pageLoadKeepsPackageFileReadsOffMain$1 (file:$SDK_REPO/offlineSdk/build/tmp/kotlin-classes/debugUnitTest/)
+WARNING: Please consider reporting this to the maintainers of com.offline.tool.ManagedOfflineRegressionTest$pageLoadKeepsPackageFileReadsOffMain$1
+WARNING: System::setSecurityManager will be removed in a future release
+WARNING: A terminally deprecated method in java.lang.System has been called
+WARNING: System::setSecurityManager has been called by com.offline.tool.ManagedOfflineRegressionTest$firstEntryAttemptsFailedColdCleanupOnlyOnceAndLaterEntryRecovers$1 (file:$SDK_REPO/offlineSdk/build/tmp/kotlin-classes/debugUnitTest/)
+WARNING: Please consider reporting this to the maintainers of com.offline.tool.ManagedOfflineRegressionTest$firstEntryAttemptsFailedColdCleanupOnlyOnceAndLaterEntryRecovers$1
+WARNING: System::setSecurityManager will be removed in a future release
+> Task :offlineSdk:testDebugUnitTest
+
+BUILD SUCCESSFUL in 15s
+15 actionable tasks: 15 executed

@@ -1,0 +1,29 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Task :app:verifyOfflineSdkAar
+Consumed SDK AAR: $SDK_REPO/build/repo/com/github/mobilewhj/offlineSdk/offlineSdk/0.3.0/offlineSdk-0.3.0.aar
+Consumed SDK AAR SHA-256: 36f00b9bbfe5ec43cefbf5a33d4ac22080030404d3351203b30c92fe4ebbf169
+
+> Task :app:dependencyInsight
+com.github.mobilewhj.offlineSdk:offlineSdk:0.3.0 (selected by rule)
+  Variant releaseVariantReleaseRuntimePublication:
+    | Attribute Name                                  | Provided     | Requested    |
+    |-------------------------------------------------|--------------|--------------|
+    | org.gradle.dependency.bundling                  | external     |              |
+    | org.gradle.libraryelements                      | aar          |              |
+    | org.gradle.status                               | release      |              |
+    | org.gradle.category                             | library      | library      |
+    | org.gradle.usage                                | java-runtime | java-runtime |
+    | com.android.build.api.attributes.AgpVersionAttr |              | 8.10.1       |
+    | com.android.build.api.attributes.BuildTypeAttr  |              | debug        |
+    | org.gradle.jvm.environment                      |              | android      |
+    | org.jetbrains.kotlin.platform.type              |              | androidJvm   |
+
+project :offlineSdk -> com.github.mobilewhj.offlineSdk:offlineSdk:0.3.0
+\--- debugRuntimeClasspath
+
+A web-based, searchable dependency report is available by adding the --scan option.
+
+BUILD SUCCESSFUL in 3s
+2 actionable tasks: 2 executed

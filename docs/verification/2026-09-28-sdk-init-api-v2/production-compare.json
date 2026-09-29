@@ -1,0 +1,82 @@
+{
+  "baseline": {
+    "files": 24,
+    "lines": 2621,
+    "nonblank": 2410
+  },
+  "current": {
+    "files": 24,
+    "lines": 2627,
+    "nonblank": 2419
+  },
+  "baseline_sdk": {
+    "files": 15,
+    "lines": 1983,
+    "nonblank": 1828
+  },
+  "current_sdk": {
+    "files": 15,
+    "lines": 2029,
+    "nonblank": 1873
+  },
+  "baseline_demo": {
+    "files": 9,
+    "lines": 638,
+    "nonblank": 582
+  },
+  "current_demo": {
+    "files": 9,
+    "lines": 598,
+    "nonblank": 546
+  },
+  "changed": [
+    {
+      "path": "app/src/main/java/com/offline/tool/sample/DemoApplication.kt",
+      "before_lines": 140,
+      "after_lines": 99,
+      "delta_lines": -41,
+      "before_sha256": "82e874887ad5bdefe7bcd7eaaf147dd79c95b6bd925064467c6df0181ce46ed9",
+      "after_sha256": "25aad97221dbc57cb096dd20c01ef8c1a769f3d9b70c64ae56e47cb71bb570f8"
+    },
+    {
+      "path": "app/src/main/java/com/offline/tool/sample/MainActivity.kt",
+      "before_lines": 97,
+      "after_lines": 97,
+      "delta_lines": 0,
+      "before_sha256": "86a53ec02775d96d8e1eb0a01212609caf8eb9e8d93dc35833af2a6730f2b205",
+      "after_sha256": "ec90fdfbc2853562dbeedb4a670195f69090b6a5a990663235543936f67bf64e"
+    },
+    {
+      "path": "app/src/main/java/com/offline/tool/sample/offline/DemoManagedStorage.kt",
+      "before_lines": 123,
+      "after_lines": 125,
+      "delta_lines": 2,
+      "before_sha256": "f29a7b49dac87666d6645c4bd48468fa05f5661c6a8ea55f33c7cd8ae9f489cb",
+      "after_sha256": "25cb879ec602141fdd7f6b0db23da3e732d4f3a49d3c10b74ea949aadb18a9ea"
+    },
+    {
+      "path": "app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeActivity.kt",
+      "before_lines": 78,
+      "after_lines": 78,
+      "delta_lines": 0,
+      "before_sha256": "69ce318a95e24a597d00be84f960ae58e9871a16b6d19d6673b3121440ca2448",
+      "after_sha256": "272c9bb7e96d5aee15076e58e6e80fd5bf63439487a094370fb14c5129381a3c"
+    },
+    {
+      "path": "app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeViewModel.kt",
+      "before_lines": 97,
+      "after_lines": 96,
+      "delta_lines": -1,
+      "before_sha256": "13f4fb2cdb9d81a2071dbbd602dbf2308b3ad148aaa86ec6fa7b5bdcb05f66df",
+      "after_sha256": "b0a3052f64c79a9ead88da34b11301887becb3da3e2bb6c7005fc7d418317436"
+    },
+    {
+      "path": "offlineSdk/src/main/java/com/offline/tool/ManagedOfflineSdk.kt",
+      "before_lines": 781,
+      "after_lines": 827,
+      "delta_lines": 46,
+      "before_sha256": "d162aa4db504bbed0a5f029c60c725766f59fabba0cc12138d65c19cb09e4555",
+      "after_sha256": "56a98e3634fc55483b0c2d2d4fcc515554224fbbc37625147d49fc21af8de2ca"
+    }
+  ]
+}

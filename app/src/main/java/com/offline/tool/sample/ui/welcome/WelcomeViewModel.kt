@@ -2,104 +2,86 @@ package com.offline.tool.sample.ui.welcome
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.offline.tool.sample.offline.DemoOfflinePackages
-import com.offline.tool.sample.offline.InstallOfflinePackageUseCase
-import com.offline.tool.sample.offline.LocalPreparationProgress
-import com.offline.tool.sample.offline.OfflineInstallResult
+import com.offline.tool.FirstPreparationResult
+import com.offline.tool.ManagedOfflineSdk
+import com.offline.tool.ManagedProgress
+import com.offline.tool.StartupDecision
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.coroutines.coroutineContext
 
 internal sealed interface WelcomeUiState {
     data object Idle : WelcomeUiState
-    data class Preparing(val progress: LocalPreparationProgress) : WelcomeUiState
+    data class Preparing(val progress: ManagedProgress? = null) : WelcomeUiState
+    data object Interrupted : WelcomeUiState
     data object Ready : WelcomeUiState
-    data class Failed(val reason: String) : WelcomeUiState
+    data class Failed(val reason: WelcomeFailure) : WelcomeUiState
 }
 
-internal class WelcomeViewModel(
-    private val repository: WelcomeRepository,
-    private val packages: DemoOfflinePackages,
-    private val installPackage: InstallOfflinePackageUseCase,
-    private val processScope: CoroutineScope,
-    private val reportFailure: (OfflineInstallResult.Failure) -> Unit,
-) : ViewModel() {
+internal enum class WelcomeFailure { PRIVACY_REQUIRED, LOCAL_PREPARATION }
+
+/** 页面只拥有本次首次调用；SDK 的后续检查不依赖这个 ViewModel 的生命周期。 */
+internal class WelcomeViewModel(private val manager: ManagedOfflineSdk) : ViewModel() {
     private val _uiState = MutableStateFlow<WelcomeUiState>(WelcomeUiState.Idle)
     val uiState = _uiState.asStateFlow()
-
-    init {
-        prepare()
-    }
+    private var preparationJob: Job? = null
 
     fun prepare() {
-        if (_uiState.value != WelcomeUiState.Idle && _uiState.value !is WelcomeUiState.Failed) return
-        _uiState.value = WelcomeUiState.Preparing(LocalPreparationProgress(LocalPreparationProgress.Stage.CHECKING))
-        viewModelScope.launch {
+        if (preparationJob?.isActive == true || _uiState.value != WelcomeUiState.Idle) return
+        // 本地判定可能挂起，期间保持中性页面；只有确认为首次才展示首装进度。
+        _uiState.value = WelcomeUiState.Idle
+        preparationJob = viewModelScope.launch {
             try {
-                // 先准备目录，再允许页面绑定；静默更新不清理已交付页面的目录。
-                when (val prepared = packages.prepareLocal()) {
-                    is OfflineInstallResult.Failure -> {
-                        if (packages.hasUsablePackage()) {
-                            reportFailure(prepared)
-                            _uiState.value = WelcomeUiState.Ready
-                        } else fail(prepared)
-                        return@launch
-                    }
-
-                    is OfflineInstallResult.Success -> Unit
-                }
-                if (packages.hasUsablePackage()) {
-                    _uiState.value = WelcomeUiState.Ready
-                    // 独立于 Welcome 的销毁，已有页面继续使用之前取得的版本。
-                    processScope.launch {
-                        val result = updatePackage()
-                        if (result is OfflineInstallResult.Failure) reportFailure(result)
-                    }
-                } else {
-                    when (val result = updatePackage { _uiState.value = WelcomeUiState.Preparing(it) }) {
-                        is OfflineInstallResult.Failure -> fail(result)
-                        is OfflineInstallResult.Success -> {
-                            if (packages.hasUsablePackage()) _uiState.value = WelcomeUiState.Ready
-                            else fail(OfflineInstallResult.Failure("LOCAL_PACKAGE_UNAVAILABLE"))
+                when (manager.startupDecision()) {
+                    StartupDecision.CONTINUE -> _uiState.value = WelcomeUiState.Ready
+                    StartupDecision.NEEDS_FIRST_PREPARATION -> {
+                        _uiState.value = WelcomeUiState.Preparing()
+                        when (manager.prepareFirst(
+                            onProgress = { progress ->
+                                // 下载和解压进度可从 IO 回调；只更新线程安全的 UI 状态。
+                                _uiState.update { state ->
+                                    (state as? WelcomeUiState.Preparing)?.copy(progress = progress) ?: state
+                                }
+                            },
+                        )) {
+                            is FirstPreparationResult.Finished,
+                            FirstPreparationResult.AlreadyFinished -> _uiState.value = WelcomeUiState.Ready
+                            FirstPreparationResult.PrivacyRequired -> {
+                                _uiState.value = WelcomeUiState.Failed(WelcomeFailure.PRIVACY_REQUIRED)
+                            }
+                            FirstPreparationResult.NotForeground -> _uiState.value = WelcomeUiState.Idle
                         }
                     }
                 }
             } catch (cancelled: CancellationException) {
+                // 自己被销毁时不留 UI；仍存活的等待者退出加载，交由用户显式重试。
+                _uiState.value = if (coroutineContext.isActive) {
+                    WelcomeUiState.Interrupted
+                } else {
+                    WelcomeUiState.Idle
+                }
                 throw cancelled
-            } catch (error: Exception) {
-                fail(OfflineInstallResult.Failure("LOCAL_PREPARATION_FAILED", cause = error))
+            } catch (_: Exception) {
+                _uiState.value = WelcomeUiState.Failed(WelcomeFailure.LOCAL_PREPARATION)
             }
         }
     }
 
-    private suspend fun updatePackage(
-        onProgress: (LocalPreparationProgress) -> Unit = {},
-    ): OfflineInstallResult {
-        val candidate = try {
-            repository.getOfflinePackage()
-        } catch (cancelled: CancellationException) {
-            throw cancelled
-        } catch (error: Exception) {
-            return OfflineInstallResult.Failure("CONFIG_REQUEST_FAILED", "config", error)
-        }
-        return try {
-            val local = packages.current()
-            when (val plan = planUpdate(local, candidate.record, local != null && packages.isUsable(local))) {
-                OfflineUpdatePlan.Keep -> OfflineInstallResult.Success(local)
-                OfflineUpdatePlan.Install -> installPackage(candidate, onProgress)
-                is OfflineUpdatePlan.Reject -> OfflineInstallResult.Failure(plan.reason, "config")
+    /** 仅由页面操作重入正常启动入口，不接管已取消的首装尝试。 */
+    fun retry() {
+        if (_uiState.value != WelcomeUiState.Interrupted && _uiState.value !is WelcomeUiState.Failed) return
+        viewModelScope.launch {
+            // 等旧调用完成取消收尾；点击一次只开启下一次正常入口。
+            preparationJob?.join()
+            if (_uiState.value == WelcomeUiState.Interrupted || _uiState.value is WelcomeUiState.Failed) {
+                _uiState.value = WelcomeUiState.Idle
+                prepare()
             }
-        } catch (cancelled: CancellationException) {
-            throw cancelled
-        } catch (error: Exception) {
-            OfflineInstallResult.Failure("INSTALLATION_FAILED", cause = error)
         }
-    }
-
-    private fun fail(failure: OfflineInstallResult.Failure) {
-        reportFailure(failure)
-        _uiState.value = WelcomeUiState.Failed(failure.reason)
     }
 }

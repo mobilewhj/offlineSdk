@@ -1,0 +1,4 @@
+cd $SDK_REPO
+python3 build/reports/main-flow-refactor/api-compare.py
+'/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/javap' -public -s -classpath $SDK_REPO/build/reports/main-flow-refactor/api-before-classes.jar com.offline.tool.ManagedOfflineSdk
+'/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/javap' -public -s -classpath $SDK_REPO/build/reports/main-flow-refactor/api-after-classes.jar com.offline.tool.ManagedOfflineSdk

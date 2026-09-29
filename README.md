@@ -1,5 +1,7 @@
 # Offline SDK
 
+`0.3.0-rc.1` 是供业务 App 接入测试的托管 SDK 候选，**正式 `0.3.0` 未发布**。代码与结构范围已复审接受；固定 tag、JitPack 构建和远端依赖消费仍须按本轮发布回执核验。它统一首次准备、前台五分钟检查、失败版本门槛、安装结果通知和页面目录保护；可编译薄宿主见 [`app/`](app/)。实际 API 与迁移方式见 [托管接入说明](docs/MIGRATION-MANAGED-0.3.0.md)，发布前代码证据见 [验收快照](docs/verification/2026-09-29-complexity-reduction/README.md)。下文 `0.2.2` 坐标与低层用法是已发布版本的历史接入说明。
+
 [![CI](https://github.com/mobilewhj/offlineSdk/actions/workflows/ci.yml/badge.svg)](https://github.com/mobilewhj/offlineSdk/actions/workflows/ci.yml) [![JitPack](https://jitpack.io/v/mobilewhj/offlineSdk.svg)](https://jitpack.io/#mobilewhj/offlineSdk)
 
 **中文** | [English](README.en.md)
@@ -13,9 +15,11 @@
 - HTTP(S) ZIP 下载、可信 SHA-256 校验、有界解压和版本目录发布。
 - Kotlin 挂起 API、取消传播、下载／解压进度；文件操作使用 Okio。
 - 系统 WebView 资源映射，可选 X5 响应适配。
-- Welcome 示例：首次准备、失败重试、本地记录保存、后台更新及旧页面资源保护。
+- Welcome 薄宿主：首次资格与调用级进度、存储适配、隐私条件和独立报告任务；更新与目录保护由 SDK 管理。
 
-SDK 处理资源文件；宿主负责候选版本、配置接口、记录存储和页面生命周期。**单包不代表只保留一个目录**：更新后旧页面仍可使用旧版本，直到安全的清理时机。
+托管入口由 SDK 决定更新和目录保护；宿主提供配置接口、存储编码及页面操作。以下低层接入仍由调用方承担管理。**单包不代表只保留一个目录**：更新后旧页面仍可使用旧版本，直到安全的清理时机。
+
+测试候选的托管接入使用 `prepareFirst(onProgress)` 接收一条完整首装进度，并通过单次挂起 `loadPage(url, baseUrl, callbacks)` 让 SDK 完成页面选择与加载；示例与约束见[迁移说明](docs/MIGRATION-MANAGED-0.3.0.md#最小接入链)。
 
 ## 环境
 
@@ -26,7 +30,33 @@ SDK 处理资源文件；宿主负责候选版本、配置接口、记录存储�
 
 ## 引入
 
-版本：`0.2.2`。在 [JitPack](https://jitpack.io/#mobilewhj/offlineSdk) 确认该版本构建成功后使用以下坐标。
+### `0.3.0-rc.1` 接入测试候选
+
+以下是多模块 SDK 的**预期** JitPack 坐标。发布前尚未完成远端 POM、构建与消费核验；接入测试前须以本轮发布回执和实际解析结果确认，不能用本地 Maven 产物代替。
+
+在 `settings.gradle.kts` 中：
+
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://jitpack.io") {
+            content { includeGroup("com.github.mobilewhj.offlineSdk") }
+        }
+    }
+}
+```
+
+在应用模块 `build.gradle.kts` 中：
+
+```kotlin
+implementation("com.github.mobilewhj.offlineSdk:offlineSdk:0.3.0-rc.1")
+```
+
+### `0.2.2` 历史低层版本
+
+`0.2.2` 已发布，其旧坐标使用不同的 group。以下仅供继续使用低层 API 的宿主参考。
 
 在 `settings.gradle.kts` 中：
 
@@ -70,7 +100,7 @@ suspend fun installCandidate(record: PackageRecord, url: String): InstallResult 
 
 `version` 从 `10000` 起，`sha256` 是可信配置提供的 64 位小写十六进制摘要。协程取消继续抛出；失败返回 `InstallResult.Failure`，包含 `reason`、`stage`、`httpStatus` 等诊断信息。
 
-**收到 `Success` 后先持久化 `result.record`，保存成功再让新页面使用该版本。** SDK 不替宿主保存记录。完整调用链见 [Welcome 示例](docs/DEMO.md)。
+**收到 `Success` 后先持久化 `result.record`，保存成功再让新页面使用该版本。** 低层 `PackageInstaller` 不保存记录；托管入口会调用宿主存储完成保存。完整托管调用链见 [Welcome 示例](docs/DEMO.md)。
 
 在主线程为 WebView 绑定已经安装并保存的版本：
 
@@ -103,7 +133,7 @@ site.zip
 - 已存在版本目录不覆盖；同一版本号不更换内容。
 - WebView 绑定固定版本目录，后台更新不会自动刷新当前页面。
 - `clearOldVersions(...)` 仅在确认没有页面使用待清理目录时调用。
-- 当前示例采用单进程、单 Welcome 更新入口，不提供多进程协调。
+- 当前托管示例采用单进程管理器，首次操作由 Welcome 调用，后续检查由 SDK 根据 Application 前台事实调度；不提供跨进程协调。
 
 进度、流关闭、取消、清理、映射规则及 X5 用法详见 [SDK API 文档（中文）](offlineSdk/README.md)。
 
@@ -111,7 +141,7 @@ site.zip
 
 用 Android Studio 打开项目并运行 `app`。示例包名为 `com.offline.tool.sample`，默认安装随 APK 提供的合成 ZIP，无需服务端或账号。
 
-首次启动进入 Welcome，资源安装及记录保存完成后打开 WebView；失败停留并可重试。已有可用包时先进入页面，再检查候选更新。默认 Repository 返回内置包；接真实配置接口时复用宿主的 Retrofit / Moshi 链路。网络下载安装路径已有 MockWebServer 测试。
+首次启动进入 Welcome，SDK 完成资源安装、active 保存及可用性确认后打开 WebView；首次离线准备失败也结束离线等待，并以原 URL 默认加载。以后冷启动即使无包也不重复首装 UI，隐私允许且前台时由 SDK 静默检查和五分钟轮询。Demo 的配置适配返回内置包；接真实配置接口时复用宿主的 Retrofit / Moshi 链路。详见 [Demo 说明](docs/DEMO.md)。
 
 | 目录 | 内容 |
 | --- | --- |
@@ -127,7 +157,7 @@ site.zip
   :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleRelease
 ```
 
-当前源码已通过 72 项 JVM 测试、Debug / R8 Release 构建，以及实际本地 Maven AAR 接入验证。**设备运行验收尚未完成**；包括 Welcome / 系统 WebView 和 X5，均不宣称已通过真机测试。详情见 [0.2.2 执行记录](docs/EXECUTION-ISUSABLE-CONCURRENCY.md)和 [0.2.1 执行记录](docs/EXECUTION-INSTALL-FACTS.md)；已发布 `0.2.0` 的历史结果见 [验证记录](docs/VALIDATION-0.2.0.md)。
+已发布 `0.2.2` 的历史源码通过 72 项 JVM 测试、Debug / R8 Release 构建和本地 Maven AAR 接入验证。`0.3.0-rc.1` 发布前的代码验收为 SDK 129 项、Demo 14 项；本地 AAR 消费与构建证据见[验收快照](docs/verification/2026-09-29-complexity-reduction/README.md)，远端产物另待本轮验证。**F4 设备运行验收仍开放**；当前候选的完整 Demo 生命周期、系统 WebView 缓存／Cookie／请求头／Range 和 X5 内核均没有通过结果。历史详情见 [0.2.2 执行记录](docs/EXECUTION-ISUSABLE-CONCURRENCY.md)和 [0.2.1 执行记录](docs/EXECUTION-INSTALL-FACTS.md)；已发布 `0.2.0` 的结果见 [验证记录](docs/VALIDATION-0.2.0.md)。
 
 连接设备后可运行 `./gradlew :offlineSdk:connectedDebugAndroidTest`。编译 Android 测试源码不代表设备测试通过。
 

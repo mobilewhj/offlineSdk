@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.offline.tool.ManagedOfflineRegressionTest" tests="23" skipped="0" failures="0" errors="0" timestamp="2026-09-29T11:51:56" hostname="mobilewhjdeMacBook-Pro.local" time="0.319">
+  <properties/>
+  <testcase name="privacyWithdrawalCancelsOnlyOperationAndLeavesHostSiblingActive" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.005"/>
+  <testcase name="completedActivationMakesNewPageUseCurrentActive" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.004"/>
+  <testcase name="activeReadFailureMustNotDeleteRecoverableInstalledDirectory" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.003"/>
+  <testcase name="activeReadFailureCanRecoverOnTheNextLocalPreparation" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.002"/>
+  <testcase name="missingActiveFilesMustNotPermitDowngrade" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.002"/>
+  <testcase name="privacyRevocationCancelsSdkSilentCheckBeforeActivation" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.002"/>
+  <testcase name="missingActiveFilesStillAllowSameDigestRepairOrHigherVersion" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.004"/>
+  <testcase name="pageLoadKeepsPackageFileReadsOffMain" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.008"/>
+  <testcase name="outcomeCallbackCancellationMustNotReplaceCommittedInstallResult" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.003"/>
+  <testcase name="finalUsabilityFailureRollsBackActiveAndReportsTheRollbackResultOnce" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.01"/>
+  <testcase name="invalidHigherCandidateAndSkipsKeepTheInstallationFailureThreshold" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.005"/>
+  <testcase name="enabledWriteFailureMustNotHideObservedSameVersionShaConflict" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.003"/>
+  <testcase name="shutdownCancelsSdkSilentCheckBeforeActivation" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.002"/>
+  <testcase name="pageLoadRechecksDisabledConfigAfterIoObservation" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.063"/>
+  <testcase name="providerSelfCancellationDoesNotStopLaterSdkSilentChecks" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.003"/>
+  <testcase name="firstEntryAttemptsFailedColdCleanupOnlyOnceAndLaterEntryRecovers" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.003"/>
+  <testcase name="firstAndRegularActivationPublishOnlyCompleteSuccessSnapshots" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.006"/>
+  <testcase name="sameVersionRepairInvalidatesPageObservedBeforeDirectoryReplacement" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.156"/>
+  <testcase name="backgroundAfterInstallingStartsStillFinishesTargetPreparationAndActivation" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.009"/>
+  <testcase name="customDownloadClientIsUsedForTheManagedInstallation" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.015"/>
+  <testcase name="observedSameVersionShaConflictMustBlockPageDuringEnabledStorageWait" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.003"/>
+  <testcase name="silentChecksUseActualProviderEntryForFiveMinuteInterval" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.002"/>
+  <testcase name="suspendEntriesKeepManagedFactsOnMainAndBlockingWorkOnIo" classname="com.offline.tool.ManagedOfflineRegressionTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

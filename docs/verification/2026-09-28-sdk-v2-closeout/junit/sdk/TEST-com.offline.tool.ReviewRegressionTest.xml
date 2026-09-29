@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.offline.tool.ReviewRegressionTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-09-28T10:24:46" hostname="mobilewhjdeMacBook-Pro.local" time="0.015">
+  <properties/>
+  <testcase name="activeReadFailureMustNotDeleteRecoverableInstalledDirectory" classname="com.offline.tool.ReviewRegressionTest" time="0.003"/>
+  <testcase name="missingActiveFilesMustNotPermitDowngrade" classname="com.offline.tool.ReviewRegressionTest" time="0.001"/>
+  <testcase name="privacyRevocationCancelsSdkSilentCheckBeforeActivation" classname="com.offline.tool.ReviewRegressionTest" time="0.002"/>
+  <testcase name="firstPreparationReentryDuringCancellationCleanupMustNotCreateAnotherOwner" classname="com.offline.tool.ReviewRegressionTest" time="0.003"/>
+  <testcase name="outcomeCallbackCancellationMustNotReplaceCommittedInstallResult" classname="com.offline.tool.ReviewRegressionTest" time="0.002"/>
+  <testcase name="enabledWriteFailureMustNotHideObservedSameVersionShaConflict" classname="com.offline.tool.ReviewRegressionTest" time="0.002"/>
+  <testcase name="observedSameVersionShaConflictMustBlockPageDuringEnabledStorageWait" classname="com.offline.tool.ReviewRegressionTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

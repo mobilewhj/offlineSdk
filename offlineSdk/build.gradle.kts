@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.github.mobilewhj.offlineSdk"
-version = providers.gradleProperty("sdkVersion").getOrElse("0.2.2")
+version = providers.gradleProperty("sdkVersion").getOrElse("0.3.0-rc.1")
 
 android {
     namespace = "com.offline.tool"
@@ -26,11 +26,13 @@ android {
 }
 
 dependencies {
+    compileOnly("androidx.annotation:annotation:1.7.0")
     compileOnly(libs.tbs)
     api(libs.kotlinx.coroutines.android)
     api(libs.okhttp)
     implementation(libs.okio)
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.okhttp.tls)
     androidTestImplementation(libs.androidx.junit)

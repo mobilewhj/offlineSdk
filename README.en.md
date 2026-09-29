@@ -1,5 +1,7 @@
 # Offline SDK
 
+`0.3.0-rc.1` is a managed SDK candidate for app integration testing. **The final `0.3.0` has not been released.** The code and structure review passed; the fixed tag, JitPack build, and remote dependency consumption still require verification in this release run. The SDK owns initial preparation, five-minute foreground checks, failed-version gating, typed installation outcomes, and page-directory protection. See the [managed migration guide](docs/MIGRATION-MANAGED-0.3.0.md), [thin demo](docs/DEMO.md), and [pre-release acceptance snapshot](docs/verification/2026-09-29-complexity-reduction/README.md). The `0.2.2` coordinates below describe the previously published low-level release.
+
 [![CI](https://github.com/mobilewhj/offlineSdk/actions/workflows/ci.yml/badge.svg)](https://github.com/mobilewhj/offlineSdk/actions/workflows/ci.yml) [![JitPack](https://jitpack.io/v/mobilewhj/offlineSdk.svg)](https://jitpack.io/#mobilewhj/offlineSdk)
 
 [中文](README.md) | **English**
@@ -13,9 +15,11 @@ Designed for apps maintaining one H5 resource bundle with full-package updates. 
 - HTTP(S) ZIP downloads, trusted SHA-256 verification, bounded extraction, and version directory publication.
 - Kotlin suspending APIs, cancellation propagation, and download / extraction progress; Okio for file operations.
 - System WebView resource mapping and an optional X5 response adapter.
-- A Welcome sample covering first installation, retry, local record persistence, background updates, and existing-page protection.
+- A thin Welcome sample with first-preparation progress, storage adapters, privacy conditions, and independent reporting tasks. The SDK owns updates and directory protection.
 
-The SDK manages resource files. The host owns candidate selection, configuration APIs, record persistence, and page lifecycle. **A single package can have multiple version directories**: existing pages retain their original resources until cleanup is safe.
+The managed entry owns update decisions and directory protection. The host supplies configuration, storage encoding, and page operations. The low-level integration below still leaves management to the caller. **A single package can have multiple version directories**: existing pages retain their original resources until cleanup is safe.
+
+The test candidate's managed API uses one `prepareFirst(onProgress)` callback for first preparation and one suspending `loadPage(url, baseUrl, callbacks)` call for page selection and loading. See the [migration guide](docs/MIGRATION-MANAGED-0.3.0.md#最小接入链).
 
 ## Requirements
 
@@ -26,7 +30,33 @@ The SDK manages resource files. The host owns candidate selection, configuration
 
 ## Installation
 
-Version: `0.2.2`. Confirm a successful build for this version on [JitPack](https://jitpack.io/#mobilewhj/offlineSdk) before using the coordinates below.
+### `0.3.0-rc.1` integration-test candidate
+
+These are the **expected** coordinates for the SDK module. The remote POM, build, and consumer resolution still need verification in this release run; check those results before integration testing. A local Maven artifact does not establish remote availability.
+
+In `settings.gradle.kts`:
+
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://jitpack.io") {
+            content { includeGroup("com.github.mobilewhj.offlineSdk") }
+        }
+    }
+}
+```
+
+In your application module's `build.gradle.kts`:
+
+```kotlin
+implementation("com.github.mobilewhj.offlineSdk:offlineSdk:0.3.0-rc.1")
+```
+
+### Previously published low-level `0.2.2`
+
+`0.2.2` uses a different group. The following is historical guidance for hosts continuing to use the low-level API.
 
 In `settings.gradle.kts`:
 
@@ -70,7 +100,7 @@ suspend fun installCandidate(record: PackageRecord, url: String): InstallResult 
 
 Versions start at `10000`. Supply a trusted, 64-character lowercase hexadecimal `sha256`. Cancellation propagates as an exception. Installation failures return `InstallResult.Failure`, including `reason`, `stage`, and `httpStatus` diagnostics. Diagnostic messages may be Chinese; use the typed reason and stage for application logic.
 
-**After `Success`, persist `result.record` before allowing new pages to use that version.** The SDK does not save the active record. See the [Welcome sample guide (Chinese)](docs/DEMO.md) for the complete integration flow.
+**After `Success`, persist `result.record` before allowing new pages to use that version.** The low-level `PackageInstaller` does not save the active record; the managed entry calls the host storage adapter to save it. See the [Welcome sample guide (Chinese)](docs/DEMO.md) for the complete integration flow.
 
 On the main thread, bind WebView to an installed and persisted version:
 
@@ -103,7 +133,7 @@ site.zip
 - Existing version directories are never overwritten. Do not change content under an existing version number.
 - Each WebView binds to a fixed version. Background updates do not reload existing pages.
 - Call `clearOldVersions(...)` only when no page uses any directory to be removed.
-- The sample has one process and one Welcome update entry point; it does not coordinate multiple processes.
+- The sample has one process manager: Welcome owns its first-preparation call, and the SDK schedules later checks from Application conditions. Cross-process coordination is not provided.
 
 See the [SDK API guide (Chinese)](offlineSdk/README.md) for progress, stream ownership, cancellation, cleanup, mapping rules, and X5 details.
 
@@ -111,7 +141,7 @@ See the [SDK API guide (Chinese)](offlineSdk/README.md) for progress, stream own
 
 Open the project in Android Studio and run `app`. Its application ID is `com.offline.tool.sample`. The sample installs a synthetic ZIP bundled in the APK, so it requires no server or account.
 
-On first launch, Welcome prepares resources and persists the record before opening WebView. Failures remain on Welcome with retry available. Later launches open an available local package first and check for updates in the background. The default Repository returns the built-in candidate. Integrate a real configuration endpoint through the host's existing Retrofit / Moshi stack. The remote ZIP installation path is covered by MockWebServer tests.
+On first launch, Welcome waits for the SDK to prepare resources, save active, and confirm usability. A failed first offline preparation ends the offline wait and the page loads the original URL. Later launches skip first-install UI even when no package remains; the SDK checks silently while the app is foreground and consented. The Demo configuration adapter returns the built-in candidate. Integrate a real endpoint through the host's existing Retrofit / Moshi stack. See the [Demo guide](docs/DEMO.md).
 
 | Directory | Contents |
 | --- | --- |
@@ -127,7 +157,7 @@ On first launch, Welcome prepares resources and persists the record before openi
   :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleRelease
 ```
 
-Current source passed 72 JVM tests, Debug / R8 Release builds, and integration against the actual local Maven AAR. **Device acceptance remains pending.** Welcome / system WebView and X5 have not been verified on a device. See the [0.2.2 execution record (Chinese)](docs/EXECUTION-ISUSABLE-CONCURRENCY.md) and [0.2.1 execution record (Chinese)](docs/EXECUTION-INSTALL-FACTS.md); the [0.2.0 validation record (Chinese)](docs/VALIDATION-0.2.0.md) remains historical.
+The previously published `0.2.2` source passed 72 JVM tests, Debug / R8 Release builds, and integration against the local Maven AAR. The [`0.3.0-rc.1` pre-release acceptance snapshot](docs/verification/2026-09-29-complexity-reduction/README.md) records 129 SDK tests, 14 Demo tests, and local AAR consumption; remote artifacts still require this release run's verification. **F4 device acceptance remains open.** The current candidate has no passing result for the full Demo lifecycle, system WebView cache / Cookie / headers / Range behavior, or the X5 runtime. Historical evidence is in the [0.2.2 execution record (Chinese)](docs/EXECUTION-ISUSABLE-CONCURRENCY.md), [0.2.1 execution record (Chinese)](docs/EXECUTION-INSTALL-FACTS.md), and [0.2.0 validation record (Chinese)](docs/VALIDATION-0.2.0.md).
 
 With a connected device, run `./gradlew :offlineSdk:connectedDebugAndroidTest`. Compiling Android test sources does not mean device tests passed.
 

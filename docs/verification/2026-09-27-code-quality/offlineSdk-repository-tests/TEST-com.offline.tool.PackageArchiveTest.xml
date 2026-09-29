@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.offline.tool.PackageArchiveTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-09-27T10:54:05" hostname="mobilewhjdeMacBook-Pro.local" time="0.036">
+  <properties/>
+  <testcase name="corruptLocalHeaderIsRejectedWithoutPublishingWithAndWithoutProgress" classname="com.offline.tool.PackageArchiveTest" time="0.008"/>
+  <testcase name="tooManyEntriesAreRejectedBeforeExtractingWithAndWithoutProgress" classname="com.offline.tool.PackageArchiveTest" time="0.028"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,68 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :offlineSdk:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :offlineSdk:preBuild UP-TO-DATE
+> Task :offlineSdk:preDebugBuild UP-TO-DATE
+> Task :offlineSdk:generateDebugResValues UP-TO-DATE
+> Task :offlineSdk:generateDebugResources UP-TO-DATE
+> Task :offlineSdk:packageDebugResources UP-TO-DATE
+> Task :offlineSdk:parseDebugLocalResources UP-TO-DATE
+> Task :offlineSdk:generateDebugRFile UP-TO-DATE
+> Task :offlineSdk:compileDebugKotlin UP-TO-DATE
+> Task :offlineSdk:javaPreCompileDebug UP-TO-DATE
+> Task :offlineSdk:compileDebugJavaWithJavac NO-SOURCE
+> Task :offlineSdk:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :offlineSdk:preDebugAndroidTestBuild UP-TO-DATE
+> Task :offlineSdk:writeDebugAarMetadata UP-TO-DATE
+> Task :offlineSdk:checkDebugAndroidTestAarMetadata UP-TO-DATE
+> Task :offlineSdk:compileDebugLibraryResources UP-TO-DATE
+> Task :offlineSdk:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :offlineSdk:mapDebugAndroidTestSourceSetPaths UP-TO-DATE
+> Task :offlineSdk:generateDebugAndroidTestResources UP-TO-DATE
+> Task :offlineSdk:mergeDebugAndroidTestResources UP-TO-DATE
+> Task :offlineSdk:extractDeepLinksDebug UP-TO-DATE
+> Task :offlineSdk:processDebugManifest UP-TO-DATE
+> Task :offlineSdk:processDebugAndroidTestManifest UP-TO-DATE
+> Task :offlineSdk:processDebugAndroidTestResources UP-TO-DATE
+> Task :offlineSdk:javaPreCompileDebugAndroidTest UP-TO-DATE
+> Task :offlineSdk:mergeDebugAndroidTestShaders UP-TO-DATE
+> Task :offlineSdk:compileDebugAndroidTestShaders NO-SOURCE
+> Task :offlineSdk:generateDebugAndroidTestAssets UP-TO-DATE
+> Task :offlineSdk:mergeDebugShaders UP-TO-DATE
+> Task :offlineSdk:compileDebugShaders NO-SOURCE
+> Task :offlineSdk:generateDebugAssets UP-TO-DATE
+> Task :offlineSdk:mergeDebugAssets UP-TO-DATE
+> Task :offlineSdk:mergeDebugAndroidTestAssets UP-TO-DATE
+> Task :offlineSdk:compressDebugAndroidTestAssets UP-TO-DATE
+> Task :offlineSdk:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :offlineSdk:desugarDebugAndroidTestFileDependencies UP-TO-DATE
+> Task :offlineSdk:processDebugJavaRes UP-TO-DATE
+> Task :offlineSdk:checkDebugAndroidTestDuplicateClasses UP-TO-DATE
+> Task :offlineSdk:mergeExtDexDebugAndroidTest UP-TO-DATE
+> Task :offlineSdk:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :offlineSdk:mergeDebugJniLibFolders UP-TO-DATE
+> Task :offlineSdk:mergeDebugNativeLibs NO-SOURCE
+> Task :offlineSdk:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :offlineSdk:mergeDebugAndroidTestJniLibFolders UP-TO-DATE
+> Task :offlineSdk:mergeDebugAndroidTestNativeLibs NO-SOURCE
+> Task :offlineSdk:mergeLibDexDebugAndroidTest UP-TO-DATE
+> Task :offlineSdk:stripDebugAndroidTestDebugSymbols NO-SOURCE
+> Task :offlineSdk:validateSigningDebugAndroidTest UP-TO-DATE
+> Task :offlineSdk:writeDebugAndroidTestSigningConfigVersions UP-TO-DATE
+> Task :offlineSdk:compileDebugAndroidTestKotlin
+> Task :offlineSdk:compileDebugAndroidTestJavaWithJavac NO-SOURCE
+> Task :offlineSdk:dexBuilderDebugAndroidTest
+> Task :offlineSdk:mergeDebugAndroidTestGlobalSynthetics UP-TO-DATE
+> Task :offlineSdk:processDebugAndroidTestJavaRes UP-TO-DATE
+> Task :offlineSdk:mergeDebugAndroidTestJavaResource UP-TO-DATE
+> Task :offlineSdk:mergeProjectDexDebugAndroidTest
+> Task :offlineSdk:packageDebugAndroidTest
+> Task :offlineSdk:createDebugAndroidTestApkListingFileRedirect UP-TO-DATE
+
+> Task :offlineSdk:connectedDebugAndroidTest
+Starting 9 tests on PHP110 - 16
+
+Finished 9 tests on PHP110 - 16
+
+BUILD SUCCESSFUL in 33s
+46 actionable tasks: 5 executed, 41 up-to-date

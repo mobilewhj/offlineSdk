@@ -10,7 +10,7 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 FILES = ('index.html', 'style.css')
 OUTPUT = ROOT / 'app/src/main/assets/sample.zip'
-CONFIG = ROOT / 'app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeRepository.kt'
+CONFIG = ROOT / 'app/src/main/java/com/offline/tool/sample/DemoApplication.kt'
 # Fixed metadata preserves the already published demo ZIP byte for byte.
 TIMESTAMP = (2026, 9, 17, 11, 27, 50)
 

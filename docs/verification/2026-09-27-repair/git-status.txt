@@ -1,0 +1,41 @@
+## main...origin/main
+ M CHANGELOG.md
+ M README.en.md
+ M README.md
+ M app/src/main/java/com/offline/tool/sample/DemoApplication.kt
+ M app/src/main/java/com/offline/tool/sample/MainActivity.kt
+ D app/src/main/java/com/offline/tool/sample/offline/DemoOfflinePackages.kt
+ D app/src/main/java/com/offline/tool/sample/offline/InstallOfflinePackageUseCase.kt
+ D app/src/main/java/com/offline/tool/sample/offline/OfflinePageAdapter.kt
+ D app/src/main/java/com/offline/tool/sample/offline/OfflineUrlRules.kt
+ D app/src/main/java/com/offline/tool/sample/ui/welcome/OfflineUpdatePlan.kt
+ M app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeActivity.kt
+ D app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeRepository.kt
+ M app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeViewModel.kt
+ M app/src/main/res/layout/act_welcome.xml
+ M app/src/main/res/values/strings.xml
+ D app/src/test/java/com/offline/tool/sample/offline/OfflineUrlRulesTest.kt
+ D app/src/test/java/com/offline/tool/sample/ui/welcome/OfflineUpdatePlanTest.kt
+ D app/src/test/java/com/offline/tool/sample/ui/welcome/WelcomeFlowTest.kt
+ M docs/DEMO.md
+ M offlineSdk/README.md
+ M offlineSdk/build.gradle.kts
+ M offlineSdk/src/androidTest/java/com/offline/tool/OfflineAndroidTest.kt
+ M offlineSdk/src/main/java/com/offline/tool/FailureReason.kt
+ M offlineSdk/src/main/java/com/offline/tool/OfflineInterceptor.kt
+ M offlineSdk/src/main/java/com/offline/tool/PackageInstaller.kt
+ M scripts/aar-consumer-smoke/src/com/offline/tool/sample/OfflineSdkAarSmoke.kt
+ M scripts/generate-sample.py
+?? app/src/main/java/com/offline/tool/sample/offline/DemoManagedStorage.kt
+?? app/src/main/java/com/offline/tool/sample/offline/DemoOutcomeReporter.kt
+?? app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeProgressPresentation.kt
+?? app/src/test/java/com/offline/tool/sample/offline/DemoOutcomeReporterTest.kt
+?? app/src/test/java/com/offline/tool/sample/ui/welcome/WelcomeProgressPresentationTest.kt
+?? app/src/test/java/com/offline/tool/sample/ui/welcome/WelcomeViewModelTest.kt
+?? docs/MIGRATION-MANAGED-0.3.0.md
+?? docs/SDK-MANAGED-REFACTOR-DELIVERY.md
+?? docs/verification/
+?? offlineSdk/src/main/java/com/offline/tool/ManagedOfflineSdk.kt
+?? offlineSdk/src/main/java/com/offline/tool/ManagedOfflineTypes.kt
+?? offlineSdk/src/test/java/com/offline/tool/ManagedOfflineRegressionTest.kt
+?? offlineSdk/src/test/java/com/offline/tool/ManagedOfflineSdkTest.kt

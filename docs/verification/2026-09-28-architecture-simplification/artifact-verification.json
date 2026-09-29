@@ -1,0 +1,57 @@
+{
+  "coordinate": "com.github.mobilewhj.offlineSdk:offlineSdk:0.3.0",
+  "local_candidate_only": true,
+  "baseline_artifacts": {
+    "aar_sha256": "77e60fbcaeceaa4ac13826c1774ac88ab9af062bb994d016dc2db1f5f12101c0",
+    "sources_jar_sha256": "ed25b5c295cb3d93f5836760cb1e3cfb9f16cf0acd61e9bee9b62a413ba7fc05"
+  },
+  "artifacts": {
+    "offlineSdk-0.3.0.aar": {
+      "path": "$SDK_REPO/build/repo/com/github/mobilewhj/offlineSdk/offlineSdk/0.3.0/offlineSdk-0.3.0.aar",
+      "sha256": "b25b0874d7b46410495ab48cb23cc820be609d48d16b617094b5c84daa6e8c00",
+      "gradle_sha256": "b25b0874d7b46410495ab48cb23cc820be609d48d16b617094b5c84daa6e8c00",
+      "checksum_matches": true
+    },
+    "offlineSdk-0.3.0-sources.jar": {
+      "path": "$SDK_REPO/build/repo/com/github/mobilewhj/offlineSdk/offlineSdk/0.3.0/offlineSdk-0.3.0-sources.jar",
+      "sha256": "c33dc8bc8c6bf6cd5ccc0817c541bb19e19781e52e09eac6706cc87e46d096bd",
+      "gradle_sha256": "c33dc8bc8c6bf6cd5ccc0817c541bb19e19781e52e09eac6706cc87e46d096bd",
+      "checksum_matches": true
+    },
+    "offlineSdk-0.3.0.pom": {
+      "path": "$SDK_REPO/build/repo/com/github/mobilewhj/offlineSdk/offlineSdk/0.3.0/offlineSdk-0.3.0.pom",
+      "sha256": "5379399a9f112b88872a69b491d24881a4fe4c358ff1d3c7b1acba10672bb0b3",
+      "gradle_sha256": "5379399a9f112b88872a69b491d24881a4fe4c358ff1d3c7b1acba10672bb0b3",
+      "checksum_matches": true
+    },
+    "offlineSdk-0.3.0.module": {
+      "path": "$SDK_REPO/build/repo/com/github/mobilewhj/offlineSdk/offlineSdk/0.3.0/offlineSdk-0.3.0.module",
+      "sha256": "f3cc279156f2b0e64bf0ee657bd50d1b0aca3e0a72c31bf50b78b3aa0ac58e90",
+      "gradle_sha256": "f3cc279156f2b0e64bf0ee657bd50d1b0aca3e0a72c31bf50b78b3aa0ac58e90",
+      "checksum_matches": true
+    }
+  },
+  "sources_jar": {
+    "workspace_source_count": 15,
+    "packaged_source_count": 15,
+    "missing": [],
+    "extra": [],
+    "byte_mismatched": [],
+    "matches_current_sdk_src_main": true
+  },
+  "consumer": {
+    "resolved_aar_path_present": true,
+    "resolved_coordinate_present": true,
+    "reported_sha256": "b25b0874d7b46410495ab48cb23cc820be609d48d16b617094b5c84daa6e8c00",
+    "reported_sha256_matches_candidate": true,
+    "debug_kotlin_compiled": true,
+    "release_r8_executed": true,
+    "build_successful": true,
+    "low_level_source_calls": {
+      "PackageInstaller": true,
+      "OfflineInterceptor": true,
+      "PackageInstaller.isUsable": true,
+      "OfflineInterceptor.resolve": true
+    }
+  }
+}

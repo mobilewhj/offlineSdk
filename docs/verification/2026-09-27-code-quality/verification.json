@@ -1,0 +1,105 @@
+{
+  "date": "2026-09-27",
+  "scope": "Q1–Q3内部代码质量整改；公开管理API不变",
+  "branch": "main",
+  "head": "ef55eb17e659d9f77ee714a9a37a9bb9d0259921",
+  "implementationCommitted": false,
+  "formallyPublished": false,
+  "acceptance": "R1–R9修复和行为通过事实保留；代码质量整改待原规划任务复审，整体验收未通过，不进入正式发布交接",
+  "environment": {
+    "java": "OpenJDK JBR 17.0.14+1-b1367.22",
+    "gradle": "8.11.1",
+    "agp": "8.10.1",
+    "kotlin": "2.0.21",
+    "minSdk": 24,
+    "compileSdk": 35
+  },
+  "testResults": {
+    "offlineSdk-repository-tests": {
+      "tests": 102,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "app-repository-tests": {
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "offlineSdk-external-tests": {
+      "tests": 108,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "appAarTests": {
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "sourceManifestSha256": "8c02b96bcc4d35b25a7fee7f4346959efdb674d8a8a25a5fcab7c061f08ca313",
+  "sourceJarMatchesCurrentProductionSources": true,
+  "demoFilesChangedSinceR1R9Evidence": [],
+  "previousR1R9AarSha256": "c07cfab1d9eda4071417c5fbf8430fe7b5e7a04fd3597f2e1cfe35c559d7d32c",
+  "localCoordinate": "com.github.mobilewhj.offlineSdk:offlineSdk:0.3.0",
+  "artifactDirectory": "$SDK_REPO/build/repo/com/github/mobilewhj/offlineSdk/offlineSdk/0.3.0",
+  "artifactSha256": {
+    "offlineSdk-0.3.0-sources.jar": "9d632bcba128a4c2e6e35f6e0498e1ae8158e8075a662ed742f7cc53aff192b8",
+    "offlineSdk-0.3.0.aar": "159f24bb0a470602033ea9cb754ba8670146df72f243084687e33bace4cdb09b",
+    "offlineSdk-0.3.0.module": "9ea98c4173ab607e6c2a3ab398cf438fd1c51ffacc3a6f4dc6d8bd5663dd867d",
+    "offlineSdk-0.3.0.pom": "5379399a9f112b88872a69b491d24881a4fe4c358ff1d3c7b1acba10672bb0b3"
+  },
+  "consumerResolvedAarSha256": "159f24bb0a470602033ea9cb754ba8670146df72f243084687e33bace4cdb09b",
+  "structureDiffBase": "ManagedOfflineSdk来自本轮改动前工作区快照；OfflineInterceptor来自上轮固定源码包；两个新内部辅助原先不存在。",
+  "commands": [
+    {
+      "command": "./gradlew :offlineSdk:testDebugUnitTest :app:testDebugUnitTest --no-daemon --console=plain",
+      "result": "初次SDK99项中1项测试断言失败：协程调试附加线程名；改用线程对象身份断言，后续完整门禁通过。",
+      "log": "initial-tests.log"
+    },
+    {
+      "command": "./gradlew :offlineSdk:testDebugUnitTest :offlineSdk:lintRelease :offlineSdk:compileDebugAndroidTestKotlin :offlineSdk:assembleRelease :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleRelease --no-daemon --console=plain",
+      "result": "BUILD SUCCESSFUL；SDK102、Demo9",
+      "log": "full-build.log"
+    },
+    {
+      "command": "./gradlew :offlineSdk:testDebugUnitTest -I $TRACKING_REPO/.trellis/tasks/09-24-offline-sdk-managed-refactor/research/sdk-acceptance-2026-09-27/review-probes.init.gradle -PreviewProbesDir=$TRACKING_REPO/.trellis/tasks/09-24-offline-sdk-managed-refactor/research/sdk-acceptance-2026-09-27 --no-daemon --console=plain",
+      "result": "BUILD SUCCESSFUL；SDK108=仓库102+外部6，全部通过",
+      "log": "external-regressions.log"
+    },
+    {
+      "command": "./gradlew :offlineSdk:publishReleasePublicationToLocalReleaseRepository -PsdkVersion=0.3.0 --no-daemon --console=plain",
+      "result": "BUILD SUCCESSFUL；仅本地候选生成，不是正式发布",
+      "log": "local-candidate.log"
+    },
+    {
+      "command": "./gradlew :app:verifyOfflineSdkAar :app:dependencyInsight --configuration debugRuntimeClasspath --dependency offlineSdk :app:assembleDebug :app:assembleRelease :app:testDebugUnitTest :app:lintDebug -PsdkVersion=0.3.0 -PsmokeSdkVersion=0.3.0 -I scripts/aar-consumer-smoke.init.gradle --no-daemon --console=plain",
+      "result": "首次新增验证task的Groovy路径插值把.aar解析为属性，任务失败；改用${smokeVersion}.aar后重跑。未修改产品源码。",
+      "log": "aar-consumer-first.log"
+    },
+    {
+      "command": "./gradlew :app:verifyOfflineSdkAar :app:dependencyInsight --configuration debugRuntimeClasspath --dependency offlineSdk :app:assembleDebug :app:assembleRelease :app:testDebugUnitTest :app:lintDebug -PsdkVersion=0.3.0 -PsmokeSdkVersion=0.3.0 -I scripts/aar-consumer-smoke.init.gradle --no-daemon --console=plain",
+      "result": "BUILD SUCCESSFUL；消费者实际解析摘要相符，Debug/Release/R8、Demo9、lint通过",
+      "log": "aar-consumer.log"
+    },
+    {
+      "command": "python3 scripts/generate-sample.py --check",
+      "result": "通过；SHA-256=28069f115248f28f7bc5d8dc42799c2d75b9c641caa374549657042f2b3ab47b"
+    },
+    {
+      "command": "git diff --check",
+      "result": "通过"
+    }
+  ],
+  "notVerified": [
+    "原规划任务Q1–Q3结构复审与整体验收",
+    "设备UI及真实生命周期",
+    "设备Main/StrictMode",
+    "系统WebView/X5实际运行",
+    "真实后端成功/失败HTTP编码和上传",
+    "远端正式坐标解析/tag/实现提交"
+  ]
+}
