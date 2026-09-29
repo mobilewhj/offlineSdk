@@ -35,7 +35,7 @@ implementation("com.github.mobilewhj:offlineSdk:0.3.0-rc.1")
 
 ## 真实远端薄宿主消费
 
-从固定标签 `git archive` 建立仅含 `:app` 的独立工程；其[仓库配置](remote-consumer-settings.gradle.kts)只有 Google、Maven Central 与 JitPack，应用直接声明上述远端坐标。新 Gradle 用户目录加 `--refresh-dependencies`；没有 SDK project 依赖、`mavenLocal`、本地 `build/repo` 或依赖替换。解析打印的 AAR 来自独立 Gradle 缓存，其 SHA-256 与另行下载的远端 AAR 一致。[解析结果](remote-consumer-resolution.txt)、[汇总 JSON](remote-consumer-summary.json)、[完整成功日志](remote-consumer-build.log)及[JUnit XML](junit/remote-app/)均已保存。
+从固定标签 `git archive` 建立仅含 `:app` 的独立工程；其[依赖仓库配置](remote-consumer-settings.gradle.kts)只有 Google、Maven Central 与 JitPack，应用直接声明上述远端坐标。新 Gradle 用户目录加 `--refresh-dependencies`；没有 SDK project 依赖、`mavenLocal`、本地 `build/repo` 或依赖替换。解析打印的 AAR 来自独立 Gradle 缓存，其 SHA-256 与另行下载的远端 AAR 一致。[解析结果](remote-consumer-resolution.txt)、[汇总 JSON](remote-consumer-summary.json)、[完整成功日志](remote-consumer-build.log)及[JUnit XML](junit/remote-app/)均已保存。
 
 实际通过命令在隔离工程 `$REMOTE_SMOKE/project` 执行（`$REMOTE_SMOKE` 为测试时新建目录，`$SDK_REPO` 为 SDK 源码检出目录）：
 
