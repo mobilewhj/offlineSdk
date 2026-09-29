@@ -1,10 +1,10 @@
 # 托管离线包接入迁移（0.3.0-rc.1 测试候选）
 
-`0.3.0-rc.1` 用于业务 App 接入测试，**正式 `0.3.0` 未发布**。R1–R9、Q1–Q3 及主流程优化的历史结论保留；本轮 R0–R5、F2-R 和 P2/P3 的代码与结构范围已由原规划会话复审接受。当前本地 AAR 与单测是发布前证据，固定 tag、JitPack 构建和远端依赖消费须由本轮发布回执确认后才可用于业务 App 接入测试。F4 与完整运行验收仍开放。旧 `0.2.2` 低层 API 保留；同一托管根目录只能由一个 `ManagedOfflineSdk` 实例修改。接管前先停止旧低层在途写操作，接管后其他安装器不得再向该目录发起写入。
+`0.3.0-rc.1` 用于业务 App 接入测试，**正式 `0.3.0` 未发布**。R1–R9、Q1–Q3 及主流程优化的历史结论保留；本轮 R0–R5、F2-R 和 P2/P3 的代码与结构范围已由原规划会话复审接受。本地 AAR 与单测是发布前证据；固定 tag 的 JitPack 构建、远端 POM 和隔离薄宿主依赖消费均已核验，详见[发布回执](verification/2026-09-29-test-release/README.md)。F4 与完整运行验收仍开放。旧 `0.2.2` 低层 API 保留；同一托管根目录只能由一个 `ManagedOfflineSdk` 实例修改。接管前先停止旧低层在途写操作，接管后其他安装器不得再向该目录发起写入。
 
 ## 测试候选依赖
 
-多模块 SDK 的**预期** JitPack 坐标为 `com.github.mobilewhj.offlineSdk:offlineSdk:0.3.0-rc.1`，以本轮实际远端 POM 与薄宿主解析结果为准；本地 Maven `0.3.0` 坐标和摘要不能替代远端验证。在 `settings.gradle.kts` 中加入：
+远端 POM 和隔离 tag Demo 的依赖解析确认 SDK 的 JitPack 坐标为 `com.github.mobilewhj:offlineSdk:0.3.0-rc.1`；远端 AAR 的实际消费与摘要见[发布回执](verification/2026-09-29-test-release/README.md)。在 `settings.gradle.kts` 中加入：
 
 ```kotlin
 dependencyResolutionManagement {
@@ -12,13 +12,13 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven("https://jitpack.io") {
-            content { includeGroup("com.github.mobilewhj.offlineSdk") }
+            content { includeGroup("com.github.mobilewhj") }
         }
     }
 }
 ```
 
-应用模块使用 `implementation("com.github.mobilewhj.offlineSdk:offlineSdk:0.3.0-rc.1")`。发布前代码与行为证据见 [验收快照](verification/2026-09-29-complexity-reduction/README.md)；下方 API、存储和页面约定是业务 App 接入测试的迁移边界。
+应用模块使用 `implementation("com.github.mobilewhj:offlineSdk:0.3.0-rc.1")`。发布前代码与行为证据见 [验收快照](verification/2026-09-29-complexity-reduction/README.md)；下方 API、存储和页面约定是业务 App 接入测试的迁移边界。
 
 ## API 与所有权
 

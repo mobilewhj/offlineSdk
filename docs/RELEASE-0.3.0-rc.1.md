@@ -11,10 +11,10 @@
 
 ## 接入方式
 
-JitPack 多模块候选坐标预计为 `com.github.mobilewhj.offlineSdk:offlineSdk:0.3.0-rc.1`。使用前应核对本次 GitHub Release 回执中的远端 POM、构建状态和实际消费验证。`settings.gradle.kts` 中将 `https://jitpack.io` 加入依赖仓库，并允许 group `com.github.mobilewhj.offlineSdk`。最小调用链见[迁移说明](MIGRATION-MANAGED-0.3.0.md#最小接入链)和[薄宿主](../app/)。
+固定 tag 的 [JitPack 构建日志](https://jitpack.io/com/github/mobilewhj/offlineSdk/0.3.0-rc.1/build.log)显示构建成功，[远端 POM](https://jitpack.io/com/github/mobilewhj/offlineSdk/0.3.0-rc.1/offlineSdk-0.3.0-rc.1.pom)确认坐标为 `com.github.mobilewhj:offlineSdk:0.3.0-rc.1`、打包类型为 AAR。隔离 tag Demo 已从 JitPack 解析并消费该坐标。`settings.gradle.kts` 中将 `https://jitpack.io` 加入依赖仓库，并允许 group `com.github.mobilewhj`。最小调用链见[迁移说明](MIGRATION-MANAGED-0.3.0.md#最小接入链)和[薄宿主](../app/)。
 
 ## 候选验证与开放项
 
-发布前相同生产源码通过 SDK JVM **129/129**、Demo JVM **14/14**；SDK Release、Demo Debug/Release/R8、lint 和两模块 AndroidTest Kotlin 源码编译通过。本地 `0.3.0-rc.1` AAR 与已接受的候选 AAR 字节一致，源码摘要及证据见[回执](verification/2026-09-29-complexity-reduction/README.md)。远端产物身份与消费结果以 GitHub Release 回执为准，不沿用本地摘要。
+发布前相同生产源码通过 SDK JVM **129/129**、Demo JVM **14/14**；SDK Release、Demo Debug/Release/R8、lint 和两模块 AndroidTest Kotlin 源码编译通过。本地 `0.3.0-rc.1` AAR 与已接受的候选 AAR 字节一致，源码摘要及证据见[验收快照](verification/2026-09-29-complexity-reduction/README.md)。隔离 tag Demo 消费远端 AAR 后，Debug、Release/R8、JVM **14/14**、lint 和 AndroidTest Kotlin 源码编译均通过；远端 AAR SHA-256 为 `cbfb3d35b8da06b6727643399daca82562bdadf60bcb2e25add916d1685333d3`，sources JAR SHA-256 为 `8e4ae3dc4c2dfbf69ea68c7e615ad797619058fbd9946360df8ed4bc52783cc4`。解析、构建和摘要证据见[发布回执](verification/2026-09-29-test-release/README.md)。
 
 F4 当前候选真机验证尚无通过 XML；完整系统 WebView/X5、缓存与 Cookie 生命周期、业务 App 接入和正式 `0.3.0` 验收仍需后续进行。本候选不表示这些项目已经通过。

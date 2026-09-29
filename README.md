@@ -1,6 +1,6 @@
 # Offline SDK
 
-`0.3.0-rc.1` 是供业务 App 接入测试的托管 SDK 候选，**正式 `0.3.0` 未发布**。代码与结构范围已复审接受；固定 tag、JitPack 构建和远端依赖消费仍须按本轮发布回执核验。它统一首次准备、前台五分钟检查、失败版本门槛、安装结果通知和页面目录保护；可编译薄宿主见 [`app/`](app/)。实际 API 与迁移方式见 [托管接入说明](docs/MIGRATION-MANAGED-0.3.0.md)，发布前代码证据见 [验收快照](docs/verification/2026-09-29-complexity-reduction/README.md)。下文 `0.2.2` 坐标与低层用法是已发布版本的历史接入说明。
+`0.3.0-rc.1` 是供业务 App 接入测试的托管 SDK 候选，**正式 `0.3.0` 未发布**。代码与结构范围已复审接受；固定 tag 的 JitPack 构建、远端 POM 和隔离薄宿主依赖消费均已核验。它统一首次准备、前台五分钟检查、失败版本门槛、安装结果通知和页面目录保护；可编译薄宿主见 [`app/`](app/)。实际 API 与迁移方式见 [托管接入说明](docs/MIGRATION-MANAGED-0.3.0.md)，发布前代码证据见 [验收快照](docs/verification/2026-09-29-complexity-reduction/README.md)，远端消费证据见 [发布回执](docs/verification/2026-09-29-test-release/README.md)。下文 `0.2.2` 坐标与低层用法是已发布版本的历史接入说明。
 
 [![CI](https://github.com/mobilewhj/offlineSdk/actions/workflows/ci.yml/badge.svg)](https://github.com/mobilewhj/offlineSdk/actions/workflows/ci.yml) [![JitPack](https://jitpack.io/v/mobilewhj/offlineSdk.svg)](https://jitpack.io/#mobilewhj/offlineSdk)
 
@@ -32,7 +32,7 @@
 
 ### `0.3.0-rc.1` 接入测试候选
 
-以下是多模块 SDK 的**预期** JitPack 坐标。发布前尚未完成远端 POM、构建与消费核验；接入测试前须以本轮发布回执和实际解析结果确认，不能用本地 Maven 产物代替。
+固定 tag 的 JitPack 构建、远端 POM 和隔离薄宿主依赖消费确认以下 SDK 坐标；详见 [发布回执](docs/verification/2026-09-29-test-release/README.md)。
 
 在 `settings.gradle.kts` 中：
 
@@ -42,7 +42,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven("https://jitpack.io") {
-            content { includeGroup("com.github.mobilewhj.offlineSdk") }
+            content { includeGroup("com.github.mobilewhj") }
         }
     }
 }
@@ -51,12 +51,12 @@ dependencyResolutionManagement {
 在应用模块 `build.gradle.kts` 中：
 
 ```kotlin
-implementation("com.github.mobilewhj.offlineSdk:offlineSdk:0.3.0-rc.1")
+implementation("com.github.mobilewhj:offlineSdk:0.3.0-rc.1")
 ```
 
 ### `0.2.2` 历史低层版本
 
-`0.2.2` 已发布，其旧坐标使用不同的 group。以下仅供继续使用低层 API 的宿主参考。
+`0.2.2` 已发布。以下仅供继续使用低层 API 的宿主参考。
 
 在 `settings.gradle.kts` 中：
 
@@ -157,7 +157,7 @@ site.zip
   :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleRelease
 ```
 
-已发布 `0.2.2` 的历史源码通过 72 项 JVM 测试、Debug / R8 Release 构建和本地 Maven AAR 接入验证。`0.3.0-rc.1` 发布前的代码验收为 SDK 129 项、Demo 14 项；本地 AAR 消费与构建证据见[验收快照](docs/verification/2026-09-29-complexity-reduction/README.md)，远端产物另待本轮验证。**F4 设备运行验收仍开放**；当前候选的完整 Demo 生命周期、系统 WebView 缓存／Cookie／请求头／Range 和 X5 内核均没有通过结果。历史详情见 [0.2.2 执行记录](docs/EXECUTION-ISUSABLE-CONCURRENCY.md)和 [0.2.1 执行记录](docs/EXECUTION-INSTALL-FACTS.md)；已发布 `0.2.0` 的结果见 [验证记录](docs/VALIDATION-0.2.0.md)。
+已发布 `0.2.2` 的历史源码通过 72 项 JVM 测试、Debug / R8 Release 构建和本地 Maven AAR 接入验证。`0.3.0-rc.1` 发布前的代码验收为 SDK 129 项、Demo 14 项；本地 AAR 消费与构建证据见[验收快照](docs/verification/2026-09-29-complexity-reduction/README.md)。隔离 tag Demo 从 JitPack 消费远端 AAR，Debug、Release/R8、14/14 测试、lint 和 AndroidTest Kotlin 源码编译通过，详见[发布回执](docs/verification/2026-09-29-test-release/README.md)。**F4 设备运行验收仍开放**；当前候选的完整 Demo 生命周期、系统 WebView 缓存／Cookie／请求头／Range 和 X5 内核均没有通过结果。历史详情见 [0.2.2 执行记录](docs/EXECUTION-ISUSABLE-CONCURRENCY.md)和 [0.2.1 执行记录](docs/EXECUTION-INSTALL-FACTS.md)；已发布 `0.2.0` 的结果见 [验证记录](docs/VALIDATION-0.2.0.md)。
 
 连接设备后可运行 `./gradlew :offlineSdk:connectedDebugAndroidTest`。编译 Android 测试源码不代表设备测试通过。
 

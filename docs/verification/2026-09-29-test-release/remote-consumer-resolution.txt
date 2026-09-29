@@ -1,0 +1,3 @@
+REMOTE_COMPONENT=com.github.mobilewhj:offlineSdk:0.3.0-rc.1
+REMOTE_AAR_PATH=$REMOTE_SMOKE/gradle-home/caches/modules-2/files-2.1/com.github.mobilewhj/offlineSdk/0.3.0-rc.1/56d123a62c8a0c9a4dc5501a92117a4ab7ac674a/offlineSdk-0.3.0-rc.1.aar
+REMOTE_AAR_SHA256=cbfb3d35b8da06b6727643399daca82562bdadf60bcb2e25add916d1685333d3

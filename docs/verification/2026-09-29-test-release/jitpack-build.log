@@ -1,0 +1,135 @@
+Build starting...
+Build image: default
+Start: Tue Sep 29 15:47:37 UTC 2026 2a83ddec4fae
+Git:
+0.3.0-rc.1-0-gea4f042
+commit ea4f042e98533c94694001503c2522ba0d1e7446
+Author: mobilewhj 
+Date:   Tue Sep 29 23:42:32 2026 +0800
+
+    Prepare offline SDK 0.3.0-rc.1 test candidate
+
+
+Init SDKMan
+Running JDK install command:
+sdk install java 17.0.12-oracle;sdk use java 17.0.12-oracle
+[1;33mWe periodically need to update the local cache. Please run:[0m
+
+  $ sdk update
+
+[1;36mBroadcasts discontinued. Please follow @sdkman_ on Twitter for announcements.[0m
+
+Downloading: java 17.0.12-oracle
+
+In progress...
+
+
+Repackaging Java 17.0.12-oracle...
+
+Done repackaging...
+
+[1;32mInstalling: java 17.0.12-oracle[0m
+[1;32mDone installing![0m
+
+
+[1;32mSetting java 17.0.12-oracle as default.[0m
+[1;33mWe periodically need to update the local cache. Please run:[0m
+
+  $ sdk update
+
+
+[1;32mUsing java version 17.0.12-oracle in this shell.[0m
+Found Android manifest
+Android SDK version: . Build tools: 
+Running install command:
+./gradlew :offlineSdk:publishToMavenLocal -PsdkVersion="$VERSION" --no-daemon
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8 -Dhttps.protocols=TLSv1.2
+Downloading https://services.gradle.org/distributions/gradle-8.11.1-bin.zip
+.............10%.............20%.............30%.............40%.............50%.............60%.............70%.............80%.............90%.............100%
+
+Welcome to Gradle 8.11.1!
+
+Here are the highlights of this release:
+ - Parallel load and store for Configuration Cache
+ - Java compilation errors at the end of the build output
+ - Consolidated report for warnings and deprecations
+
+For more details see https://docs.gradle.org/8.11.1/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+Checking the license for package Android SDK Build-Tools 35 in /opt/android-sdk-linux/licenses
+License for package Android SDK Build-Tools 35 accepted.
+Preparing "Install Android SDK Build-Tools 35 v.35.0.0".
+"Install Android SDK Build-Tools 35 v.35.0.0" ready.
+Installing Android SDK Build-Tools 35 in /opt/android-sdk-linux/build-tools/35.0.0
+"Install Android SDK Build-Tools 35 v.35.0.0" complete.
+"Install Android SDK Build-Tools 35 v.35.0.0" finished.
+Checking the license for package Android SDK Platform 35 in /opt/android-sdk-linux/licenses
+License for package Android SDK Platform 35 accepted.
+Preparing "Install Android SDK Platform 35 (revision 2)".
+"Install Android SDK Platform 35 (revision 2)" ready.
+Installing Android SDK Platform 35 in /opt/android-sdk-linux/platforms/android-35
+"Install Android SDK Platform 35 (revision 2)" complete.
+"Install Android SDK Platform 35 (revision 2)" finished.
+[=========                              ] 25%                                   [=========                              ] 25% Fetch remote repository...        [=======================================] 100% Fetch remote repository...       
+> Task :offlineSdk:preBuild UP-TO-DATE
+> Task :offlineSdk:preReleaseBuild UP-TO-DATE
+> Task :offlineSdk:mergeReleaseJniLibFolders
+> Task :offlineSdk:mergeReleaseNativeLibs NO-SOURCE
+> Task :offlineSdk:stripReleaseDebugSymbols NO-SOURCE
+> Task :offlineSdk:copyReleaseJniLibsProjectAndLocalJars
+> Task :offlineSdk:generateReleaseResValues
+> Task :offlineSdk:extractDeepLinksForAarRelease
+> Task :offlineSdk:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :offlineSdk:generateReleaseResources
+> Task :offlineSdk:packageReleaseResources
+> Task :offlineSdk:mergeReleaseShaders
+> Task :offlineSdk:compileReleaseShaders NO-SOURCE
+> Task :offlineSdk:generateReleaseAssets UP-TO-DATE
+> Task :offlineSdk:mergeReleaseAssets
+> Task :offlineSdk:javaPreCompileRelease
+> Task :offlineSdk:prepareReleaseArtProfile
+> Task :offlineSdk:prepareLintJarForPublish
+> Task :offlineSdk:writeReleaseAarMetadata
+> Task :offlineSdk:parseReleaseLocalResources
+> Task :offlineSdk:sourceReleaseJar
+> Task :offlineSdk:processReleaseManifest
+> Task :offlineSdk:generateReleaseRFile
+> Task :offlineSdk:generatePomFileForReleasePublication
+> Task :offlineSdk:compileReleaseKotlin
+> Task :offlineSdk:extractReleaseAnnotations
+> Task :offlineSdk:compileReleaseJavaWithJavac NO-SOURCE
+> Task :offlineSdk:mergeReleaseGeneratedProguardFiles
+> Task :offlineSdk:mergeReleaseConsumerProguardFiles
+> Task :offlineSdk:processReleaseJavaRes
+> Task :offlineSdk:mergeReleaseJavaResource
+> Task :offlineSdk:syncReleaseLibJars
+> Task :offlineSdk:bundleReleaseAar
+> Task :offlineSdk:generateMetadataFileForReleasePublication
+> Task :offlineSdk:publishReleasePublicationToMavenLocal
+> Task :offlineSdk:publishToMavenLocal
+
+BUILD SUCCESSFUL in 1m 23s
+27 actionable tasks: 27 executed
+Build tool exit code: 0
+Looking for artifacts...
+Looking for pom.xml in build directory and ~/.m2
+Found artifact: com.github.mobilewhj.offlineSdk:offlineSdk:0.3.0-rc.1
+2026-09-29T15:49:24.792295776Z
+Exit code: 0
+Creating -sources.jar
+
+✅ Build artifacts:
+com.github.mobilewhj:offlineSdk:0.3.0-rc.1
+
+Files: 
+com/github/mobilewhj/offlineSdk/0.3.0-rc.1
+com/github/mobilewhj/offlineSdk/0.3.0-rc.1/build.log
+com/github/mobilewhj/offlineSdk/0.3.0-rc.1/offlineSdk-0.3.0-rc.1-sources.jar
+com/github/mobilewhj/offlineSdk/0.3.0-rc.1/offlineSdk-0.3.0-rc.1.aar
+com/github/mobilewhj/offlineSdk/0.3.0-rc.1/offlineSdk-0.3.0-rc.1.module
+com/github/mobilewhj/offlineSdk/0.3.0-rc.1/offlineSdk-0.3.0-rc.1.pom
+com/github/mobilewhj/offlineSdk/0.3.0-rc.1/offlineSdk-0.3.0-rc.1.pom.md5
+com/github/mobilewhj/offlineSdk/0.3.0-rc.1/offlineSdk-0.3.0-rc.1.pom.sha1
+

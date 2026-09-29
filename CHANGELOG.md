@@ -2,7 +2,7 @@
 
 ## 0.3.0-rc.1（接入测试候选）
 
-正式 `0.3.0` 未发布。本条记录对应已接受代码与结构范围的测试候选；固定 tag、GitHub Pre-release、JitPack 构建和远端消费仍以本轮实际发布验证为准，不将本地 AAR 结果写成远端可用。
+正式 `0.3.0` 未发布。本条记录对应已接受代码与结构范围的测试候选，按 GitHub Pre-release 发布，不设为 Latest。固定 tag 的 JitPack 构建、远端 POM 和隔离薄宿主依赖消费已核验；证据见[发布回执](docs/verification/2026-09-29-test-release/README.md)。
 
 - 新增 `ManagedOfflineSdk`，统一首次准备、前台五分钟配置检查、安装、active 保存、页面目录保护及资源缓存失效。
 - 本进程仅记录最高失败版本；同版及更低版本跳过，更高版本仍可安装，真实新进程重置。首次完成与最新诊断写入独立小记录，不引入旧退避、保存恢复或持久封禁。
@@ -12,7 +12,7 @@
 - 修复候选验收 R1–R9：存储读取故障不清目录、公开检查统一取消、防降级独立于文件、配置冲突及时生效、终态回调隔离、页面 Main 无包文件读取，并支持注入既有下载客户端。Demo 补全磁盘资源缓存、首次进度和隐私报告取消示例。
 - 代码质量整改集中 URL 共同规则与本地初始事实解释，将 History 保存收敛到入口收尾，删除全局保存策略开关；公开管理 API 不变。
 - F2-R 和后续 P2/P3 已关闭；删除重复终态载体与无效调度分支，首装收为单条进度回调，页面收为挂起 `loadPage()` 入口。R0–R5 代码与结构范围已由原规划会话复审接受。
-- 预期 JitPack 多模块坐标为 `com.github.mobilewhj.offlineSdk:offlineSdk:0.3.0-rc.1`，实际 POM 和远端消费仍待本轮核验；旧 `0.2.2` 坐标属于历史低层版本。
+- 远端 POM 和隔离 tag Demo 确认 JitPack 坐标为 `com.github.mobilewhj:offlineSdk:0.3.0-rc.1`；远端 AAR 消费后的 Debug、Release/R8、14/14 测试、lint 和 AndroidTest Kotlin 源码编译通过。旧 `0.2.2` 坐标属于历史低层版本。
 - F4 设备结果及完整 Demo 生命周期、系统 WebView 缓存／Cookie／请求头／Range、X5 实际内核继续开放。当前 `0.2.2` 正式发布物不受影响。
 
 ## 0.2.2（Android SDK）

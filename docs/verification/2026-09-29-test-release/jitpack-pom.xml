@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <!-- do_not_remove: published-with-gradle-metadata -->
+<modelVersion>4.0.0</modelVersion>
+  <groupId>com.github.mobilewhj</groupId>
+  <artifactId>offlineSdk</artifactId>
+  <version>0.3.0-rc.1</version>
+  <packaging>aar</packaging>
+  <name>Offline SDK</name>
+  <description>Single-package offline ZIP installation and WebView resource mapping for small Android projects</description>
+  <url>https://github.com/mobilewhj/offlineSdk</url>
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>mobilewhj</id>
+      <url>https://github.com/mobilewhj</url>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:https://github.com/mobilewhj/offlineSdk.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/mobilewhj/offlineSdk.git</developerConnection>
+    <url>https://github.com/mobilewhj/offlineSdk</url>
+  </scm>
+  <dependencies>
+    <dependency>
+      <groupId>org.jetbrains.kotlinx</groupId>
+      <artifactId>kotlinx-coroutines-android</artifactId>
+      <version>1.7.3</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+      <version>4.12.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib</artifactId>
+      <version>2.0.21</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okio</groupId>
+      <artifactId>okio</artifactId>
+      <version>3.7.0</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+</project>

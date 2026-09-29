@@ -1,0 +1,34 @@
+{
+  "version": "0.3.0-rc.1",
+  "tag_commit": "ea4f042e98533c94694001503c2522ba0d1e7446",
+  "coordinate": "com.github.mobilewhj:offlineSdk:0.3.0-rc.1",
+  "isolated_host": {
+    "only_app_module": true,
+    "uses_jitpack": true,
+    "no_project_or_local_maven_substitution": true,
+    "fresh_gradle_home": true,
+    "refresh_dependencies": true
+  },
+  "resolved_component": "com.github.mobilewhj:offlineSdk:0.3.0-rc.1",
+  "remote_aar_sha256": "cbfb3d35b8da06b6727643399daca82562bdadf60bcb2e25add916d1685333d3",
+  "downloaded_aar_sha256": "cbfb3d35b8da06b6727643399daca82562bdadf60bcb2e25add916d1685333d3",
+  "tasks_passed": [
+    "verifyRemoteSdkResolution",
+    "dependencyInsight",
+    "assembleDebug",
+    "minifyReleaseWithR8",
+    "assembleRelease",
+    "testDebugUnitTest",
+    "lintDebug",
+    "compileDebugAndroidTestKotlin"
+  ],
+  "demo_unit_tests": {
+    "tests": 14,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "junit_xml_files": 3,
+  "build_result": "BUILD SUCCESSFUL in 2m 10s; 110 actionable tasks executed",
+  "first_attempt": "Failed in verification init script because Groovy Set has no single(); fixed iterator access and reran the same isolated project."
+}

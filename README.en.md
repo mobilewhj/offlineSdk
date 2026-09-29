@@ -1,6 +1,6 @@
 # Offline SDK
 
-`0.3.0-rc.1` is a managed SDK candidate for app integration testing. **The final `0.3.0` has not been released.** The code and structure review passed; the fixed tag, JitPack build, and remote dependency consumption still require verification in this release run. The SDK owns initial preparation, five-minute foreground checks, failed-version gating, typed installation outcomes, and page-directory protection. See the [managed migration guide](docs/MIGRATION-MANAGED-0.3.0.md), [thin demo](docs/DEMO.md), and [pre-release acceptance snapshot](docs/verification/2026-09-29-complexity-reduction/README.md). The `0.2.2` coordinates below describe the previously published low-level release.
+`0.3.0-rc.1` is a managed SDK candidate for app integration testing. **The final `0.3.0` has not been released.** The code and structure review passed; the fixed tag's JitPack build, remote POM, and isolated thin-host dependency consumption were verified. The SDK owns initial preparation, five-minute foreground checks, failed-version gating, typed installation outcomes, and page-directory protection. See the [managed migration guide](docs/MIGRATION-MANAGED-0.3.0.md), [thin demo](docs/DEMO.md), [pre-release acceptance snapshot](docs/verification/2026-09-29-complexity-reduction/README.md), and [remote release evidence](docs/verification/2026-09-29-test-release/README.md). The `0.2.2` coordinates below describe the previously published low-level release.
 
 [![CI](https://github.com/mobilewhj/offlineSdk/actions/workflows/ci.yml/badge.svg)](https://github.com/mobilewhj/offlineSdk/actions/workflows/ci.yml) [![JitPack](https://jitpack.io/v/mobilewhj/offlineSdk.svg)](https://jitpack.io/#mobilewhj/offlineSdk)
 
@@ -32,7 +32,7 @@ The test candidate's managed API uses one `prepareFirst(onProgress)` callback fo
 
 ### `0.3.0-rc.1` integration-test candidate
 
-These are the **expected** coordinates for the SDK module. The remote POM, build, and consumer resolution still need verification in this release run; check those results before integration testing. A local Maven artifact does not establish remote availability.
+The fixed tag's JitPack build, remote POM, and isolated thin-host dependency consumption confirm these SDK coordinates; see the [release evidence](docs/verification/2026-09-29-test-release/README.md).
 
 In `settings.gradle.kts`:
 
@@ -42,7 +42,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven("https://jitpack.io") {
-            content { includeGroup("com.github.mobilewhj.offlineSdk") }
+            content { includeGroup("com.github.mobilewhj") }
         }
     }
 }
@@ -51,12 +51,12 @@ dependencyResolutionManagement {
 In your application module's `build.gradle.kts`:
 
 ```kotlin
-implementation("com.github.mobilewhj.offlineSdk:offlineSdk:0.3.0-rc.1")
+implementation("com.github.mobilewhj:offlineSdk:0.3.0-rc.1")
 ```
 
 ### Previously published low-level `0.2.2`
 
-`0.2.2` uses a different group. The following is historical guidance for hosts continuing to use the low-level API.
+`0.2.2` is already published. The following is historical guidance for hosts continuing to use the low-level API.
 
 In `settings.gradle.kts`:
 
@@ -157,7 +157,7 @@ On first launch, Welcome waits for the SDK to prepare resources, save active, an
   :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleRelease
 ```
 
-The previously published `0.2.2` source passed 72 JVM tests, Debug / R8 Release builds, and integration against the local Maven AAR. The [`0.3.0-rc.1` pre-release acceptance snapshot](docs/verification/2026-09-29-complexity-reduction/README.md) records 129 SDK tests, 14 Demo tests, and local AAR consumption; remote artifacts still require this release run's verification. **F4 device acceptance remains open.** The current candidate has no passing result for the full Demo lifecycle, system WebView cache / Cookie / headers / Range behavior, or the X5 runtime. Historical evidence is in the [0.2.2 execution record (Chinese)](docs/EXECUTION-ISUSABLE-CONCURRENCY.md), [0.2.1 execution record (Chinese)](docs/EXECUTION-INSTALL-FACTS.md), and [0.2.0 validation record (Chinese)](docs/VALIDATION-0.2.0.md).
+The previously published `0.2.2` source passed 72 JVM tests, Debug / R8 Release builds, and integration against the local Maven AAR. The [`0.3.0-rc.1` pre-release acceptance snapshot](docs/verification/2026-09-29-complexity-reduction/README.md) records 129 SDK tests, 14 Demo tests, and local AAR consumption. The isolated tag Demo consumed the remote JitPack AAR and passed Debug, Release/R8, 14/14 tests, lint, and AndroidTest Kotlin compilation; see the [release evidence](docs/verification/2026-09-29-test-release/README.md). **F4 device acceptance remains open.** The current candidate has no passing result for the full Demo lifecycle, system WebView cache / Cookie / headers / Range behavior, or the X5 runtime. Historical evidence is in the [0.2.2 execution record (Chinese)](docs/EXECUTION-ISUSABLE-CONCURRENCY.md), [0.2.1 execution record (Chinese)](docs/EXECUTION-INSTALL-FACTS.md), and [0.2.0 validation record (Chinese)](docs/VALIDATION-0.2.0.md).
 
 With a connected device, run `./gradlew :offlineSdk:connectedDebugAndroidTest`. Compiling Android test sources does not mean device tests passed.
 

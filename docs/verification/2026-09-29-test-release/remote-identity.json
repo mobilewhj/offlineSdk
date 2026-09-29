@@ -1,0 +1,18 @@
+{
+  "tag": "0.3.0-rc.1",
+  "commit": "ea4f042e98533c94694001503c2522ba0d1e7446",
+  "coordinate": {
+    "groupId": "com.github.mobilewhj",
+    "artifactId": "offlineSdk",
+    "version": "0.3.0-rc.1",
+    "packaging": "aar"
+  },
+  "source_entries": 15,
+  "source_entries_match_tag_byte_for_byte": true,
+  "managed_offline_sdk_javap_matches_accepted": true,
+  "sha256": {
+    "aar": "cbfb3d35b8da06b6727643399daca82562bdadf60bcb2e25add916d1685333d3",
+    "sources": "8e4ae3dc4c2dfbf69ea68c7e615ad797619058fbd9946360df8ed4bc52783cc4",
+    "pom": "c65378dddb060caceb15beb31882e76649915040645615bfbf04c48aefa56679"
+  }
+}

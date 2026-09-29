@@ -29,7 +29,7 @@ gradle.beforeProject { project ->
             if (artifacts.size() != 1) {
                 throw new GradleException("Expected one remote AAR, found ${artifacts.size()}")
             }
-            def aar = artifacts.single().file.canonicalFile
+            def aar = artifacts.iterator().next().file.canonicalFile
             def path = aar.path
             if (path.startsWith(project.rootProject.projectDir.canonicalPath + File.separator) ||
                 path.contains("${File.separator}.m2${File.separator}") ||
@@ -44,7 +44,7 @@ gradle.beforeProject { project ->
                     digest.update(buffer, 0, count)
                 }
             }
-            println "REMOTE_COMPONENT=${components.single().id.displayName}"
+            println "REMOTE_COMPONENT=${components.iterator().next().id.displayName}"
             println "REMOTE_AAR_PATH=$path"
             println "REMOTE_AAR_SHA256=${digest.digest().encodeHex()}"
         }
