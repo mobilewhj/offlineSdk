@@ -22,6 +22,7 @@ jobs:
           ./gradlew :offlineSdk:testDebugUnitTest :offlineSdk:lintRelease
           :offlineSdk:compileDebugAndroidTestKotlin
           :offlineSdk:publishReleasePublicationToLocalReleaseRepository
+          -PsdkVersion="0.3.0-ci-local-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleRelease --no-daemon
       - uses: actions/upload-artifact@v4
         with:

@@ -13,6 +13,8 @@ import com.offline.tool.ConfigResponse
 import com.offline.tool.FirstPreparationResult
 import com.offline.tool.ManagedConfigProvider
 import com.offline.tool.ManagedOfflineSdk
+import com.offline.tool.ManagedFailureReason
+import com.offline.tool.ManagedStage
 import com.offline.tool.ManagedPageCallbacks
 import com.offline.tool.OfflineConfiguration
 import com.offline.tool.OfflineInterceptor
@@ -25,6 +27,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertFalse
 import org.junit.Assume.assumeTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -38,6 +41,54 @@ import java.util.concurrent.atomic.AtomicReference
 /** 真实 Demo 存储和管理器链的 Main 磁盘边界；仅操作测试私有目录与偏好文件。 */
 @RunWith(AndroidJUnit4::class)
 class DemoManagedStorageAndroidTest {
+    @Test fun existingDemoHistoryUsesSdkCodecWithoutChangingKeysOrActiveFormat() = runBlocking<Unit> {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val suffix = UUID.randomUUID().toString()
+        val preferencesName = "offline_compat_$suffix"
+        val testFiles = File(context.cacheDir, "offline_compat_files_$suffix")
+        val scoped = object : ContextWrapper(context) {
+            override fun getApplicationContext(): Context = this
+            override fun getFilesDir(): File = testFiles
+            override fun getSharedPreferences(name: String?, mode: Int): SharedPreferences =
+                context.getSharedPreferences(preferencesName, mode)
+        }
+        val preferences = scoped.getSharedPreferences("offline_demo", Context.MODE_PRIVATE)
+        val active = File(testFiles, "offline/current.txt")
+        try {
+            assertTrue(checkNotNull(active.parentFile).mkdirs())
+            active.writeText("10000\n${"a".repeat(64)}\n")
+            val oldHistory = """{"initialPreparationFinished":true,"latestFailure":{
+                "reason":"INSTALL","stage":"DOWNLOAD","installReason":"DOWNLOAD",
+                "targetVersion":10001,"occurredAtMillis":1234,"detail":"old signed URL"}}"""
+            assertTrue(preferences.edit().putBoolean("enabled", false)
+                .putBoolean("cache_dirty", true).putString("history", oldHistory).commit())
+            val storage = DemoManagedStorage(scoped)
+            val history = checkNotNull(storage.readHistory())
+            assertTrue(history.initialPreparationFinished)
+            assertEquals(ManagedFailureReason.INSTALL, history.latestFailure?.reason)
+            assertEquals(ManagedStage.DOWNLOAD, history.latestFailure?.stage)
+            assertEquals(false, storage.readEnabled())
+            assertEquals(true, storage.readCacheDirty())
+            assertEquals(10000, storage.readActive()?.version)
+            assertTrue(storage.writeHistory(history))
+            val encoded = checkNotNull(preferences.getString("history", null))
+            assertTrue(encoded.contains("\"reason\":\"install\""))
+            assertFalse(encoded.contains("old signed URL"))
+            assertEquals("10000\n${"a".repeat(64)}\n", active.readText())
+            // 未知诊断只能丢明细；损坏顶层必须是读故障，不能伪装空库。
+            assertTrue(preferences.edit().putString("history",
+                """{"initialPreparationFinished":true,"latestFailure":{"reason":"FUTURE"}}""").commit())
+            assertTrue(checkNotNull(storage.readHistory()).initialPreparationFinished)
+            assertTrue(preferences.edit().putString("history", "null").commit())
+            var failed = false
+            try { storage.readHistory() } catch (_: Exception) { failed = true }
+            assertTrue("损坏 History 未抛出读取故障", failed)
+        } finally {
+            testFiles.deleteRecursively()
+            context.deleteSharedPreferences(preferencesName)
+        }
+    }
+
     @Test fun initializationConfigurationAndPageLoadKeepDemoPersistenceOffMain() {
         assumeTrue(Build.VERSION.SDK_INT >= 28)
         val instrumentation = InstrumentationRegistry.getInstrumentation()

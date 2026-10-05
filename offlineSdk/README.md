@@ -1,8 +1,14 @@
 # Android 离线包 SDK
 
-`0.3.0-rc.1` 是接入测试候选，正式 `0.3.0` 未发布。`ManagedOfflineSdk` 高层入口统一同一根目录的本地准备、配置检查、安装、active 保存、页面保护与缓存失效；配置/存储/条件/结果通知由宿主提供。代码与结构范围已复审接受，固定 tag 的 JitPack 构建和远端 POM 已核验，隔离 tag Demo 已消费坐标 `com.github.mobilewhj:offlineSdk:0.3.0-rc.1`；证据见[发布回执](../docs/verification/2026-09-29-test-release/README.md)。仓库配置、详细签名与迁移说明见[托管接入文档](../docs/MIGRATION-MANAGED-0.3.0.md)，Demo 见[示例说明](../docs/DEMO.md)。已发布 `0.2.2` 的低层 API 继续保留；以下内容描述这些低层 API，使用托管根目录时不要再用独立安装器并发修改该目录。
+本页对应 `0.3.0` 正式版本源码，坐标为 `com.github.mobilewhj:offlineSdk:0.3.0`；[发布说明](../docs/RELEASE-0.3.0.md)列明远端核验要求及开放项。此前已发布接入测试候选固定为 `com.github.mobilewhj:offlineSdk:0.3.0-rc.1`。RC 的样例和 API 必须查看[固定 tag](https://github.com/mobilewhj/offlineSdk/tree/ea4f042e98533c94694001503c2522ba0d1e7446/app)及其[迁移文档](https://github.com/mobilewhj/offlineSdk/tree/ea4f042e98533c94694001503c2522ba0d1e7446/docs/MIGRATION-MANAGED-0.3.0.md)，其远端身份见[发布回执](../docs/verification/2026-09-29-test-release/README.md)。
 
-托管首装由单条 `prepareFirst(onProgress)` 进度回调呈现；页面仅调用挂起的 `loadPage(url, baseUrl, callbacks)`，由 SDK 内部完成 IO 观察与 Main 最终复核。
+`0.3.0` 包含 B2 内部职责拆分、`ManagedOfflineStorage.default`、`keyValue`、`OfflineStorageCodec` 和 `prepareStartup`；这些新增接口不属于 RC。当前最短完整接入链见[主 README](../README.md#030最短完整接入链)，当前 Demo 见[示例说明](../docs/DEMO.md)。Manager 拥有任务、调度和条件，Session 拥有包/配置/目录/History/失败门槛，Cache 拥有缓存失效与持久确认。
+
+高层托管 API 决定配置、版本、安装、active 保存和目录保护，宿主只提供配置、存储、条件和回调。当前 `prepareStartup` 结束本次离线等待或返回临时条件不足；页面仍只调用一次 `loadPage`，直接绑定给定 interceptor 并加载原 URL。取消传播，正常离线失败不阻塞业务门禁；结果回调和 Demo 日志不代表后端上报成功。
+
+默认文件存储构造不读盘，状态目录与安装 root 必须隔离。`keyValue` 四原语只适配 String/Boolean 介质，active/history 必须已采用 codec 格式；它不转换任意旧字符串，`legacyEvidence` 也不作格式转换。保留旧格式时使用必要的 `ManagedOfflineStorage` 实现。缺失返回 null，读取故障抛出，写入 true 表示同步提交确认；false 不是无副作用或回滚承诺。有效类型但不具业务资格的记录仍由管理器判断，codec 不复制版本/SHA/目录策略。
+
+以下为保留的低层 `PackageInstaller` API；它不接管宿主元数据和调度。同一托管根目录不能再由独立安装器并发修改。
 
 SDK 负责离线 ZIP 的下载、校验、安装和 WebView 资源映射。版本选择、元数据持久化及页面切换由调用方负责。
 
@@ -21,7 +27,7 @@ SDK 负责离线 ZIP 的下载、校验、安装和 WebView 资源映射。版�
 
 ## 存储契约
 
-`PackageRecord` 只包含整数 `version` 和 ZIP 整包 `sha256`，不包含下载地址，也不依赖具体存储库。SDK 接收候选记录，安装成功后返回 `InstallResult.Success.record`；SDK 不读取或保存当前版本记录，不提供存储接口或默认存储实现。
+`PackageRecord` 只包含整数 `version` 和 ZIP 整包 `sha256`，不包含下载地址，也不依赖具体存储库。`PackageInstaller` 低层 API 接收候选记录，安装成功后返回 `InstallResult.Success.record`；该低层安装器不读取或保存当前版本记录，不提供存储接口或默认存储实现。
 
 `Success` 表示完整版本目录已经发布。调用方必须自行保存返回的记录，确认保存成功后才能报告当前版本切换；保存失败时保留原当前记录，并自行处理未绑定页面的新目录。安装失败不会修改调用方的记录。
 
@@ -93,7 +99,7 @@ JS/MJS 使用 `text/javascript`，WOFF/WOFF2 使用 `font/woff`、`font/woff2`�
 
 ## 依赖与验证
 
-TBS 为 `compileOnly`，使用 X5 适配器的调用方须提供运行时依赖；其余核心代码不依赖 X5。SDK 不依赖 MMKV 或 JSON 存储格式。
+TBS 为 `compileOnly`，使用 X5 适配器的调用方须提供运行时依赖；其余核心代码不依赖 X5。`0.3.0` codec 使用 Gson 2.11.0 的严格语法模式，记录字段解码与业务资格仍沿原边界；该依赖通过正式远端 POM/module 传递，RC 不据此增加依赖。SDK 不依赖 MMKV 或业务 Entity；`0.3.0` 高层的 active/History 格式由 codec 维护，固定 RC 仍由宿主八方法适配存储。
 
 SDK 验证命令：
 

@@ -11,7 +11,7 @@ android {
         targetSdk = 35
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         versionCode = 5
-        versionName = "0.3.0-rc.1"
+        versionName = providers.gradleProperty("sdkVersion").getOrElse("0.3.0")
     }
     buildFeatures {
         viewBinding = true
@@ -38,5 +38,6 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)
+    testImplementation("org.json:json:20240303")
     androidTestImplementation(libs.androidx.junit)
 }

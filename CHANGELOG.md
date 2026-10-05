@@ -1,8 +1,18 @@
 # 更新记录
 
+## 0.3.0（2026-10-05）
+
+- B2 内部职责分开：Manager 拥有任务、调度和条件；Session 拥有包、配置、目录、失败门槛和 History；Cache 拥有缓存失效与持久确认。公开 RC 入口继续保留。
+- 已有 `ManagedOfflineStorage.default`、`keyValue`、`OfflineStorageCodec` 和 `prepareStartup` 简化新 App 接入。四原语只适配介质，需要 SDK codec 格式；legacyEvidence 不转换旧字符串。默认 File 的 F1/F2 回归及原证据保留。
+- 本轮修复非法 JSON 被解释成正常 active 记录的问题，并通过现有诊断 detail 区分安全、有限的配置失败原因；版本/SHA/目录策略仍由管理器处理，不增加业务上传或改变安装终态通道。
+- 文档区分固定 RC 与正式 0.3.0，RC 样例链接固定 tag；本地发布使用显式新唯一版本，拒绝覆盖已发布 RC 或既有候选身份。历史验证记录不改写，当前源码不继承历史测试数量或设备成绩。
+- 正式坐标 `com.github.mobilewhj:offlineSdk:0.3.0`；新增 Gson 2.11.0 严格语法运行依赖由 POM/module 传递，AAR 不内嵌该库。
+- CI 使用明确唯一的隔离验证版本，正式 JitPack 通过受控入口生成 Maven 本地制品；普通候选显式版本、RC 和既有身份不可覆盖保护保留。发布成立以实际远端构建/获取/普通消费为准，见[发布说明](docs/RELEASE-0.3.0.md)。
+- 最终产物的 API24、真实 X5、真实冷进程、默认五分钟以及完整业务启动/两小时路径和后端协议/回执仍单独开放；业务 App 的固定 RC 接入未在本次升级。
+
 ## 0.3.0-rc.1（接入测试候选）
 
-正式 `0.3.0` 未发布。本条记录对应已接受代码与结构范围的测试候选，按 GitHub Pre-release 发布，不设为 Latest。固定 tag 的 JitPack 构建、远端 POM 和隔离薄宿主依赖消费已核验；证据见[发布回执](docs/verification/2026-09-29-test-release/README.md)。
+RC 发布时正式 `0.3.0` 尚未发布。本条历史记录对应已接受代码与结构范围的测试候选，按 GitHub Pre-release 发布，不设为 Latest。固定 tag 的 JitPack 构建、远端 POM 和隔离薄宿主依赖消费已核验；证据见[发布回执](docs/verification/2026-09-29-test-release/README.md)。
 
 - 新增 `ManagedOfflineSdk`，统一首次准备、前台五分钟配置检查、安装、active 保存、页面目录保护及资源缓存失效。
 - 本进程仅记录最高失败版本；同版及更低版本跳过，更高版本仍可安装，真实新进程重置。首次完成与最新诊断写入独立小记录，不引入旧退避、保存恢复或持久封禁。

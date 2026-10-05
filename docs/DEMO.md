@@ -1,14 +1,16 @@
-# 托管 SDK 薄宿主 Demo（0.3.0-rc.1 测试候选）
+# 托管 SDK 薄宿主 Demo（0.3.0）
 
-Android Studio 运行 `app`，最低 Android API 24。Demo 从 APK `assets/sample.zip` 安装合成页面，无需服务端、账号或真实业务资源。示例源码不进入 SDK AAR。
+Android Studio 运行 `app`，最低 Android API 24。当前 Demo 默认以 project 依赖运行本工作区源码，从 APK `assets/sample.zip` 安装合成页面，无需服务端、账号或真实业务资源。示例源码不进入 SDK AAR；project 编译通过不能代替实际 AAR 消费验证。
 
-R1–R9、Q1–Q3 及主流程优化的历史结论保留；本轮让 SDK 自行准备安装器并收窄公开 API，R0–R5、F2-R、P2/P3 代码与结构范围已由原规划会话复审接受。`0.3.0-rc.1` 仅供接入测试，正式 `0.3.0` 未发布；业务 App 接入测试仍须等固定 tag、JitPack 与远端薄宿主消费验证。源码身份及本地候选结果见[发布前验收快照](verification/2026-09-29-complexity-reduction/README.md)，预期坐标见[迁移说明](MIGRATION-MANAGED-0.3.0.md#测试候选依赖)。
+固定 RC 已发布为 `com.github.mobilewhj:offlineSdk:0.3.0-rc.1`；其可编译样例在[固定 tag](https://github.com/mobilewhj/offlineSdk/tree/ea4f042e98533c94694001503c2522ba0d1e7446/app)，其历史验证见[发布回执](verification/2026-09-29-test-release/README.md)。当前 Demo 与默认存储样例对应 `0.3.0` 新能力，不能作为 RC API 样例。正式坐标为 `com.github.mobilewhj:offlineSdk:0.3.0`，可编译样例见[固定 `0.3.0` tag](https://github.com/mobilewhj/offlineSdk/tree/0.3.0/app)，范围及发布核验要求见[发布说明](RELEASE-0.3.0.md)。
+
+当前 SDK 已完成 B2 所有权拆分，提供 default/keyValue/codec 和 `prepareStartup`。完整新 App 链为 Application 单例/config/storage/conditions → `prepareStartup` → 业务门禁 → 一次 `loadPage` → 给定 interceptor/原 URL；见[主 README](../README.md#030最短完整接入链)。既有 Welcome 保留已兼容的 `startupDecision` → 必要时 `prepareFirst`，独立 [`DefaultStorageSample.kt`](../app/src/main/java/com/offline/tool/sample/offline/DefaultStorageSample.kt) 展示 `prepareStartup`，不重复建立宿主框架或迁移既有 Demo 数据。
 
 | 文件 | 宿主仍负责的事情 |
 | --- | --- |
 | [`DemoApplication.kt`](../app/src/main/java/com/offline/tool/sample/DemoApplication.kt) | Main 直接构造并持有唯一管理器；生命周期和隐私变化同步传给 SDK，不保存管理器就绪状态或重放条件。配置端口 Main-safe；C9 终态独立分发。 |
 | [`DemoOutcomeReporter.kt`](../app/src/main/java/com/offline/tool/sample/offline/DemoOutcomeReporter.kt) | 用独立进程报告作用域接收终态，普通异常本地记录、取消继续传播，撤回隐私取消已登记任务，不重试或补发。真实 App 在其挂起 `report` 回调中调用 Repository。 |
-| [`DemoManagedStorage.kt`](../app/src/main/java/com/offline/tool/sample/offline/DemoManagedStorage.kt) | 复用旧 `current.txt` active 格式；用 SharedPreferences 编码 enabled、单值 History 和待清缓存 Boolean。读取故障抛出异常，英文枚举名作为稳定持久码，未知失败码不丢失首次完成事实。 |
+| [`DemoManagedStorage.kt`](../app/src/main/java/com/offline/tool/sample/offline/DemoManagedStorage.kt) | 保留 `current.txt` 两行 active 格式和 SharedPreferences 的 enabled/cache_dirty 介质；History 使用 SDK codec，旧大写诊断码只作读取兼容。读取故障抛出，未知失败码不丢失独立首次完成事实，不持久化 detail。 |
 | [`WelcomeViewModel.kt`](../app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeViewModel.kt) | 直接持有管理器并作 `startupDecision()`；初始化挂起时保持中性 Idle，运行故障放行线上导航。只有 `NEEDS_FIRST_PREPARATION` 才显示首次准备，单个页面 Job 去重；存活等待者收到 owner 取消后进入显式恢复状态。 |
 | [`WelcomeActivity.kt`](../app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeActivity.kt)、[`WelcomeProgressPresentation.kt`](../app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeProgressPresentation.kt) | 等待 owner 且没有自己的回调时显示中性准备文案；中断时停止加载并显示“重试/返回”。单条进度覆盖检查、目标准备、下载/解压、保存及确认；下载/解压最高显示 99%，只有 SDK 的 `Complete` 显示总体完成及 100%；首次正常结束后进入页面。 |
 | [`MainActivity.kt`](../app/src/main/java/com/offline/tool/sample/MainActivity.kt) | 直接取管理器并挂起调用一次 `loadPage()`；回 Main 后执行 `WebView.clearCache(true)` 清内存及磁盘资源缓存，绑定拦截器并加载原 URL，不清 Cookie、localStorage 或业务数据。 |
@@ -31,6 +33,14 @@ Demo 不包含 App 业务配置、广告、导航、隐私页、两小时后台�
 ./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleRelease --console=plain
 ```
 
-旧 Demo 策略单测随旧编排一起移除；`WelcomeViewModelTest` 覆盖直接注入后隐私/前台变化、后次启动中性状态、首装资格、存活等待者取消和显式恢复。`WelcomeProgressPresentationTest` 覆盖阶段进度、等待中性文案及完成含义；`DemoOutcomeReporterTest` 覆盖普通异常隔离、隐私取消与重新授权不补发。SDK 托管行为另由其单测验证，Demo 继续执行 Debug/Release 编译、lint 和本地真实 AAR 消费验证；AAR 薄宿主同时编译新高层和已发布低层的源码调用。发布前本地产物身份与结果见[验收快照](verification/2026-09-29-complexity-reduction/README.md)，测试候选的远端消费须另行核验。
+旧 Demo 策略单测随旧编排一起移除；`WelcomeViewModelTest` 覆盖直接注入后隐私/前台变化、后次启动中性状态、首装资格、存活等待者取消和显式恢复。`WelcomeProgressPresentationTest` 覆盖阶段进度、等待中性文案及完成含义；`DemoOutcomeReporterTest` 覆盖普通异常隔离、隐私取消与重新授权不补发。SDK 托管行为另由其单测验证，Demo 继续执行 Debug/Release 编译、lint 和本地真实 AAR 消费验证；AAR 薄宿主同时编译新高层和已发布低层的源码调用。固定 RC 的历史本地与远端结果见[验收快照](verification/2026-09-29-complexity-reduction/README.md)和[发布回执](verification/2026-09-29-test-release/README.md)。当前默认存储样例单测复用实际公开工厂，局部 JVM 文件同步夹具不计 Android Os/fsync 或设备通过；正式发布另外绑定最终 tag、远端 AAR 和普通 Gradle 消费证据，本地源码或 project 编译不能替代远端消费。
 
-F4 当前候选没有设备通过结果。完整 Demo 生命周期、系统 WebView 内存／磁盘缓存、Cookie／请求头／Range、X5 实际内核、Main StrictMode 和真实 HTTP 上报仍需设备或业务接入验证；不能用 JVM 测试或源码编译替代这些验收。
+本轮源码不继承旧产物的设备成绩。完整 Demo 生命周期、系统 WebView 内存／磁盘缓存、Cookie／请求头／Range、X5 实际内核、Main StrictMode 和真实 HTTP 上报仍需设备或业务接入验证；不能用 JVM 测试或源码编译替代这些验收。
+
+## 四原语的格式前提
+
+`ManagedOfflineStorage.keyValue` 读取的是 SDK codec 格式的 active/history JSON，四原语只适配介质。Demo 的两行 `current.txt` 不是该格式，因此仍保留最小自定义 active 适配；`legacyEvidence` 不转换格式。正常格式、未知额外字段与历史诊断码读取按 codec 契约处理，非法 JSON 作为读取故障；版本下限、SHA 资格及可用性仍由 Manager/Session 判断。
+
+默认存储的同步成功表示持久确认，false 不能解释为文件操作无副作用或自动回滚。隐私、合法前台事实与报告生命周期都由现有宿主直接提供；SDK 不加入业务 UI 控制或后端客户端。
+
+当前配置诊断通过既有 ManagedFailure.detail 输出有限分类。provider Failure.detail 仅接受 timeout/network/http/empty_response/response_decode/exception 六安全标记，其他非 null 说明被标记为 withheld；不输出原异常、完整响应或带凭据 URL，不将 detail 用于业务判断，codec 不保存 detail。无效配置不产生安装终态或失败版本门槛，关闭配置仍优先。

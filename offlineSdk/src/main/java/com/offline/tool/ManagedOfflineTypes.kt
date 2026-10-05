@@ -1,5 +1,6 @@
 package com.offline.tool
 
+import android.content.Context
 import java.io.File
 import java.io.InputStream
 
@@ -11,6 +12,9 @@ fun interface ManagedConfigProvider {
 
 sealed interface ConfigResponse {
     data class Success(val config: OfflineConfiguration) : ConfigResponse
+    /** detail 仅供诊断：精确接受 timeout/network/http/empty_response/response_decode/exception 六种安全标记，
+     * 映射到固定 provider_* 提示；其他非 null 文本只显示 provider_detail_withheld，null 无细节。
+     * 不透传异常、完整响应、URL 或 Token，不参与资格判断；SDK 固定存储格式不持久化 detail。 */
     data class Failure(val reason: ConfigFailureReason, val detail: String? = null) : ConfigResponse
 }
 
@@ -32,7 +36,7 @@ sealed interface PackageSource {
     class Local(val openZip: () -> InputStream) : PackageSource
 }
 
-/** 宿主负责此单值小记录的编码和环境隔离；最近失败仅作诊断，不恢复进程失败门槛。 */
+/** 环境内的单值历史；SDK 提供固定编码，最近失败仅作诊断，不恢复进程失败门槛。 */
 data class PreparationHistory(
     val initialPreparationFinished: Boolean = false,
     val latestFailure: ManagedFailure? = null,
@@ -58,6 +62,25 @@ interface ManagedOfflineStorage {
 
     /** 只返回可靠识别的旧失败或拒绝事实；没有证据返回 null，读取故障抛出异常。 */
     suspend fun readLegacyEvidence(): LegacyPreparationEvidence? = null
+
+    companion object {
+        /** 既有介质接入只需四原语；端口由 SDK 在 IO 调用，保持指定键与 String/Boolean 类型。
+         * String 必须采用 OfflineStorageCodec 的固定格式，四原语不会转换任意旧字符串；
+         * legacyEvidence 只提供可靠旧事实，也不是格式转换器。 */
+        fun keyValue(
+            values: OfflineKeyValueStore,
+            keys: OfflineStorageKeys,
+            legacyEvidence: suspend () -> LegacyPreparationEvidence? = { null },
+        ): ManagedOfflineStorage = KeyValueOfflineStorage(values, keys, legacyEvidence)
+
+        /** 新 App 的默认文件存储；构造不读盘，稳定 namespace 不包含路径语义。 */
+        fun default(context: Context, namespace: String = "main"): ManagedOfflineStorage =
+            defaultOfflineStorage(context, namespace)
+
+        /** 无 Context 的接入/样例可传其 noBackup 目录，同样使用固定布局与同步提交。 */
+        fun default(noBackupDirectory: File, namespace: String = "main"): ManagedOfflineStorage =
+            defaultOfflineStorage(noBackupDirectory, namespace)
+    }
 }
 
 enum class ManagedFailureReason {

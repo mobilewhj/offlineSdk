@@ -1,6 +1,8 @@
 # Offline SDK
 
-`0.3.0-rc.1` 是供业务 App 接入测试的托管 SDK 候选，**正式 `0.3.0` 未发布**。代码与结构范围已复审接受；固定 tag 的 JitPack 构建、远端 POM 和隔离薄宿主依赖消费均已核验。它统一首次准备、前台五分钟检查、失败版本门槛、安装结果通知和页面目录保护；可编译薄宿主见 [`app/`](app/)。实际 API 与迁移方式见 [托管接入说明](docs/MIGRATION-MANAGED-0.3.0.md)，发布前代码证据见 [验收快照](docs/verification/2026-09-29-complexity-reduction/README.md)，远端消费证据见 [发布回执](docs/verification/2026-09-29-test-release/README.md)。下文 `0.2.2` 坐标与低层用法是已发布版本的历史接入说明。
+本页对应 **`0.3.0` 正式版本源码**，正式坐标为 `com.github.mobilewhj:offlineSdk:0.3.0`，样例见[固定 `0.3.0` tag](https://github.com/mobilewhj/offlineSdk/tree/0.3.0/app)，版本范围及发布核验要求见[发布说明](docs/RELEASE-0.3.0.md)。`0.3.0-rc.1` 是此前发布的接入测试候选，固定依赖仍为 `com.github.mobilewhj:offlineSdk:0.3.0-rc.1`。RC 的可编译样例见[固定 tag 的 Demo](https://github.com/mobilewhj/offlineSdk/tree/ea4f042e98533c94694001503c2522ba0d1e7446/app)，其 API 说明见[固定 tag 的迁移文档](https://github.com/mobilewhj/offlineSdk/tree/ea4f042e98533c94694001503c2522ba0d1e7446/docs/MIGRATION-MANAGED-0.3.0.md)，远端消费身份见[发布回执](docs/verification/2026-09-29-test-release/README.md)。
+
+**`0.3.0` 新增能力**：B2 内部职责拆分、默认文件存储、四原语 keyValue 适配、固定 codec 和 `prepareStartup` 已实现，不能据此认为 RC 包含这些接口。当前源码用法见下文与[Demo 说明](docs/DEMO.md)；已有业务 App 的固定 RC 接入不需要切换到本地候选。
 
 [![CI](https://github.com/mobilewhj/offlineSdk/actions/workflows/ci.yml/badge.svg)](https://github.com/mobilewhj/offlineSdk/actions/workflows/ci.yml) [![JitPack](https://jitpack.io/v/mobilewhj/offlineSdk.svg)](https://jitpack.io/#mobilewhj/offlineSdk)
 
@@ -17,9 +19,78 @@
 - 系统 WebView 资源映射，可选 X5 响应适配。
 - Welcome 薄宿主：首次资格与调用级进度、存储适配、隐私条件和独立报告任务；更新与目录保护由 SDK 管理。
 
-托管入口由 SDK 决定更新和目录保护；宿主提供配置接口、存储编码及页面操作。以下低层接入仍由调用方承担管理。**单包不代表只保留一个目录**：更新后旧页面仍可使用旧版本，直到安全的清理时机。
+托管入口由 SDK 决定更新和目录保护；宿主提供配置接口、存储、隐私/前后台事实和页面操作。`0.3.0` 提供默认存储与固定编码。**单包不代表只保留一个目录**：更新后旧页面仍可使用旧版本，直到安全的清理时机。
 
-测试候选的托管接入使用 `prepareFirst(onProgress)` 接收一条完整首装进度，并通过单次挂起 `loadPage(url, baseUrl, callbacks)` 让 SDK 完成页面选择与加载；示例与约束见[迁移说明](docs/MIGRATION-MANAGED-0.3.0.md#最小接入链)。
+## 0.3.0：最短完整接入链
+
+新 App 不需要实现存储方法。Application 在 Main 持有一个稳定管理器，用现有 Repository 映射配置，直接传隐私和合法前台事实。`root` 是 SDK 独占安装目录；默认状态目录位于 `noBackupFilesDir/offline-sdk-state/<namespace>`，不能与安装目录重叠。
+
+```kotlin
+import android.webkit.WebViewClient
+import com.offline.tool.ManagedOfflineSdk
+import com.offline.tool.ManagedOfflineStorage
+import com.offline.tool.ManagedPageCallbacks
+import com.offline.tool.OfflineInterceptor
+import com.offline.tool.StartupResult
+import java.io.File
+
+// Application / Main：existingConfigProvider 从现有配置链映射 ConfigResponse。
+val manager = ManagedOfflineSdk(
+    root = File(context.filesDir, "offline-packages"),
+    storage = ManagedOfflineStorage.default(context, namespace = "main"),
+    configProvider = existingConfigProvider,
+    minimumVersion = 100_000,
+    onInstallationOutcome = receiveInstallationOutcome,
+    onDiagnostic = receiveDiagnostic,
+)
+manager.setConditions(privacyAllowed, foreground) // Main，同步传最新事实。
+
+// Welcome 的生命周期协程：一次调用；进度回调应线程安全或切 Main。
+when (manager.prepareStartup(onProgress = showProgress)) {
+    StartupResult.Continue -> finishOfflineWait()
+    StartupResult.Deferred -> showExplicitRetry()
+}
+
+// 业务配置、广告和导航门禁完成后，由真实页面调用一次；callbacks 在 Main 执行。
+manager.loadPage(originalUrl, baseUrl, object : ManagedPageCallbacks {
+    override fun clearResourceCache(): Boolean {
+        webView.clearCache(true)
+        return true
+    }
+    override fun loadOffline(directory: File, interceptor: OfflineInterceptor, url: String) {
+        webView.webViewClient = interceptor
+        webView.loadUrl(url)
+    }
+    override fun loadOnline(url: String) {
+        webView.webViewClient = WebViewClient()
+        webView.loadUrl(url)
+    }
+})
+```
+
+宿主已有的配置提供器、回调和 UI 函数代表集成边界；完整可编译调用见 [`DefaultStorageSample.kt`](app/src/main/java/com/offline/tool/sample/offline/DefaultStorageSample.kt) 与 [`MainActivity.kt`](app/src/main/java/com/offline/tool/sample/MainActivity.kt)。页面使用 SDK 给定的 interceptor 和原 URL，保留原 WebView/X5 的 JSBridge、Cookie、localStorage 和销毁保护；已有 WebViewClient 的宿主把 `interceptor.resolve(...)` 接入原资源回调。
+
+`Continue` 表示本次离线等待结束，包含正常失败或关闭；业务导航仍由宿主门禁决定。`Deferred` 表示临时条件不足，无自动排队；取消继续抛出，不能伪装完成。默认 namespace 使用稳定值、主进程单例；缺失返回 null，读取故障抛出。写入 true 表示同步提交确认；false 不承诺已发生的文件操作被回滚，也不提供跨 key 事务。
+
+已有介质可通过 `ManagedOfflineStorage.keyValue(values, keys, legacyEvidence)` 只实现 `OfflineKeyValueStore` 的 String/Boolean 四原语，null 字符串写入表示删除。**active/history 字符串必须已经是 SDK codec 格式**；四原语只适配介质，不自动转换任意旧字符串。`legacyEvidence` 仅提供可靠历史事实，不是格式转换器；旧格式须保留必要的 `ManagedOfflineStorage` 适配，而不是直接交给 keyValue。
+
+配置和无目标故障走 `onDiagnostic`，真实安装终态走 `onInstallationOutcome`，各收一次。回调可以把类型映射给宿主现有报告链；SDK 不调用后端。Demo 的日志不算成功上传，业务成功协议与回执需要单独联调。
+
+### 当前配置诊断的安全 detail
+
+配置错误仍使用稳定 reason/stage，现有 `ManagedFailure.detail` 区分缺版本、版本门槛、缺候选、版本不一致、摘要格式、URL 或同版摘要冲突，不把候选版本伪装为 targetVersion。`ConfigResponse.Failure.detail` 只精确接受 `timeout`、`network`、`http`、`empty_response`、`response_decode`、`exception` 六个安全标记，并映射为固定 `provider_*` 说明；null 无细节，其他非 null 值显示 `provider_detail_withheld`。任意异常消息、完整响应、签名 URL 和 Token 不透传。detail 只供诊断，不能用作业务分支；SDK codec 不持久化它。配置诊断不触发安装终态、不抬高失败版本门槛；有效关闭仍优先。
+
+## 本地候选与历史身份
+
+正式版本使用不可变 `0.3.0` tag；另做本地验证时，为每份最终源码显式分配全新的本地版本，并生成 AAR、sources、POM 与 module；实际消费应核对解析路径和摘要。普通 Demo 的 project 编译仅验证源码，不能代替 AAR 消费验证。
+
+```sh
+# 在 SDK 根目录；将占位值替换为此次源码的全新唯一版本，不能使用 RC 或旧候选。
+./gradlew :offlineSdk:publishReleasePublicationToLocalReleaseRepository \
+  -PsdkVersion=0.3.0-local-UNIQUE-SOURCE-ID --console=plain
+```
+
+本地候选发布仅允许 file 仓库（默认 `build/repo`），要求显式非空、安全版本名，并拒绝 `0.3.0-rc.1` 或已存在的版本目录。默认版本标识为 `0.3.0`，发布仍不能省略 sdkVersion。普通 `publishToMavenLocal` 继续拒绝；仅显式 `-PjitpackRelease=true -PsdkVersion=0.3.0` 的正式入口可输出至新的 Maven 本地目录，正式入口须显式指定绝对路径 `-Dmaven.repo.local`，隔离检查使用全新目录，见[发布说明](docs/RELEASE-0.3.0.md#发布入口与身份保护)。工作站路径、旧 App candidate init 脚本与历史候选命令仅是对应冻结输入的证据，不能用当前源码重放旧身份。[历史来源说明](docs/RELEASE-0.3.0.md#历史来源与验证边界)保留 B2/候选证据边界；固定 RC 的结果仍见其[发布回执](docs/verification/2026-09-29-test-release/README.md)。
 
 ## 环境
 
@@ -30,9 +101,9 @@
 
 ## 引入
 
-### `0.3.0-rc.1` 接入测试候选
+### 正式 `0.3.0`
 
-固定 tag 的 JitPack 构建、远端 POM 和隔离薄宿主依赖消费确认以下 SDK 坐标；详见 [发布回执](docs/verification/2026-09-29-test-release/README.md)。
+下方依赖使用不可变 `0.3.0` tag。远端发布成立须同时核对 JitPack 实际构建、远端 AAR/sources/POM/module 和普通 Gradle 消费，不能由本地构建推断；见[发布说明](docs/RELEASE-0.3.0.md)。
 
 在 `settings.gradle.kts` 中：
 
@@ -51,8 +122,12 @@ dependencyResolutionManagement {
 在应用模块 `build.gradle.kts` 中：
 
 ```kotlin
-implementation("com.github.mobilewhj:offlineSdk:0.3.0-rc.1")
+implementation("com.github.mobilewhj:offlineSdk:0.3.0")
 ```
+
+### 已发布的固定 `0.3.0-rc.1`
+
+继续使用 RC 的宿主保持 `implementation("com.github.mobilewhj:offlineSdk:0.3.0-rc.1")`，并使用页首固定 tag 的样例。其 JitPack 构建、远端 POM 与隔离消费见[历史发布回执](docs/verification/2026-09-29-test-release/README.md)；RC 不包含 default/keyValue/codec/prepareStartup 新入口。
 
 ### `0.2.2` 历史低层版本
 
@@ -78,11 +153,11 @@ dependencyResolutionManagement {
 implementation("com.github.mobilewhj:offlineSdk:0.2.2")
 ```
 
-公开包名为 `com.offline.tool`。克隆源码后，示例使用 `implementation(project(":offlineSdk"))`。
+公开包名为 `com.offline.tool`。当前源码 Demo 默认使用 `implementation(project(":offlineSdk"))`；RC 样例必须使用上方固定 tag。
 
 `0.2.2` 修复入口检查等待后台下载的问题，公开 API 签名不变。`0.2.1` 增加的安装结果字段改变了部分二进制签名；从 `0.2.0` 升级时请重新编译宿主。详见 [迁移说明](docs/MIGRATION-INSTALL-FACTS.md)和[并发修复记录](docs/EXECUTION-ISUSABLE-CONCURRENCY.md)。
 
-## 快速接入
+## 历史低层接入
 
 同一资源根目录复用一个安装器：
 
@@ -132,7 +207,7 @@ site.zip
 - 压缩包和单个文件上限均为 64 MiB，总解压上限 256 MiB，最多 10000 个条目。
 - 已存在版本目录不覆盖；同一版本号不更换内容。
 - WebView 绑定固定版本目录，后台更新不会自动刷新当前页面。
-- `clearOldVersions(...)` 仅在确认没有页面使用待清理目录时调用。
+- 低层 `clearOldVersions(...)` 仅在确认没有页面使用待清理目录时调用；托管根目录的清理交给管理器。
 - 当前托管示例采用单进程管理器，首次操作由 Welcome 调用，后续检查由 SDK 根据 Application 前台事实调度；不提供跨进程协调。
 
 进度、流关闭、取消、清理、映射规则及 X5 用法详见 [SDK API 文档（中文）](offlineSdk/README.md)。
@@ -157,11 +232,11 @@ site.zip
   :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleRelease
 ```
 
-已发布 `0.2.2` 的历史源码通过 72 项 JVM 测试、Debug / R8 Release 构建和本地 Maven AAR 接入验证。`0.3.0-rc.1` 发布前的代码验收为 SDK 129 项、Demo 14 项；本地 AAR 消费与构建证据见[验收快照](docs/verification/2026-09-29-complexity-reduction/README.md)。隔离 tag Demo 从 JitPack 消费远端 AAR，Debug、Release/R8、14/14 测试、lint 和 AndroidTest Kotlin 源码编译通过，详见[发布回执](docs/verification/2026-09-29-test-release/README.md)。**F4 设备运行验收仍开放**；当前候选的完整 Demo 生命周期、系统 WebView 缓存／Cookie／请求头／Range 和 X5 内核均没有通过结果。历史详情见 [0.2.2 执行记录](docs/EXECUTION-ISUSABLE-CONCURRENCY.md)和 [0.2.1 执行记录](docs/EXECUTION-INSTALL-FACTS.md)；已发布 `0.2.0` 的结果见 [验证记录](docs/VALIDATION-0.2.0.md)。
+已发布 `0.2.2` 的历史源码通过 72 项 JVM 测试、Debug / R8 Release 构建和本地 Maven AAR 接入验证。`0.3.0-rc.1` 发布前的代码验收为 SDK 129 项、Demo 14 项；本地 AAR 消费与构建证据见[验收快照](docs/verification/2026-09-29-complexity-reduction/README.md)。隔离 tag Demo 从 JitPack 消费远端 AAR，Debug、Release/R8、14/14 测试、lint 和 AndroidTest Kotlin 源码编译通过，详见[发布回执](docs/verification/2026-09-29-test-release/README.md)。**F4 设备运行验收仍开放**；`0.3.0` 最终产物的完整 Demo 生命周期、系统 WebView 缓存／Cookie／请求头／Range 和 X5 内核均没有通过结果。历史详情见 [0.2.2 执行记录](docs/EXECUTION-ISUSABLE-CONCURRENCY.md)和 [0.2.1 执行记录](docs/EXECUTION-INSTALL-FACTS.md)；已发布 `0.2.0` 的结果见 [验证记录](docs/VALIDATION-0.2.0.md)。
 
-连接设备后可运行 `./gradlew :offlineSdk:connectedDebugAndroidTest`。编译 Android 测试源码不代表设备测试通过。
+`0.3.0` 功能基线已在独立本地候选中验收；正式发布须另绑定最终 tag、远端制品及普通 Gradle 消费，上述 RC 历史计数不能作为正式产物的新结果。见[验证边界](docs/RELEASE-0.3.0.md#历史来源与验证边界)。API24、真实 X5、真实冷进程、默认五分钟、完整业务启动/两小时路径和后端回执仍单独开放。SDK 发布不代表业务 App 已升级或完成验收。连接设备后可运行 `./gradlew :offlineSdk:connectedDebugAndroidTest`；编译 Android 测试源码不代表设备测试通过。
 
-[更新记录](CHANGELOG.md) · [发布步骤](docs/RELEASING.md) · [GitHub Issues](https://github.com/mobilewhj/offlineSdk/issues)
+[更新记录](CHANGELOG.md) · [0.3.0 发布说明](docs/RELEASE-0.3.0.md) · [GitHub Issues](https://github.com/mobilewhj/offlineSdk/issues)
 
 ## 开发与许可
 
@@ -169,7 +244,7 @@ site.zip
 
 本项目采用 [Apache License 2.0](LICENSE)。
 
-推荐使用 Maven 坐标获得传递依赖。直接使用 AAR 时，调用方需自行提供 Kotlin 标准库、OkHttp 4.12.0、Okio 3.7.0 和 kotlinx-coroutines-android 1.7.3；AAR 本身不包含这些依赖。
+推荐使用 Maven 坐标获得传递依赖，AAR 本身不包含它们。固定 RC 的依赖包含 Kotlin 标准库、OkHttp 4.12.0、Okio 3.7.0 和 kotlinx-coroutines-android 1.7.3；`0.3.0` 另外使用 Gson 2.11.0 作严格 JSON 语法验证，具体传递依赖以正式远端 POM/module 为准。直接复制 AAR 不能省略这些依赖。
 
 ## 本地生成示例包
 
@@ -180,6 +255,6 @@ python3 scripts/generate-sample.py
 python3 scripts/generate-sample.py --check
 ```
 
-CI 会检查已提交 ZIP、示例源码和配置摘要是否一致。修改网页后，应提高 Demo 的离线包版本号再测试已有安装，或清除 Demo 应用数据。测试 ZIP 由测试夹具在本地构造；Demo 和测试均无需业务网页或真实账号。
+CI 会检查已提交 ZIP、示例源码和配置摘要是否一致。修改网页后，应提高 Demo 的离线包版本号再测试已有安装；不要把清业务数据作为升级或兼容手段。测试 ZIP 由测试夹具在本地构造；Demo 和测试均无需业务网页或真实账号。
 
 [0.2.0 migration / 改名接入说明](docs/MIGRATION-0.2.0.md)

@@ -5,7 +5,8 @@ plugins {
 }
 
 group = "com.github.mobilewhj.offlineSdk"
-version = providers.gradleProperty("sdkVersion").getOrElse("0.3.0-rc.1")
+val releaseVersion = "0.3.0"
+version = providers.gradleProperty("sdkVersion").getOrElse(releaseVersion)
 
 android {
     namespace = "com.offline.tool"
@@ -31,7 +32,9 @@ dependencies {
     api(libs.kotlinx.coroutines.android)
     api(libs.okhttp)
     implementation(libs.okio)
+    implementation(libs.gson)
     testImplementation(libs.junit)
+    testImplementation("org.json:json:20240303")
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.okhttp.tls)
@@ -83,5 +86,41 @@ tasks.withType<org.gradle.api.tasks.bundling.Jar>().configureEach {
         from(rootProject.file("LICENSE")) {
             into("META-INF/offline-sdk")
         }
+    }
+}
+
+// 当前源码只能发布为显式新身份；已发布 RC 与任何既有本地版本均不可覆盖。
+fun verifyNewPublicationIdentity(repositoryDirectory: File, publication: MavenPublication) {
+    val explicitVersion = providers.gradleProperty("sdkVersion").orNull
+    check(!explicitVersion.isNullOrBlank()) { "Local publication requires an explicit new -PsdkVersion" }
+    check(explicitVersion.matches(Regex("[A-Za-z0-9][A-Za-z0-9._-]*"))) { "Invalid sdkVersion" }
+    check(explicitVersion != "0.3.0-rc.1") { "Published 0.3.0-rc.1 is immutable" }
+    val target = repositoryDirectory.resolve(
+        "${publication.groupId.replace('.', '/')}/${publication.artifactId}/$explicitVersion"
+    )
+    check(!target.exists()) { "Publication identity already exists: $target; choose a new sdkVersion" }
+}
+
+tasks.withType<org.gradle.api.publish.maven.tasks.PublishToMavenRepository>().configureEach {
+    doFirst {
+        check(repository.url.scheme == "file") { "This working tree only permits local candidate publication" }
+        verifyNewPublicationIdentity(File(repository.url), publication)
+    }
+}
+
+tasks.withType<org.gradle.api.publish.maven.tasks.PublishToMavenLocal>().configureEach {
+    doFirst {
+        // JitPack 正式入口显式指定仓库，避免 Maven settings 改写实际输出位置。
+        check(providers.gradleProperty("jitpackRelease").orNull == "true") {
+            "Use isolated build/repo for candidates; Maven local requires -PjitpackRelease=true"
+        }
+        check(providers.gradleProperty("sdkVersion").orNull == releaseVersion) {
+            "JitPack publication requires explicit -PsdkVersion=$releaseVersion"
+        }
+        val localRepository = providers.systemProperty("maven.repo.local").orNull
+        check(!localRepository.isNullOrBlank()) { "JitPack publication requires explicit -Dmaven.repo.local" }
+        val localRepositoryDirectory = File(localRepository)
+        check(localRepositoryDirectory.isAbsolute) { "maven.repo.local must be an absolute path" }
+        verifyNewPublicationIdentity(localRepositoryDirectory, publication)
     }
 }

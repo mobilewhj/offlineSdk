@@ -1,8 +1,18 @@
-# 托管离线包接入迁移（0.3.0-rc.1 测试候选）
+# 0.3.0 与固定 RC 托管接入边界
 
-`0.3.0-rc.1` 用于业务 App 接入测试，**正式 `0.3.0` 未发布**。R1–R9、Q1–Q3 及主流程优化的历史结论保留；本轮 R0–R5、F2-R 和 P2/P3 的代码与结构范围已由原规划会话复审接受。本地 AAR 与单测是发布前证据；固定 tag 的 JitPack 构建、远端 POM 和隔离薄宿主依赖消费均已核验，详见[发布回执](verification/2026-09-29-test-release/README.md)。F4 与完整运行验收仍开放。旧 `0.2.2` 低层 API 保留；同一托管根目录只能由一个 `ManagedOfflineSdk` 实例修改。接管前先停止旧低层在途写操作，接管后其他安装器不得再向该目录发起写入。
+正式 `0.3.0` 坐标为 `com.github.mobilewhj:offlineSdk:0.3.0`，可编译样例见[固定 `0.3.0` tag](https://github.com/mobilewhj/offlineSdk/tree/0.3.0/app)，版本范围及发布核验要求见[发布说明](RELEASE-0.3.0.md)。此前已发布接入测试候选是 `com.github.mobilewhj:offlineSdk:0.3.0-rc.1`。本文“RC 接入”章节描述该固定版本；可编译样例与原始接口说明使用[固定 tag](https://github.com/mobilewhj/offlineSdk/tree/ea4f042e98533c94694001503c2522ba0d1e7446/app)和[固定迁移文档](https://github.com/mobilewhj/offlineSdk/tree/ea4f042e98533c94694001503c2522ba0d1e7446/docs/MIGRATION-MANAGED-0.3.0.md)，不能用当前 Demo 推断 RC 能力。发布前历史、本地及远端消费分别见[验收快照](verification/2026-09-29-complexity-reduction/README.md)和[发布回执](verification/2026-09-29-test-release/README.md)。
 
-## 测试候选依赖
+## 0.3.0 的新增入口
+
+`0.3.0` 已实现 B2 内部所有权、默认文件存储、四原语 keyValue、codec 和 `prepareStartup`；无需再次开发，**固定 RC 没有这些新增入口**。当前新 App 的完整链见[主 README](../README.md#030最短完整接入链)，可编译新入口见 [`DefaultStorageSample.kt`](../app/src/main/java/com/offline/tool/sample/offline/DefaultStorageSample.kt)。`prepareStartup` 的 Continue 只结束离线等待；Deferred 为临时条件不足，取消仍抛出。页面继续由一次 loadPage 加载给定 interceptor 与原 URL。
+
+新 App 可用 `ManagedOfflineStorage.default(context, namespace)`，无需实现存储。保留介质的 App 可用四原语 keyValue，但 active/history 字符串须是 SDK codec 格式；它不自动转换旧格式，legacyEvidence 也不是格式转换器。当前 Demo 保留必要的两行 active 适配。正式消费使用固定 `0.3.0` 远端 AAR；另做本地验证须显式分配新的唯一候选身份。旧工作站候选命令只作为[历史来源](RELEASE-0.3.0.md#历史来源与验证边界)，不能复用其版本发布当前源码。
+
+下面保留 RC 的八方法存储和 startupDecision→prepareFirst 接入契约。所有托管版本中，同一 root 只能有一个管理器；接管前先停止旧低层在途写，接管后不能同时另开目录写入口。设备/API24/X5、完整业务启动/两小时路径和后端回执仍需其对应最终产物的独立验收。
+
+## RC 接入
+
+### 固定依赖
 
 远端 POM 和隔离 tag Demo 的依赖解析确认 SDK 的 JitPack 坐标为 `com.github.mobilewhj:offlineSdk:0.3.0-rc.1`；远端 AAR 的实际消费与摘要见[发布回执](verification/2026-09-29-test-release/README.md)。在 `settings.gradle.kts` 中加入：
 
@@ -20,7 +30,7 @@ dependencyResolutionManagement {
 
 应用模块使用 `implementation("com.github.mobilewhj:offlineSdk:0.3.0-rc.1")`。发布前代码与行为证据见 [验收快照](verification/2026-09-29-complexity-reduction/README.md)；下方 API、存储和页面约定是业务 App 接入测试的迁移边界。
 
-## API 与所有权
+### API 与所有权
 
 SDK 的公开构造仅需 `root`、`storage`、`configProvider`；可选 `minimumVersion`、`onInstallationOutcome`、`onDiagnostic`、`downloadClient`。宿主在 Application 的 Main 上为固定环境直接创建并持有一个管理器，立即传入最新隐私/前台事实，再把同一对象交给 Welcome 和页面。构造只保存依赖与内存状态；首次合法挂起入口由 SDK 在 IO 准备安装器、规范化路径并读取记录。运行期初始化故障不会留下失败的等待对象：本次页面实际调用 `loadOnline()`，下一合法入口在同一管理器上重试。生产业务传 `minimumVersion = 100_000`，并提供自己的 Repository、按环境存储、隐私及前后台事实。宿主适配器也应轻量构造，阻塞工作放在既有读写或请求入口。
 
@@ -32,7 +42,7 @@ SDK 的公开构造仅需 `root`、`storage`、`configProvider`；可选 `minimu
 
 配置入口是 Main-safe 的挂起 `ManagedConfigProvider.fetch(currentVersion: Int): ConfigResponse`。SDK 在同一次本地可用性检查后传入实际可用的 Int 版本，否则为 `0`；在 Main 确认资格、紧邻调用 provider 时记录本次单调时间，成功或失败均占五分钟间隔。宿主把现有接口响应映射为 `ConfigResponse.Success(OfflineConfiguration(enabled, onlineVersion, candidate))` 或类型化 `ConfigResponse.Failure`；既有 Retrofit 挂起调用可直接接入，适配器若做阻塞本地读写或同步请求，应自行 `withContext(Dispatchers.IO)`，并支持协程取消。有效关闭只需 `enabled = false`，不要求版本、URL 或 SHA。候选用 `OfflineCandidate(PackageRecord(version, sha256), PackageSource.Remote(url))`；Demo 用 `PackageSource.Local` 演示 APK 内置 ZIP。SDK 不知道业务 Entity、JSON 或 URL 生成规则。
 
-`ManagedOfflineStorage` 仅保存 `active`、`enabled`、每环境一个 `PreparationHistory(initialPreparationFinished, latestFailure)`、以及缓存待清 Boolean。挂起读写由 SDK 在 IO 调度器调用，写入返回 `Boolean`，取消传播。`readCacheDirty()` 仍由 SDK 在 IO 读取；本候选的 `writeCacheDirty(dirty)` 为 `suspend`，宿主实现须在 IO 完成真实持久提交后才返回 `true`，失败返回 `false`，取消传播。Demo 用 IO 上的 `SharedPreferences.commit()`；不能以 `apply()` 后立即返回 `true` 冒充写盘成功。页面操作回到 Main 后只同步复核、清资源缓存和绑定，成功清理后的标记由 SDK 异步写盘，内存待清事实在持久确认前保持为脏；写失败下一页面可重试，旧清除写入不能覆盖后到配置置脏。`latestFailure` 只保存枚举原因/阶段、可选版本及摘要、时间和短诊断，不保存 Throwable、签名 URL 或失败次数。`readLegacyEvidence()` 可选：仅在旧记录确实可识别时提供最近诊断；管理器同时以格式有效的旧 active 或可用旧包迁移首次完成事实。未知失败码由宿主解码为可空诊断，不能丢弃独立的首次完成标记。Demo 使用英文枚举名作稳定持久码，不使用 ordinal；业务上报仍需明确的协议映射。旧 remote/rejected/cache identity/ack 键可以留存供回滚，但不得继续作为运行策略读取或写入。
+`ManagedOfflineStorage` 仅保存 `active`、`enabled`、每环境一个 `PreparationHistory(initialPreparationFinished, latestFailure)`、以及缓存待清 Boolean。挂起读写由 SDK 在 IO 调度器调用，写入返回 `Boolean`，取消传播。`readCacheDirty()` 仍由 SDK 在 IO 读取；本候选的 `writeCacheDirty(dirty)` 为 `suspend`，宿主实现须在 IO 完成真实持久提交后才返回 `true`，失败返回 `false`，取消传播。Demo 用 IO 上的 `SharedPreferences.commit()`；不能以 `apply()` 后立即返回 `true` 冒充写盘成功。页面操作回到 Main 后只同步复核、清资源缓存和绑定，成功清理后的标记由 SDK 异步写盘，内存待清事实在持久确认前保持为脏；写失败下一页面可重试，旧清除写入不能覆盖后到配置置脏。`latestFailure` 只保存枚举原因/阶段、可选版本及摘要、时间和短诊断，不保存 Throwable、签名 URL 或失败次数。RC 的 `readLegacyEvidence()` 可选：仅在旧记录确实可识别时提供最近诊断；管理器同时以格式有效的旧 active 或可用旧包迁移首次完成事实。未知失败码由宿主解码为可空诊断，不能丢弃独立的首次完成标记。Demo 使用英文枚举名作稳定持久码，不使用 ordinal；业务上报仍需明确的协议映射。旧 remote/rejected/cache identity/ack 键可以留存供回滚，但不得继续作为运行策略读取或写入。
 
 存储缺记录才返回 `null`，读取故障必须抛出异常。读取 active 等初始化事实失败时，SDK 保留全部目录，不提交空初始化事实，也不写迁移完成标记；`startupDecision()` 放行继续页面流程，`loadPage()` 实际回源。下一次合法入口仍能重新读取，不增加恢复账本或补写循环。
 
@@ -91,6 +101,6 @@ Application 在 Main 传 `setConditions(privacyAllowed, foreground)`，无需写
 - 删除 App 中的轮询、失败版本判断、目录清理/保护和错误文案分支；保留 Repository/Retrofit/Moshi、MMKV 编码、隐私/前后台事实、业务配置与导航、WebView 操作、独立报告任务。
 - `PackageInstaller` 与低层安装结果继续可用，但不得与同根托管管理器同时修改目录。`OfflineInterceptor` 增加默认的运行期开关参数；源码调用可重编译，依赖旧构造函数的二进制须重新编译。
 - 本地 AAR 消费样例同时编译新的管理器入口与旧低层 `PackageInstaller` 构造/只读检查、`OfflineInterceptor` 构造/资源解析调用；旧二进制消费者仍按上条限制重编。低层样例使用独立根目录，不能拿它绕过托管目录保护。
-- 参考可编译薄宿主：[DemoApplication](../app/src/main/java/com/offline/tool/sample/DemoApplication.kt)、[DemoManagedStorage](../app/src/main/java/com/offline/tool/sample/offline/DemoManagedStorage.kt)、[DemoOutcomeReporter](../app/src/main/java/com/offline/tool/sample/offline/DemoOutcomeReporter.kt)、[WelcomeViewModel](../app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeViewModel.kt)、[MainActivity](../app/src/main/java/com/offline/tool/sample/MainActivity.kt)。
+- RC 可编译薄宿主：[DemoApplication](https://github.com/mobilewhj/offlineSdk/tree/ea4f042e98533c94694001503c2522ba0d1e7446/app/src/main/java/com/offline/tool/sample/DemoApplication.kt)、[DemoManagedStorage](https://github.com/mobilewhj/offlineSdk/tree/ea4f042e98533c94694001503c2522ba0d1e7446/app/src/main/java/com/offline/tool/sample/offline/DemoManagedStorage.kt)、[DemoOutcomeReporter](https://github.com/mobilewhj/offlineSdk/tree/ea4f042e98533c94694001503c2522ba0d1e7446/app/src/main/java/com/offline/tool/sample/offline/DemoOutcomeReporter.kt)、[WelcomeViewModel](https://github.com/mobilewhj/offlineSdk/tree/ea4f042e98533c94694001503c2522ba0d1e7446/app/src/main/java/com/offline/tool/sample/ui/welcome/WelcomeViewModel.kt)、[MainActivity](https://github.com/mobilewhj/offlineSdk/tree/ea4f042e98533c94694001503c2522ba0d1e7446/app/src/main/java/com/offline/tool/sample/MainActivity.kt)。
 
 内部职责及规则维护位置见 [代码质量整改说明](SDK-CODE-QUALITY-REFACTOR.md)；本轮不向 App 增加管理策略。

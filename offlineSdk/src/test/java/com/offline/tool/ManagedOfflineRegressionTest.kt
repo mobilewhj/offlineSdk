@@ -23,6 +23,7 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -161,6 +162,231 @@ class ManagedOfflineRegressionTest {
             assertEquals(listOf(higher.record), store.activeWrites)
             assertEquals(2, outcomes.size)
             assertEquals(InstallationOutcome.Installed(higher.record), outcomes.last())
+        } finally {
+            sdk.shutdown()
+        }
+    }
+
+    @Test
+    fun invalidConfigurationDiagnosticsDistinguishCausesWithoutStartingInstallation() = runTest {
+        val root = temporary.newFolder().canonicalFile
+        val oldBytes = zip("known active")
+        val old = candidate(100001, oldBytes).record
+        installBeforeManager(root, old, oldBytes)
+        val store = MemoryStorage(old)
+        val targetBytes = zip("valid next package")
+        val targetRecord = PackageRecord(100002, sha256(targetBytes))
+        var sourceReads = 0
+        fun local(record: PackageRecord) = OfflineCandidate(record, PackageSource.Local {
+            sourceReads++
+            targetBytes.inputStream()
+        })
+        val valid = local(targetRecord)
+        val cases = listOf(
+            OfflineConfiguration(true, candidate = valid) to "online_version_missing",
+            OfflineConfiguration(true, 99999, valid) to "online_version_below_minimum",
+            OfflineConfiguration(true, 100002) to "candidate_missing",
+            OfflineConfiguration(true, 100002, local(targetRecord.copy(version = 99999))) to "candidate_version_below_minimum",
+            OfflineConfiguration(true, 100002, local(targetRecord.copy(sha256 = "invalid"))) to "sha256_format",
+            OfflineConfiguration(true, 100002, local(targetRecord.copy(version = 100003))) to "candidate_version_mismatch",
+            OfflineConfiguration(true, 100002, OfflineCandidate(targetRecord, PackageSource.Remote("file:///invalid.zip"))) to
+                "source_url_invalid",
+            OfflineConfiguration(true, old.version, local(old.copy(sha256 = "a".repeat(64)))) to "same_version_sha256_conflict",
+        )
+        var configuration: ConfigResponse = ConfigResponse.Success(cases.first().first)
+        var now = 0L
+        val diagnostics = mutableListOf<ManagedFailure>()
+        val outcomes = mutableListOf<InstallationOutcome>()
+        val dispatcher = StandardTestDispatcher(testScheduler)
+        val sdk = ManagedOfflineSdk.forTest(
+            root = root,
+            storage = store,
+            configProvider = ManagedConfigProvider { configuration },
+            minimumVersion = 100000,
+            onDiagnostic = { diagnostics += it },
+            onInstallationOutcome = { outcomes += it },
+            ioDispatcher = dispatcher,
+            mainDispatcher = dispatcher,
+            monotonicMillis = { now },
+            downloadClient = OkHttpClient.Builder().addInterceptor {
+                sourceReads++
+                throw IOException("配置错误不得进入网络下载")
+            }.build(),
+        )
+        fun check(config: OfflineConfiguration) {
+            configuration = ConfigResponse.Success(config)
+            now += 300_001L
+            sdk.setConditions(privacyAllowed = true, foreground = false)
+            sdk.setConditions(privacyAllowed = true, foreground = true)
+            runCurrent()
+        }
+        try {
+            sdk.startupDecision()
+            cases.forEachIndexed { index, (config, expected) ->
+                check(config)
+                val failure = sdk.state.value.latestFailure!!
+                assertEquals(expected, failure.detail)
+                assertEquals(ManagedFailureReason.INVALID_CONFIG, failure.reason)
+                assertEquals(ManagedStage.CONFIG, failure.stage)
+                assertEquals(null, failure.targetVersion)
+                assertEquals(index + 1, diagnostics.size)
+                assertEquals(failure, diagnostics.last())
+                assertEquals(0, sourceReads)
+                assertTrue("配置诊断没有安装终态", outcomes.isEmpty())
+                assertTrue("配置错误不保存 active", store.activeWrites.isEmpty())
+                assertEquals(old, store.active)
+                assertTrue(File(root, "${old.version}/index.html").isFile)
+            }
+            val diagnosticCount = diagnostics.size
+            // 关闭配置仍先于缺版本、坏摘要、URL 与失败门槛规则，不新增配置诊断。
+            check(OfflineConfiguration(false, candidate = valid.copy(record = targetRecord.copy(sha256 = "invalid"))))
+            assertFalse(sdk.state.value.enabled)
+            assertEquals(diagnosticCount, diagnostics.size)
+            assertEquals(0, sourceReads)
+            assertTrue(outcomes.isEmpty())
+            assertTrue(store.activeWrites.isEmpty())
+
+            // 多种无效候选包含更高版本，但不能提升 failedVersion 阻止随后合法的较低新版本。
+            check(OfflineConfiguration(true, valid.record.version, valid))
+            assertEquals(1, sourceReads)
+            assertEquals(listOf(valid.record), store.activeWrites)
+            assertEquals(listOf(InstallationOutcome.Installed(valid.record)), outcomes)
+        } finally {
+            sdk.shutdown()
+        }
+    }
+
+    @Test
+    fun providerFailureDetailsUseOnlyDocumentedSafeMarkers() = runTest {
+        val cases = listOf(
+            Triple(ConfigResponse.Failure(ConfigFailureReason.REQUEST, "timeout"), ManagedFailureReason.CONFIG_REQUEST, "provider_timeout"),
+            Triple(ConfigResponse.Failure(ConfigFailureReason.REQUEST, "network"), ManagedFailureReason.CONFIG_REQUEST, "provider_network"),
+            Triple(ConfigResponse.Failure(ConfigFailureReason.REQUEST, "http"), ManagedFailureReason.CONFIG_REQUEST, "provider_http"),
+            Triple(ConfigResponse.Failure(ConfigFailureReason.UNAVAILABLE, "empty_response"), ManagedFailureReason.CONFIG_UNAVAILABLE, "provider_empty_response"),
+            Triple(ConfigResponse.Failure(ConfigFailureReason.PARSE, "response_decode"), ManagedFailureReason.CONFIG_PARSE, "provider_response_decode"),
+            Triple(ConfigResponse.Failure(ConfigFailureReason.REQUEST, "exception"), ManagedFailureReason.CONFIG_REQUEST, "provider_exception"),
+            Triple(ConfigResponse.Failure(ConfigFailureReason.REQUEST), ManagedFailureReason.CONFIG_REQUEST, null),
+            Triple(ConfigResponse.Failure(ConfigFailureReason.REQUEST, "TIMEOUT"), ManagedFailureReason.CONFIG_REQUEST, "provider_detail_withheld"),
+            Triple(ConfigResponse.Failure(ConfigFailureReason.PARSE, "https://private.example/config?token=secret"), ManagedFailureReason.CONFIG_PARSE, "provider_detail_withheld"),
+            Triple(ConfigResponse.Failure(ConfigFailureReason.UNAVAILABLE, "Token secret\nfull response"), ManagedFailureReason.CONFIG_UNAVAILABLE, "provider_detail_withheld"),
+        )
+        val store = MemoryStorage()
+        val diagnostics = mutableListOf<ManagedFailure>()
+        val outcomes = mutableListOf<InstallationOutcome>()
+        var configuration = cases.first().first
+        val dispatcher = StandardTestDispatcher(testScheduler)
+        val sdk = ManagedOfflineSdk.forTest(
+            root = temporary.newFolder().canonicalFile,
+            storage = store,
+            configProvider = ManagedConfigProvider { configuration },
+            minimumVersion = 100000,
+            onDiagnostic = { diagnostics += it },
+            onInstallationOutcome = { outcomes += it },
+            ioDispatcher = dispatcher,
+            mainDispatcher = dispatcher,
+            monotonicMillis = { testScheduler.currentTime },
+        )
+        try {
+            sdk.startupDecision()
+            sdk.setConditions(privacyAllowed = true, foreground = true)
+            cases.forEachIndexed { index, (response, reason, detail) ->
+                configuration = response
+                if (index > 0) advanceTimeBy(300_000L)
+                runCurrent()
+                assertEquals(index + 1, diagnostics.size)
+                val failure = diagnostics.last()
+                assertEquals(reason, failure.reason)
+                assertEquals(ManagedStage.CONFIG, failure.stage)
+                assertEquals(detail, failure.detail)
+                assertEquals(null, failure.targetVersion)
+                assertEquals(failure, sdk.state.value.latestFailure)
+                assertTrue(store.activeWrites.isEmpty())
+                assertTrue(outcomes.isEmpty())
+                assertFalse("诊断文本不进入 SDK 稳定持久化格式", OfflineStorageCodec.encodeHistory(store.history).contains("detail"))
+            }
+        } finally {
+            sdk.shutdown()
+        }
+    }
+
+    @Test
+    fun thrownProviderExceptionEmitsSafeDetailAndFirstFailureStillFinishes() = runTest {
+        val store = MemoryStorage().apply { history = PreparationHistory() }
+        val diagnostics = mutableListOf<ManagedFailure>()
+        val outcomes = mutableListOf<InstallationOutcome>()
+        val dispatcher = StandardTestDispatcher(testScheduler)
+        val sdk = ManagedOfflineSdk.forTest(
+            root = temporary.newFolder().canonicalFile,
+            storage = store,
+            configProvider = ManagedConfigProvider { throw IOException("https://private.example?token=secret") },
+            minimumVersion = 100000,
+            onDiagnostic = { diagnostics += it },
+            onInstallationOutcome = { outcomes += it },
+            ioDispatcher = dispatcher,
+            mainDispatcher = dispatcher,
+            monotonicMillis = { testScheduler.currentTime },
+        )
+        try {
+            assertEquals(StartupDecision.NEEDS_FIRST_PREPARATION, sdk.startupDecision())
+            sdk.setConditions(privacyAllowed = true, foreground = true)
+            val result = sdk.prepareFirst() as FirstPreparationResult.Finished
+            val failure = (result.check as CheckResult.Failed).failure
+            assertEquals(ManagedFailureReason.CONFIG_REQUEST, failure.reason)
+            assertEquals("provider_exception", failure.detail)
+            assertEquals(null, failure.targetVersion)
+            assertEquals(listOf(failure), diagnostics)
+            assertTrue(store.history.initialPreparationFinished)
+            assertTrue(sdk.state.value.initialPreparationFinished)
+            assertFalse(result.usablePackage)
+            assertTrue(store.activeWrites.isEmpty())
+            assertTrue(outcomes.isEmpty())
+        } finally {
+            sdk.shutdown()
+        }
+    }
+
+    @Test
+    fun providerCancellationRemainsCancellationWithoutDiagnosticOrFirstCompletion() = runTest {
+        val store = MemoryStorage().apply { history = PreparationHistory() }
+        val diagnostics = mutableListOf<ManagedFailure>()
+        val outcomes = mutableListOf<InstallationOutcome>()
+        var cancel = true
+        val dispatcher = StandardTestDispatcher(testScheduler)
+        val sdk = ManagedOfflineSdk.forTest(
+            root = temporary.newFolder().canonicalFile,
+            storage = store,
+            configProvider = ManagedConfigProvider {
+                if (cancel) throw CancellationException("provider cancelled")
+                ConfigResponse.Failure(ConfigFailureReason.PARSE, "response_decode")
+            },
+            minimumVersion = 100000,
+            onDiagnostic = { diagnostics += it },
+            onInstallationOutcome = { outcomes += it },
+            ioDispatcher = dispatcher,
+            mainDispatcher = dispatcher,
+            monotonicMillis = { testScheduler.currentTime },
+        )
+        try {
+            sdk.startupDecision()
+            sdk.setConditions(privacyAllowed = true, foreground = true)
+            try {
+                sdk.prepareFirst()
+                throw AssertionError("配置取消必须传播")
+            } catch (cancelled: CancellationException) {
+                assertEquals("provider cancelled", cancelled.message)
+            }
+            assertFalse(store.history.initialPreparationFinished)
+            assertFalse(sdk.state.value.initialPreparationFinished)
+            assertTrue(diagnostics.isEmpty())
+            assertTrue(outcomes.isEmpty())
+            assertTrue(store.activeWrites.isEmpty())
+
+            cancel = false
+            val result = sdk.prepareFirst() as FirstPreparationResult.Finished
+            assertEquals("provider_response_decode", (result.check as CheckResult.Failed).failure.detail)
+            assertEquals(1, diagnostics.size)
+            assertTrue(store.history.initialPreparationFinished)
+            assertTrue(outcomes.isEmpty())
         } finally {
             sdk.shutdown()
         }
@@ -449,6 +675,194 @@ class ManagedOfflineRegressionTest {
                         assertEquals(PageDecision.Online, withTimeout(5_000L) { checkNotNull(page).await() })
                         assertEquals("配置关闭后须真实加载线上页面", 1, callbacks.onlineLoads)
                         assertEquals("旧 IO 观察不得绑定离线目录", 0, callbacks.offlineLoads)
+                    } finally {
+                        freeIo.countDown()
+                        enabledWriteRelease.complete(Unit)
+                        main.hold = false
+                        main.releaseAll()
+                        page?.cancelAndJoin()
+                        blocker?.cancelAndJoin()
+                        sdk.shutdown()
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun pageLoadRejectsOldObservationAfterNewActiveIsCommitted() =
+        verifyPageObservationAfterConfiguration(ObservationChange.ACTIVE_SWITCH)
+
+    @Test
+    fun pageLoadRejectsOldObservationAfterOnlineVersionChanges() =
+        verifyPageObservationAfterConfiguration(ObservationChange.ONLINE_VERSION_MISMATCH)
+
+    @Test
+    fun observationReadyAppliesImmediateDisabledConfigBeforePageSelection() = runTest {
+        val root = temporary.newFolder().canonicalFile
+        val bytes = zip("locally observed page")
+        val old = candidate(100001, bytes).record
+        installBeforeManager(root, old, bytes)
+        val events = mutableListOf<String>()
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val session = ManagedPackageSession(
+            root = root,
+            storage = MemoryStorage(old),
+            configProvider = ManagedConfigProvider {
+                events += "provider"
+                ConfigResponse.Success(OfflineConfiguration(enabled = false))
+            },
+            minimumVersion = 100000,
+            ioDispatcher = dispatcher,
+            downloadClient = OkHttpClient(),
+            downloadTimeoutMillis = 120_000L,
+            processScope = backgroundScope,
+            conditions = MutableStateFlow(RunConditions(privacyAllowed = true, foreground = true)),
+            onDiagnostic = {},
+        )
+        assertTrue(session.prepareLocal() is LocalPreparation.Ready)
+        val base = "https://offline.example/app/"
+        val pageUrl = "https://offline.example/app/?from=notification#page"
+        val callbacks = object : ManagedPageCallbacks {
+            override fun clearResourceCache(): Boolean {
+                events += "clear"
+                return true
+            }
+            override fun loadOffline(directory: File, interceptor: OfflineInterceptor, url: String) {
+                events += "offline"
+            }
+            override fun loadOnline(url: String) {
+                assertEquals(pageUrl, url)
+                events += "online"
+            }
+        }
+        var observed = 0
+        val decision = session.loadPage(pageUrl, base, callbacks, false, null) {
+            events += "observed"
+            observed++
+            // 通知是同步调用期端口；让配置检查立即执行，锁定其早于页面最终复核的时点。
+            val check = backgroundScope.launch(dispatcher, start = CoroutineStart.UNDISPATCHED) {
+                session.checkOnce(first = false, onProgress = {})
+            }
+            assertTrue("同步 provider 必须在观察通知返回前完成", check.isCompleted)
+            assertFalse("最终页面复核必须读取刚发布的 disabled", session.state.value.enabled)
+        }
+        assertEquals(1, observed)
+        assertEquals(PageDecision.Online, decision)
+        assertEquals(old, session.state.value.active)
+        assertEquals(listOf("observed", "provider", "clear", "online"), events)
+    }
+
+    private enum class ObservationChange { ACTIVE_SWITCH, ONLINE_VERSION_MISMATCH }
+
+    /** 将页面的 IO 观察返回留在 Main 队首，先放行静默配置或安装，再恢复该页面。 */
+    private fun verifyPageObservationAfterConfiguration(change: ObservationChange) {
+        val root = temporary.newFolder().canonicalFile
+        val oldBytes = zip("observed V1")
+        val old = candidate(100001, oldBytes)
+        val next = candidate(100002, zip("activated V2"))
+        val base = "https://offline.example/app/"
+        Executors.newSingleThreadExecutor().asCoroutineDispatcher().use { mainDelegate ->
+            Executors.newSingleThreadExecutor().asCoroutineDispatcher().use { ioDelegate ->
+                runBlocking(mainDelegate) {
+                    assertTrue(PackageInstaller(root, ioDispatcher = ioDelegate)
+                        .install(old.record) { oldBytes.inputStream() } is InstallResult.Success)
+                    val enabledWriteEntered = CompletableDeferred<Unit>()
+                    val enabledWriteRelease = CompletableDeferred<Unit>()
+                    val store = MemoryStorage(old.record).apply {
+                        if (change == ObservationChange.ONLINE_VERSION_MISMATCH) {
+                            this.enabledWriteEntered = enabledWriteEntered
+                            this.enabledWriteRelease = enabledWriteRelease
+                        }
+                    }
+                    val main = HoldingMainDispatcher(mainDelegate)
+                    val io = ObservedIoDispatcher(ioDelegate)
+                    val outcome = CompletableDeferred<InstallationOutcome>()
+                    val configuration = when (change) {
+                        ObservationChange.ACTIVE_SWITCH -> response(next)
+                        ObservationChange.ONLINE_VERSION_MISMATCH -> ConfigResponse.Success(
+                            OfflineConfiguration(enabled = true, onlineVersion = next.record.version),
+                        )
+                    }
+                    val sdk = ManagedOfflineSdk.forTest(
+                        root = root, storage = store,
+                        configProvider = ManagedConfigProvider { configuration },
+                        minimumVersion = 100000,
+                        onInstallationOutcome = { outcome.complete(it) },
+                        ioDispatcher = io, mainDispatcher = main,
+                    )
+                    val ioBusy = CountDownLatch(1)
+                    val freeIo = CountDownLatch(1)
+                    val callbacks = object : ManagedPageCallbacks {
+                        var onlineLoads = 0
+                        var offlineLoads = 0
+                        override fun clearResourceCache() = true
+                        override fun loadOffline(directory: File, interceptor: OfflineInterceptor, url: String) {
+                            offlineLoads++
+                        }
+                        override fun loadOnline(url: String) { onlineLoads++ }
+                    }
+                    var blocker: kotlinx.coroutines.Job? = null
+                    var page: kotlinx.coroutines.Deferred<PageDecision>? = null
+                    try {
+                        sdk.startupDecision()
+                        assertEquals(old.record, sdk.state.value.active)
+                        blocker = launch(ioDelegate) {
+                            ioBusy.countDown()
+                            check(freeIo.await(5, TimeUnit.SECONDS))
+                        }
+                        assertTrue(withContext(kotlinx.coroutines.Dispatchers.IO) { ioBusy.await(5, TimeUnit.SECONDS) })
+                        io.observe.set(true)
+                        page = async { sdk.loadPage(base, base, callbacks) }
+                        assertTrue(withContext(kotlinx.coroutines.Dispatchers.IO) {
+                            io.dispatched.await(5, TimeUnit.SECONDS)
+                        })
+                        main.hold = true
+                        freeIo.countDown()
+                        withTimeout(5_000L) { while (main.queued() == 0) kotlinx.coroutines.delay(10L) }
+                        assertEquals("旧目录观察尚未交给页面回调", 0, callbacks.onlineLoads + callbacks.offlineLoads)
+
+                        sdk.setConditions(privacyAllowed = true, foreground = true)
+                        withTimeout(5_000L) {
+                            while (when (change) {
+                                ObservationChange.ACTIVE_SWITCH -> !outcome.isCompleted
+                                ObservationChange.ONLINE_VERSION_MISMATCH -> !enabledWriteEntered.isCompleted
+                            }) {
+                                main.releaseOthers()
+                                kotlinx.coroutines.delay(10L)
+                            }
+                        }
+                        when (change) {
+                            ObservationChange.ACTIVE_SWITCH -> {
+                                assertEquals(InstallationOutcome.Installed(next.record), outcome.await())
+                                assertEquals(next.record, sdk.state.value.active)
+                                assertEquals(next.record, store.active)
+                            }
+                            ObservationChange.ONLINE_VERSION_MISMATCH -> {
+                                assertEquals("版本失配时 active 仍为 V1", old.record, sdk.state.value.active)
+                                assertTrue(sdk.state.value.enabled)
+                                assertFalse(outcome.isCompleted)
+                            }
+                        }
+
+                        main.releaseFirst()
+                        assertEquals("旧 IO 观察不能绑定过期版本", PageDecision.Online,
+                            withTimeout(5_000L) { checkNotNull(page).await() })
+                        assertEquals(1, callbacks.onlineLoads)
+                        assertEquals(0, callbacks.offlineLoads)
+
+                        enabledWriteRelease.complete(Unit)
+                        main.hold = false
+                        main.releaseAll()
+                        val nextDecision = sdk.loadPage(base, base, PageCallbacks())
+                        when (change) {
+                            ObservationChange.ACTIVE_SWITCH -> assertEquals(
+                                "后续页面应选择已激活的 V2", PageDecision.Offline(next.record), nextDecision,
+                            )
+                            ObservationChange.ONLINE_VERSION_MISMATCH -> assertEquals(
+                                "线上版本失配期间后续页面仍须回源", PageDecision.Online, nextDecision,
+                            )
+                        }
                     } finally {
                         freeIo.countDown()
                         enabledWriteRelease.complete(Unit)
@@ -1217,6 +1631,51 @@ class ManagedOfflineRegressionTest {
             offlineLoads++
         }
         override fun loadOnline(url: String) = Unit
+    }
+
+    /** 只保留页面返回的第一个 Main 续体，让同一 Main 上的静默任务先完成。 */
+    private class HoldingMainDispatcher(private val delegate: CoroutineDispatcher) : CoroutineDispatcher() {
+        @Volatile var hold = false
+        private val held = mutableListOf<Pair<CoroutineContext, Runnable>>()
+
+        override fun dispatch(context: CoroutineContext, block: Runnable) {
+            if (hold) synchronized(held) { held += context to block }
+            else delegate.dispatch(context, block)
+        }
+
+        fun queued() = synchronized(held) { held.size }
+
+        fun releaseOthers() {
+            val others = synchronized(held) {
+                val rest = held.drop(1)
+                val first = held.first()
+                held.clear()
+                held += first
+                rest
+            }
+            others.forEach { (context, block) -> delegate.dispatch(context, block) }
+        }
+
+        fun releaseFirst() {
+            val first = synchronized(held) { held.removeAt(0) }
+            delegate.dispatch(first.first, first.second)
+        }
+
+        fun releaseAll() {
+            val rest = synchronized(held) { held.toList().also { held.clear() } }
+            rest.forEach { (context, block) -> delegate.dispatch(context, block) }
+        }
+    }
+
+    /** 识别页面开始的 IO 观察，不改变 IO 执行顺序。 */
+    private class ObservedIoDispatcher(private val delegate: CoroutineDispatcher) : CoroutineDispatcher() {
+        val observe = AtomicBoolean(false)
+        val dispatched = CountDownLatch(1)
+
+        override fun dispatch(context: CoroutineContext, block: Runnable) {
+            if (observe.get()) dispatched.countDown()
+            delegate.dispatch(context, block)
+        }
     }
 
     private fun candidate(version: Int, bytes: ByteArray) = OfflineCandidate(
