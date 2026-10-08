@@ -2,7 +2,7 @@
 
 > **发布前代码验收快照。** 下文的 HEAD、`0.3.0` 本地 Maven 路径、文件摘要及“尚无提交/远端发布”只描述 2026-09-29 验收当时的状态，不是 `0.3.0-rc.1` 发布结果。测试候选固定 tag、GitHub Pre-release、JitPack 产物及真实远端消费须由本轮发布回执另行记录；正式 `0.3.0` 未发布，F4 等未验项保持开放。
 
-2026-09-29，执行仓库 `$SDK_REPO`，跟踪任务为 `slcsp_android2/.trellis/tasks/09-29-offline-sdk-complexity-reduction`。基于 `main` 的未提交 0.3.0 候选继续修改，HEAD 仍为 `ef55eb17e659d9f77ee714a9a37a9bb9d0259921`。本记录包含独立复审后的 P2/P3 局部收口。保留原有未提交修改；未修改业务 App，未提交、推送、打 tag 或远端发布。
+2026-09-29，执行仓库 `$SDK_REPO`，关联宿主侧 SDK 复杂度整改任务。基于 `main` 的未提交 0.3.0 候选继续修改，HEAD 仍为 `ef55eb17e659d9f77ee714a9a37a9bb9d0259921`。本记录包含独立复审后的 P2/P3 局部收口。保留原有未提交修改；未修改业务 App，未提交、推送、打 tag 或远端发布。
 
 ## 结构结果与 R0–R5
 
@@ -45,4 +45,4 @@ F4 单独记录：PHP110 在检查时已连接，P2 收口前尝试 `:offlineSdk
 
 宿主在 Application 持有同一管理器并同步传入隐私/前台条件；Welcome 先 `startupDecision()`，需要首装时调用 `prepareFirst(onProgress = ...)`；页面只调用 `loadPage(url, baseUrl, callbacks)`。安装终态由 App 独立报告；首次正常失败仍可按本次结果放行线上。完整样例与存储/线程边界见[迁移说明](../../MIGRATION-MANAGED-0.3.0.md)及[Demo](../../../app/src/main/java/com/offline/tool/sample/)。M1 已把缓存写入改述为挂起 IO 真实持久确认，校正 Main/StrictMode 设备证据范围，并明确普通回滚失败本进程保留旧 active 与取消未知写入的下次重读是两种边界。
 
-原规划会话已独立接受 P2/P3 收口及 R0–R5 代码与结构范围；验收记录位于跟踪仓库 `slcsp_android2/.trellis/tasks/09-29-offline-sdk-complexity-reduction/p2-p3-acceptance-2026-09-29.md`，无剩余代码阻断项。F4、完整运行与正式产物仍独立开放，Trellis 任务保持 `in_progress`，业务 App 接入任务保持原状态。本地 0.3.0 只是候选，尚无提交、tag、远端发布或远端消费证明。
+原规划会话已独立接受 P2/P3 收口及 R0–R5 代码与结构范围；验收记录保存在宿主侧 SDK 复杂度整改任务中，无剩余代码阻断项。F4、完整运行与正式产物仍独立开放，Trellis 任务保持 `in_progress`，业务 App 接入任务保持原状态。本地 0.3.0 只是候选，尚无提交、tag、远端发布或远端消费证明。

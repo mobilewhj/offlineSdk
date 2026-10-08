@@ -35,4 +35,4 @@
 
 结果：本地 `build/repo/` 生成 `0.2.2` AAR、POM、源码 JAR 和 Gradle Module Metadata；与 `jitpack.yml` 一致的 `publishToMavenLocal` 通过。`dependencyInsight` 确认示例实际消费该 AAR，示例 Debug/Release 打包、单测与 Debug lint 通过。新 AAR 与已发布 `0.2.1` AAR 的 `PackageInstaller` 公开 JVM 声明集合相同；本地新 AAR 的 SHA-256 为 `8cd2bee65accf0ebeb5294d086ef1ad0e21afd3a7ac5f5c694e5ef086c92874b`。正式 JitPack 坐标为 `com.github.mobilewhj:offlineSdk:0.2.2`，远端可用性须以实际构建与消费验证为准。
 
-**设备测试未运行。** AndroidTest 源码编译不等于设备执行；WebView/X5 与真实宿主页面打开速度仍需宿主接入后验证。本轮只同步示例 App 的版本号，未修改其安装编排，也未修改 `slcsp_android2`。已发布的 `0.2.1` 仍保留旧锁等待行为；宿主应在 `0.2.2` 实际发布并验证后更新依赖。
+**设备测试未运行。** AndroidTest 源码编译不等于设备执行；WebView/X5 与真实宿主页面打开速度仍需宿主接入后验证。本轮只同步示例 App 的版本号，未修改其安装编排，也未修改业务宿主工程。已发布的 `0.2.1` 仍保留旧锁等待行为；宿主应在 `0.2.2` 实际发布并验证后更新依赖。

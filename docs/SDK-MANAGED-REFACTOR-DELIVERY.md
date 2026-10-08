@@ -2,7 +2,7 @@
 
 > **历史回执，非当前候选**：本文记录 2026-09-28 v2 源码、旧双步页面 API、AAR 和当时的测试结果。后续 F1–F4 整改见[9 月 28 日回执](verification/2026-09-28-regression-fix/verification.md)；2026-09-29 减负与单入口页面 API 的当前候选请以[新回执](verification/2026-09-29-complexity-reduction/README.md)为准。本文的源码摘要、代码行数、9/9 设备结果及旧双步页面测试均不能证明新候选；F4 当前设备证据仍独立开放。
 
-对应跟踪仓库 `slcsp_android2/.trellis/tasks/09-27-offline-sdk-architecture-simplification/HANDOFF.md` 的架构精简 v2 交接。本轮从 b25b08 **未提交候选**继续修改 SDK、Demo、测试、迁移和消费样例；又按 v2 复审完成 E1 诊断分类与 E2 回归证据收尾。未修改业务 App。结构与自动化行为已通过前轮复审；设备和正式产物门仍开放，**不接入业务 App**。
+对应宿主侧架构精简 v2 交接。本轮从 b25b08 **未提交候选**继续修改 SDK、Demo、测试、迁移和消费样例；又按 v2 复审完成 E1 诊断分类与 E2 回归证据收尾。未修改业务 App。结构与自动化行为已通过前轮复审；设备和正式产物门仍开放，**不接入业务 App**。
 
 ## 身份、路径与发布状态
 
